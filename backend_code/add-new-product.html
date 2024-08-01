@@ -13,12 +13,14 @@
     <meta name="author" content="pixelstrap">
     <link rel="icon" href="assets/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="assets/images/favicon.png" type="image/x-icon">
-    <title>Zomo - Add New Product</title>
+    <title>Perikitis - Add New Hostel</title>
 
     <!-- Google font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
 
     <!-- Linear Icon css -->
     <link rel="stylesheet" href="assets/css/linearicon.css">
@@ -63,12 +65,12 @@
 <body>
     <!-- tap on top start -->
     <div class="tap-top">
-       <i class="ri-arrow-up-double-fill"></i>
+        <i class="ri-arrow-up-double-fill"></i>
     </div>
     <!-- tap on tap end -->
 
-     <!-- loader start -->
-     <div class="loader-wrapper"> 
+    <!-- loader start -->
+    <div class="loader-wrapper">
         <img src="./assets/images/loader.gif" alt="">
     </div>
     <!-- loader end -->
@@ -85,7 +87,7 @@
                             <img class="img-fluid white-logo" src="assets/images/logo/1-white.png" alt="logo">
                         </a>
                     </div>
-                     <div class="toggle-sidebar">
+                    <div class="toggle-sidebar">
                         <i class="status_toggle middle sidebar-toggle" data-feather="align-center"></i>
                         <a href="index.html">
                             <img class="img-fluid for-light" src="assets/images/logo/1.png" alt="logo">
@@ -95,11 +97,11 @@
                 </div>
                 <div class="welcome-title">
                     <h5>
-                        Food that's you loved!
+                        Add the hostel details to show it to users
                         <img src="./assets/images/header.gif" alt="">
                     </h5>
                     <span>
-                        Delight your taste with our most famous food !!
+                        Please enter the details below
                     </span>
                 </div>
                 <div class="nav-right col-xl-6 col-5 pull-right right-header p-0">
@@ -195,7 +197,7 @@
                                         <img src="./assets/images/user/4.jpg" alt="">
                                         <div>
                                             <h5>
-                                                Nullam tempor 
+                                                Nullam tempor
                                             </h5>
                                             <p>Curabitur facilisis erat viverra.</p>
                                         </div>
@@ -261,7 +263,7 @@
                     <i class="close-icon" data-feather="x"></i>
                 </div>
             </div>
-        </div> 
+        </div>
         <!-- Page Header Ends-->
 
         <!-- Page Body start -->
@@ -304,15 +306,15 @@
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-store-3-line"></i>
-                                        <span>Product</span>
+                                        <span>Hostel</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="products.html">Prodcts</a>
+                                            <a href="products.html">Hostel details</a>
                                         </li>
 
                                         <li>
-                                            <a href="add-new-product.html">Add New Products</a>
+                                            <a href="add-new-product.html">Add New Hostel</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -535,26 +537,74 @@
                                 <div class="col-12">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h5>Product Information</h5>
+                                            <h5>Hostel Information</h5>
                                         </div>
                                         <div class="card-body">
                                             <div class="input-items">
                                                 <div class="row gy-3">
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Product Name</h6>
-                                                                <input type="text"
-                                                                placeholder="Product Name">
+                                                            <h6>Hostel Name</h6>
+                                                            <input type="text" placeholder="Hostel Name"
+                                                                id="hostelname">
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Product Type</h6>
-                                                            <select class="js-example-basic-single w-100" name="state">
+                                                            <h6>Hostel Type</h6>
+                                                            <select class="js-example-basic-single w-100" name="state"
+                                                                id="hosteltype">
                                                                 <option disabled>Static Menu</option>
-                                                                <option>Simple</option>
-                                                                <option>Classified</option>
+                                                                <option>Men</option>
+                                                                <option>Women</option>
+                                                                <option>Both</option>
                                                             </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Phone number </h6>
+                                                            <input type="tel" placeholder="Hostel Phone"
+                                                                id="hostelphone">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Email address</h6>
+                                                            <input type="email" placeholder="Hostel Email address"
+                                                                id="hostelemail">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Address Line 1</h6>
+                                                            <input type="text" placeholder="Address line 1"
+                                                                id="hosteladd1">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Address Line 2</h6>
+                                                            <input type="text" placeholder="Address line 2"
+                                                                id="hosteladd2">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>City</h6>
+                                                            <input type="text" placeholder="City" id="hostelcity">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>State</h6>
+                                                            <input type="text" placeholder="State" id="hostelstate">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Pincode</h6>
+                                                            <input type="number" placeholder="Pincode" id="hostelpin">
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
@@ -611,17 +661,18 @@
                                                     <div class="col-12">
                                                         <div class="input-box">
                                                             <h6>Tags</h6>
-                                                            <input type="text"
-                                                                placeholder="Type tag & hit enter">
-                                                        </div>  
+                                                            <input type="text" placeholder="Type tag & hit enter">
+                                                        </div>
                                                     </div>
                                                     <div class="col-12">
                                                         <div class="input-box">
                                                             <div class="icon-state">
                                                                 <label class="switch-xsm mb-0">
-                                                                    <input type="checkbox" id="flexSwitchCheckDefault-1" checked=""><span class="slider round"></span>
+                                                                    <input type="checkbox" id="flexSwitchCheckDefault-1"
+                                                                        checked=""><span class="slider round"></span>
                                                                 </label>
-                                                                <label class="form-check-label" for="flexSwitchCheckDefault-1">Refundable</label>
+                                                                <label class="form-check-label"
+                                                                    for="flexSwitchCheckDefault-1">A/C</label>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -629,9 +680,48 @@
                                                         <div class="input-box">
                                                             <div class="icon-state">
                                                                 <label class="switch-xsm mb-0">
-                                                                    <input type="checkbox" id="flexSwitchCheckDefault-2" checked=""><span class="slider round"></span>
+                                                                    <input type="checkbox" id="flexSwitchCheckDefault-2"
+                                                                        checked=""><span class="slider round"></span>
                                                                 </label>
-                                                                <label class="form-check-label" for="flexSwitchCheckDefault-2">Exchangeable</label>
+                                                                <label class="form-check-label"
+                                                                    for="flexSwitchCheckDefault-2">Wifi</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="input-box">
+                                                            <div class="icon-state">
+                                                                <label class="switch-xsm mb-0">
+                                                                    <input type="checkbox" id="flexSwitchCheckDefault-2"
+                                                                        checked=""><span class="slider round"></span>
+                                                                </label>
+                                                                <label class="form-check-label"
+                                                                    for="flexSwitchCheckDefault-2">Heater</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="input-box">
+                                                            <div class="icon-state">
+                                                                <label class="switch-xsm mb-0">
+                                                                    <input type="checkbox" id="flexSwitchCheckDefault-2"
+                                                                        checked=""><span class="slider round"></span>
+                                                                </label>
+                                                                <label class="form-check-label"
+                                                                    for="flexSwitchCheckDefault-2">24x7
+                                                                    Electricity</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="input-box">
+                                                            <div class="icon-state">
+                                                                <label class="switch-xsm mb-0">
+                                                                    <input type="checkbox" id="flexSwitchCheckDefault-2"
+                                                                        checked=""><span class="slider round"></span>
+                                                                </label>
+                                                                <label class="form-check-label"
+                                                                    for="flexSwitchCheckDefault-2">Laundry</label>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -643,14 +733,66 @@
                                 <div class="col-12">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h5>Description</h5>
+                                            <h5>Hostel Pricing details</h5>
                                         </div>
                                         <div class="card-body">
                                             <div class="input-items">
                                                 <div class="row gy-3">
-                                                    <div class="col-12">
+                                                    <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <div id="editor"></div>
+                                                            <h6>Room rent</h6>
+                                                            <input type="number" placeholder="Room rent price"
+                                                                id="roomprice">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Food price</h6>
+                                                            <input type="number" placeholder="Food price"
+                                                                id="foodprice">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>A/C Room price</h6>
+                                                            <input type="number" placeholder="A/C Room price"
+                                                                id="acprice">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Non A/C price</h6>
+                                                            <input type="number" placeholder="Non A/C Room price"
+                                                                id="nonprice">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Hostel Images</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="input-items">
+                                                <div class="row gy-3">
+                                                    <div class="col-xl-12">
+                                                        <div class="input-box">
+                                                                <form class="dropzone custom-dropzone" id="multiFileUpload"
+                                                                action="/upload.php">
+                                                                    <div class="dropzone-wrapper">
+                                                                        <div class="dz-message needsclick">
+                                                                <div>
+                                                                    <i class="icon-cloud-up"></i>
+                                                                    <h6>Drop files here or click to upload.</h6>
+                                                                </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </form>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -661,34 +803,7 @@
                                 <div class="col-12">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h5>Product Images</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="input-items">
-                                                <div class="row gy-3">
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Images</h6>
-                                                            <input type="file"
-                                                            id="formFile" multiple>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Thumbnail Image</h6>
-                                                            <input type="file"
-                                                            id="formFile1" multiple>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Product Videos</h5>
+                                            <h5>Hostel Videos</h5>
                                         </div>
                                         <div class="card-body">
                                             <div class="input-items">
@@ -707,8 +822,7 @@
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
                                                             <h6>Video Link</h6>
-                                                            <input type="text"
-                                                            placeholder="Video Link">
+                                                            <input type="text" placeholder="Video Link">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -738,8 +852,8 @@
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
                                                             <h6>Option Value</h6>
-                                                            <input type="text" class="px-0" 
-                                                                placeholder="Type tag & hit enter" 
+                                                            <input type="text" class="px-0"
+                                                                placeholder="Type tag & hit enter"
                                                                 data-role="tagsinput">
                                                         </div>
                                                     </div>
@@ -870,7 +984,8 @@
                                                                 <span class="link">https://zomo.com</span>
                                                                 <h5>Online Order From Neardy Restaurant</h5>
                                                                 <p>Find then best restaurants, cafes and bars on zomo,
-                                                                    view menus , photos, rating and user reviews for top restaursnts.
+                                                                    view menus , photos, rating and user reviews for top
+                                                                    restaursnts.
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -878,19 +993,19 @@
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
                                                             <h6>Page title</h6>
-                                                            <input type="search"
-                                                            placeholder="Fresh Fruits">
+                                                            <input type="search" placeholder="Fresh Fruits">
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
                                                             <h6>URL handle</h6>
                                                             <input type="search"
-                                                            placeholder="https://themes.pixelstrap.net/zomo/index.html">
+                                                                placeholder="https://themes.pixelstrap.net/zomo/index.html">
                                                         </div>
                                                     </div>
                                                     <div class="col-12">
-                                                        <a href="#" class="btn restaurant-button">Save</a>
+                                                        <button type="button" id="registerHostel"
+                                                            class="btn restaurant-button">Save</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -908,7 +1023,7 @@
                     <footer class="footer">
                         <div class="row">
                             <div class="col-md-12 footer-copyright text-center">
-                                <p class="mb-0">Copyright 2024 ©Zomo template by pixelstrap</p>
+                                <p class="mb-0">Copyright 2024 ©Perikitis</p>
                             </div>
                         </div>
                     </footer>
@@ -957,6 +1072,12 @@
 
     <!-- Sidebar js -->
     <script src="assets/js/config.js"></script>
+
+    <!-- New hostel register js -->
+    <script src="assets/js/hostel-register.js" type="module" defer></script>
+
+    <!-- Firebase config js -->
+    <script src="assets/js/firebase-config.js" type="module" defer></script>
 
     <!-- bootstrap tag-input js -->
     <script src="assets/js/bootstrap-tagsinput.min.js"></script>
