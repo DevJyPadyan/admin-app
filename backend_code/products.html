@@ -12,7 +12,7 @@
     <meta name="author" content="pixelstrap">
     <link rel="icon" href="assets/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="assets/images/favicon.png" type="image/x-icon">
-    <title>Zomo - Product</title>
+    <title>Perikitis - Hostel details</title>
 
     <!-- Google font-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -82,11 +82,11 @@
                 </div>
                 <div class="welcome-title">
                     <h5>
-                        Food that's you loved!
+                        Hostel that's you own!
                         <img src="./assets/images/header.gif" alt="">
                     </h5>
                     <span>
-                        Delight your taste with our most famous food !!
+                       Have a quick look at your list of Hostel !!
                     </span>
                 </div>
                 <div class="nav-right col-xl-6 col-5 pull-right right-header p-0">
@@ -291,15 +291,15 @@
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-store-3-line"></i>
-                                        <span>Product</span>
+                                        <span>Hostel</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="products.html">Prodcts</a>
+                                            <a href="products.html">Hostel</a>
                                         </li>
 
                                         <li>
-                                            <a href="add-new-product.html">Add New Products</a>
+                                            <a href="add-new-product.html">Add New Hostel</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -520,7 +520,7 @@
                             <div class="card card-table">
                                 <div class="card-body">
                                     <div class="title-header option-title d-sm-flex d-block">
-                                        <h5>Products List</h5>
+                                        <h5>Hostel List</h5>
                                         <div class="right-options">
                                             <ul>
                                                 <li>
@@ -532,30 +532,41 @@
                                                         <i class="ri-upload-2-fill me-1"></i>Export</a>
                                                 </li>
                                                 <li>
-                                                    <a class="btn btn-dashed" href="add-new-product.html">Add Product</a>
+                                                    <a class="btn btn-dashed" href="add-new-product.html">Add Hostel</a>
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
                                     <div>
+                                        <div class="input-box">
+                                            <i class="ri-search-line"></i>
+                                            <input class="search-box" type="search" placeholder="Search hostel details here..." id="myInput" onkeyup='searchTable()'>
+                                        </div>
                                         <div class="table-responsive theme-scrollbar">
                                             <table class="table category-table dataTable no-footer" id="table_id">
                                                 <thead>
                                                     <tr>
                                                         <th><input id="checkall" class="custom-checkbox" type="checkbox" name="text"></th>
-                                                        <th>Product Image</th>
-                                                        <th>Product Name</th>
-                                                        <th>Category</th>
-                                                        <th>Current Qty</th>
-                                                        <th>Price</th>
-                                                        <th>Status</th>
-                                                        <th>Option</th>
+                                                        <!--<th>S. No</th>-->
+                                                        <th>Hostel Name</th>
+                                                        <th>Hostel Type</th>
+                                                        <th>Address 1</th>
+                                                        <th>Address 2</th>
+                                                        <th>City</th>
+                                                        <th>State</th>
+                                                        <th>Phone</th>
+                                                        <th>Email ID</th>
+                                                        <th>Pin code</th>
+                                                        <th>Room rent</th>
+                                                        <th>Food price</th>
+                                                        <th>A/C price</th>
+                                                        <th>Non A/C price</th>
                                                     </tr>
                                                 </thead>
 
-                                                <tbody>
+                                                <tbody id="tbody1">
                                                     <tr>
-                                                        <td><input class="custom-checkbox" type="checkbox" name="text"></td>
+                                                        <!--<td><input class="custom-checkbox" type="checkbox" name="text"></td>
                                                         <td>
                                                             <div class="table-image">
                                                                 <img src="assets/images/product/1.png" class="img-fluid"
@@ -1043,7 +1054,7 @@
                                                                     </a>
                                                                 </li>
                                                             </ul>
-                                                        </td>
+                                                        </td>-->
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -1147,6 +1158,12 @@
     </div>
     <!-- Delete Modal Box End -->
 
+    <!-- Firebase js -->
+    <script src="assets/js/firebase-config.js" type="module" defer></script>
+
+    <!-- Hostel details js -->
+    <script src="assets/js/hostel-details.js" type="module" defer></script>
+
     <!-- latest js -->
     <script src="assets/js/jquery-3.6.0.min.js"></script>
 
@@ -1189,6 +1206,28 @@
         });
     }
 });
+
+function searchTable() {
+    var input, filter, found, table, tr, td, i, j;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("table_id");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td");
+        for (j = 0; j < td.length; j++) {
+            if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                found = true;
+            }
+        }
+        if (found) {
+            tr[i].style.display = "";
+            found = false;
+        } else {
+            tr[i].style.display = "none";
+        }
+    }
+}
     </script>
 </body>
 
