@@ -680,8 +680,35 @@
                                                         <div class="input-box">
                                                             <div class="icon-state">
                                                                 <label class="switch-xsm mb-0">
-                                                                    <input type="checkbox" id="flexSwitchCheckDefault-2"
-                                                                        checked=""><span class="slider round"></span>
+                                                                    <input type="checkbox"
+                                                                        id="flexSwitchCheckDefault-2"><span
+                                                                        class="slider round"></span>
+                                                                </label>
+                                                                <label class="form-check-label"
+                                                                    for="flexSwitchCheckDefault-2">A/C</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="input-box">
+                                                            <div class="icon-state">
+                                                                <label class="switch-xsm mb-0">
+                                                                    <input type="checkbox"
+                                                                        id="flexSwitchCheckDefault-2"><span
+                                                                        class="slider round"></span>
+                                                                </label>
+                                                                <label class="form-check-label"
+                                                                    for="flexSwitchCheckDefault-2">Non A/C</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="input-box">
+                                                            <div class="icon-state">
+                                                                <label class="switch-xsm mb-0">
+                                                                    <input type="checkbox"
+                                                                        id="flexSwitchCheckDefault-2"><span
+                                                                        class="slider round"></span>
                                                                 </label>
                                                                 <label class="form-check-label"
                                                                     for="flexSwitchCheckDefault-2">Wifi</label>
@@ -692,37 +719,21 @@
                                                         <div class="input-box">
                                                             <div class="icon-state">
                                                                 <label class="switch-xsm mb-0">
-                                                                    <input type="checkbox" id="flexSwitchCheckDefault-2"
-                                                                        checked=""><span class="slider round"></span>
-                                                                </label>
-                                                                <label class="form-check-label"
-                                                                    for="flexSwitchCheckDefault-2">Heater</label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <div class="input-box">
-                                                            <div class="icon-state">
-                                                                <label class="switch-xsm mb-0">
-                                                                    <input type="checkbox" id="flexSwitchCheckDefault-2"
-                                                                        checked=""><span class="slider round"></span>
-                                                                </label>
-                                                                <label class="form-check-label"
-                                                                    for="flexSwitchCheckDefault-2">24x7
-                                                                    Electricity</label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <div class="input-box">
-                                                            <div class="icon-state">
-                                                                <label class="switch-xsm mb-0">
-                                                                    <input type="checkbox" id="flexSwitchCheckDefault-2"
-                                                                        checked=""><span class="slider round"></span>
+                                                                    <input type="checkbox"
+                                                                        id="flexSwitchCheckDefault-2"><span
+                                                                        class="slider round"></span>
                                                                 </label>
                                                                 <label class="form-check-label"
                                                                     for="flexSwitchCheckDefault-2">Laundry</label>
                                                             </div>
+
+
+                                                            <div class="col-12">
+                                                                <button type="button" data-bs-toggle="modal"
+                                                                    data-bs-target="#room"
+                                                                    class="btn restaurant-button">Add room</a>
+                                                            </div>
+
                                                         </div>
                                                     </div>
                                                 </div>
@@ -770,7 +781,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>              
+                                </div>
                                 <div class="col-12">
                                     <div class="card">
                                         <div class="card-header">
@@ -782,18 +793,18 @@
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
                                                             <h6>Images</h6>
-                                                            <input type="file"
-                                                            id="files" multiple>
-                                                            <button id="uploadImage">Upload Image</button>
-                                                            <img id="imagePreview" src="" alt="Image Preview">
+                                                            <input type="file" id="files" multiple>
                                                         </div>
-                                                        
+                                                        <button id="uploadImage">Upload Image</button>
+                                                        <!--<p id="uploading"></p>
+                                                        <progress value="0" max="100" id="progress"></progress>
+                                                        <img id="imagePreview" src="" alt="Image Preview">-->
+
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Thumbnail Image</h6> 
-                                                            <input type="file"
-                                                            id="formFile1" multiple>
+                                                            <h6>Thumbnail Image</h6>
+                                                            <input type="file" id="formFile1" multiple>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -801,7 +812,7 @@
                                         </div>
                                     </div>
                                 </div>
-                               <!--<div class="col-12">
+                                <!--<div class="col-12">
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Hostel Videos</h5>
@@ -972,8 +983,7 @@
                                     </div>
                                 </div>-->
                                 <div class="col-12">
-                                    <button type="button" id="registerHostel"
-                                        class="btn restaurant-button">Save</a>
+                                    <button type="button" id="registerHostel" class="btn restaurant-button">Save</a>
                                 </div>
                                 <!--<div class="col-12">
                                     <div class="card">
@@ -1040,6 +1050,45 @@
         <!-- Page Body End -->
     </div>
     <!-- page-wrapper End -->
+
+    <!--Add room Modal start-->
+    <div class="modal fade location-modal" id="room" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">
+                        <h5 class="fw-semibold">Add room details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <label>
+                        Room type:
+                    </label>
+                    <input type="text" name="roomtype" id="rtype" placeholder="Room type"><br>
+                    <label>
+                        No. of rooms:
+                    </label>
+                    <input type="text" name="roomtype" id="rnumber" placeholder="Room count"><br>
+                    <label>
+                        Room price:
+                    </label>
+                    <input type="text" name="roomtype" id="rprice" placeholder="Room price"><br>
+                    <label>
+                        Room facility:
+                    </label>
+                    <input type="text" name="roomtype" id="rfac" placeholder="Room facility"><br>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn gray-btn" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn theme-btn mt-0" data-bs-dismiss="modal" id="addroom">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Add room Modal End-->
+
 
     <!-- Modal Start -->
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
