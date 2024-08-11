@@ -264,7 +264,6 @@ async function upload() {
   alert("Room details added successfully");
 });*/
 registerHostel.addEventListener('click', async (e) => {
-  console.log("hi");
   var hname = document.getElementById("hostelname").value;
   var htype = document.getElementById("hosteltype").value;
   var hphone = document.getElementById("hostelphone").value;
@@ -297,7 +296,7 @@ registerHostel.addEventListener('click', async (e) => {
 
     if (files.length != 0) {
       for (let j = 0; j < files.length; j++) {
-        const storageRef = ref2(storage, 'images/' + hname + '/room-' + i + '/' + files[j].name);
+        const storageRef = ref2(storage, 'Roomimages/' + hname + '/room-' + i + '/' + files[j].name);
         await uploadBytes(storageRef, files[j]);
         const imageUrl = await getDownloadURL(storageRef);
         imagelink1.push(imageUrl);
@@ -324,8 +323,6 @@ registerHostel.addEventListener('click', async (e) => {
     Hostelcity: hcity,
     Hostelstate: hstate,
     Hostelpin: hpin,
-    wifi: WifiChecked,
-    laundry: laundryChecked,
     Hostevegprice: vegp,
     HostelNvegprice: nonvegp,
     Hostelboth: both,
