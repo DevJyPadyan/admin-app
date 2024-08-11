@@ -8,7 +8,7 @@ const db = getDatabase();
 const storage = getStorage(app);
 
 
-/*Multiple images upload*/
+/*Hostel Multiple images upload*/
 var files = [];
 let imagelink = [];
 document.getElementById("files").addEventListener("change", function (e) {
@@ -51,63 +51,13 @@ document.getElementById("uploadImage").addEventListener("click", async function 
   }
 });
 
-
-document.getElementById("hostelfloors").addEventListener("keydown", function (event) {
-  // Check if the Enter key is pressed (key code 13)
-  if (event.key === "Enter") {
-    // Prevent default action (form submission, etc.)
-    event.preventDefault();
-
-    // Call the function to generate checkboxes
-    generateCheckboxes();
-  }
-});
-
-function generateCheckboxes() {
-  // Get the number of checkboxes from the input
-  var num = document.getElementById("hostelfloors").value;
-
-  // Get the container element
-  var container = document.getElementById("checkboxContainer");
-
-  // Clear any existing checkboxes
-  container.innerHTML = "";
-
-  // Generate checkboxes
-  for (var i = 1; i <= num; i++) {
-    // Create a div to wrap checkbox and label together
-    var wrapper = document.createElement("div");
-    wrapper.classList = "form-check"; // Bootstrap class for proper spacing (optional)
-
-    // Create checkbox element
-    var checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.id = "checkbox" + i;
-    checkbox.name = "dynamicCheckbox";
-    checkbox.value = "Floor" + i;
-    checkbox.classList = "form-check-input"; // Bootstrap class (optional)
-
-    // Create label for checkbox
-    var label = document.createElement("label");
-    label.htmlFor = "checkbox" + i;
-    label.classList = "form-check-label"; // Bootstrap class (optional)
-    label.appendChild(document.createTextNode(" Floor " + i));
-
-    // Append checkbox and label to wrapper
-    wrapper.appendChild(checkbox);
-    wrapper.appendChild(label);
-
-    // Append wrapper to container
-    container.appendChild(wrapper);
-  }
-}
 const addroom = document.getElementById("addroom");
 const roomContainer = document.getElementById("room-container");
 
 let roomCount = 0;
 
-document.addEventListener('DOMContentLoaded', function() {
-addroom.addEventListener('click', () => {
+document.addEventListener('DOMContentLoaded', function () {
+  addroom.addEventListener('click', () => {
     roomCount++;
 
     const mainParentElem = document.createElement('div');
@@ -131,14 +81,17 @@ addroom.addEventListener('click', () => {
     rowElem.classList.add('row', 'gy-3');
 
     // Floor
-    rowElem.appendChild(createInputBox('Floor', `floor-${roomCount}`, 'number', true));
+    // rowElem.appendChild(createInputBox('Floor', `floor-${roomCount}`, 'number', true));
+    const floorarr = numberToArray(document.getElementById("hostelfloors").value);
+    rowElem.appendChild(createSelectBox('Floor', `floor-${roomCount}`, true, floorarr));
+
 
     // Room Type
     const roomTypeElem = createSelectBox('Room Type', `roomType-${roomCount}`, true, [
-        { value: 'single', text: 'Single' },
-        { value: 'double', text: 'Double' },
-        { value: 'triple', text: 'Triple' },
-        { value: '4 sharing', text: '4 sharing' },
+      { value: 'single', text: 'Single' },
+      { value: 'double', text: 'Double' },
+      { value: 'triple', text: 'Triple' },
+      { value: '4 sharing', text: '4 sharing' },
     ]);
     rowElem.appendChild(roomTypeElem);
 
@@ -150,15 +103,15 @@ addroom.addEventListener('click', () => {
 
     // Air Conditioning
     const acElem = createSelectBox('Air Conditioning', `ac-${roomCount}`, true, [
-        { value: 'ac', text: 'AC' },
-        { value: 'non-ac', text: 'Non-AC' },
+      { value: 'ac', text: 'AC' },
+      { value: 'non-ac', text: 'Non-AC' },
     ]);
     rowElem.appendChild(acElem);
 
     // Bathroom
     const bathroomElem = createSelectBox('Bathroom', `bathroom-${roomCount}`, true, [
-        { value: 'attached', text: 'Attached' },
-        { value: 'common', text: 'Common' },
+      { value: 'attached', text: 'Attached' },
+      { value: 'common', text: 'Common' },
     ]);
     rowElem.appendChild(bathroomElem);
 
@@ -173,7 +126,7 @@ addroom.addEventListener('click', () => {
     removeRoomBtn.className = 'btn restaurant-button';
     removeRoomBtn.innerHTML = 'Remove Room';
     removeRoomBtn.onclick = () => {
-        cardElem.remove();
+      cardElem.remove();
     };
     rowElem.appendChild(removeRoomBtn);
 
@@ -184,10 +137,10 @@ addroom.addEventListener('click', () => {
     cardElem.appendChild(cardBodyElem);
     mainParentElem.appendChild(cardElem);
     roomContainer.appendChild(mainParentElem);
-});
+  });
 
-// Helper function to create input boxes
-function createInputBox(labelText, inputId, inputType, required, placeholder = '', multiple = false) {
+  // Helper function to create input boxes
+  function createInputBox(labelText, inputId, inputType, required, placeholder = '', multiple = false) {
     const colElem = document.createElement('div');
     colElem.classList.add('col-xl-6');
 
@@ -210,10 +163,12 @@ function createInputBox(labelText, inputId, inputType, required, placeholder = '
     colElem.appendChild(inputBoxElem);
 
     return colElem;
-}
+  }
 
-// Helper function to create select boxes
-function createSelectBox(labelText, selectId, required, options) {
+  function numberToArray(number) { const result = []; for (let i = 1; i <= number; i++) { result.push(i); } return result; }
+
+  // Helper function to create select boxes
+  function createSelectBox(labelText, selectId, required, options) {
     const colElem = document.createElement('div');
     colElem.classList.add('col-xl-6');
 
@@ -229,10 +184,18 @@ function createSelectBox(labelText, selectId, required, options) {
     if (required) selectElem.required = true;
 
     options.forEach(option => {
-        const optElem = document.createElement('option');
+      const optElem = document.createElement('option');
+      if (option.value && option.text) {
         optElem.value = option.value;
         optElem.text = option.text;
-        selectElem.appendChild(optElem);
+      }
+      else {
+        //sets the floor drop down box in dynamic forms when number of floors entered
+        optElem.value = option;
+        optElem.text = `Floor ${option}`;
+
+      }
+      selectElem.appendChild(optElem);
     });
 
     inputBoxElem.appendChild(labelElem);
@@ -240,7 +203,7 @@ function createSelectBox(labelText, selectId, required, options) {
     colElem.appendChild(inputBoxElem);
 
     return colElem;
-}
+  }
 });
 
 
@@ -312,13 +275,16 @@ registerHostel.addEventListener('click', async (e) => {
   var hcity = document.getElementById("hostelcity").value;
   var hstate = document.getElementById("hostelstate").value;
   var hpin = document.getElementById("hostelpin").value;
+  var vegp = document.getElementById("nonvegp").value;
+  var nonvegp = document.getElementById("vegp").value;
+  var both = document.getElementById("bothp").value;
 
   // Correctly select WiFi and laundry options
-  var selectwifi = document.querySelector('input[name="facility"][value="wifi"]:checked');
-  var selectlaundry = document.querySelector('input[name="facility"][value="laundry"]:checked');
 
-  var wifi = selectwifi ? selectwifi.value : null;
-  var laundry = selectlaundry ? selectlaundry.value : null;
+  var laundryChecked = document.getElementById('laundry').checked;
+  var WifiChecked = document.getElementById('wifi').checked;
+
+  //console.log(laundryChecked);
 
   let rooms = [];
 
@@ -343,8 +309,6 @@ registerHostel.addEventListener('click', async (e) => {
         imagelink1.push(imageUrl);
       }
     }
-
-
     rooms.push({
       floor: floor,
       roomtype: roomType,
@@ -356,7 +320,6 @@ registerHostel.addEventListener('click', async (e) => {
       images: imagelink1
     });
   }
-
   update(ref(db, "Hostel details/" + hname + '/'), {
     Hostelname: hname,
     Hosteltype: htype,
@@ -367,51 +330,19 @@ registerHostel.addEventListener('click', async (e) => {
     Hostelcity: hcity,
     Hostelstate: hstate,
     Hostelpin: hpin,
-    wifi: wifi,
-    laundry: laundry,
+    wifi: WifiChecked,
+    laundry: laundryChecked,
+    Hostevegprice: vegp,
+    HostelNvegprice: nonvegp,
+    Hostelboth: both,
     rooms: rooms
   })
     .then(() => {
       //console.log(db, "Hostel details/" + hname)
-      alert("Hostel details added");
+      alert("Hostel details added successfully");
       window.location.href = "././products.html";
     })
     .catch((error) => {
       alert(error);
     });
 });
-
-/*registerHostel.addEventListener('click', (e) => {
-  var hname = document.getElementById("hostelname").value;
-  var htype = document.getElementById("hosteltype").value;
-  var hphone = document.getElementById("hostelphone").value;
-  var hemail = document.getElementById("hostelemail").value;
-  var hadd1 = document.getElementById("hosteladd1").value;
-  var hadd2 = document.getElementById("hosteladd2").value;
-  var hcity = document.getElementById("hostelcity").value;
-  var hstate = document.getElementById("hostelstate").value;
-  var hpin = document.getElementById("hostelpin").value;
-
-
-  update(ref(db, "Hostel details/" + hname + '/'), {
-    Hostelname: hname,
-    Hosteltype: htype,
-    Hostelphone: hphone,
-    Hostelemail: hemail,
-    Hosteladd1: hadd1,
-    Hosteladd2: hadd2,
-    Hostelcity: hcity,
-    Hostelstate: hstate,
-    Hostelpin: hpin,
-
-
-  })
-    .then(() => {
-      window.location.href = "././products.html";
-    })
-    .catch((error) => {
-      alert(error);
-    });
-
-});*/
-

@@ -17,7 +17,9 @@
     <!-- Google font-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
     <!-- Fontawesome css -->
     <link rel="stylesheet" type="text/css" href="assets/css/vendors/font-awesome.css">
 
@@ -50,12 +52,12 @@
 <body>
     <!-- tap on top start-->
     <div class="tap-top">
-       <i class="ri-arrow-up-double-fill"></i>
+        <i class="ri-arrow-up-double-fill"></i>
     </div>
     <!-- tap on tap end-->
 
-     <!-- loader start -->
-     <div class="loader-wrapper"> 
+    <!-- loader start -->
+    <div class="loader-wrapper">
         <img src="./assets/images/loader.gif" alt="">
     </div>
     <!-- loader end -->
@@ -72,7 +74,7 @@
                             <img class="img-fluid white-logo" src="assets/images/logo/1-white.png" alt="logo">
                         </a>
                     </div>
-                     <div class="toggle-sidebar">
+                    <div class="toggle-sidebar">
                         <i class="status_toggle middle sidebar-toggle" data-feather="align-center"></i>
                         <a href="index.html">
                             <img class="img-fluid for-light" src="assets/images/logo/1.png" alt="logo">
@@ -86,7 +88,7 @@
                         <img src="./assets/images/header.gif" alt="">
                     </h5>
                     <span>
-                       Have a quick look at your list of Hostel !!
+                        Have a quick look at your list of Hostel !!
                     </span>
                 </div>
                 <div class="nav-right col-xl-6 col-5 pull-right right-header p-0">
@@ -248,7 +250,7 @@
                     <i class="close-icon" data-feather="x"></i>
                 </div>
             </div>
-        </div> 
+        </div>
         <!-- Page Header Ends-->
 
         <!-- Page Body Start-->
@@ -540,13 +542,16 @@
                                     <div>
                                         <div class="input-box">
                                             <i class="ri-search-line"></i>
-                                            <input class="search-box" type="search" placeholder="Search hostel details here..." id="myInput" onkeyup='searchTable()'>
+                                            <input class="search-box" type="search"
+                                                placeholder="Search hostel details here..." id="myInput"
+                                                onkeyup='searchTable()'>
                                         </div>
                                         <div class="table-responsive theme-scrollbar">
                                             <table class="table category-table dataTable no-footer" id="table_id">
                                                 <thead>
                                                     <tr>
-                                                        <th><input id="checkall" class="custom-checkbox" type="checkbox" name="text"></th>
+                                                        <th><input id="checkall" class="custom-checkbox" type="checkbox"
+                                                                name="text"></th>
                                                         <!--<th>S. No</th>-->
                                                         <th>Hostel Name</th>
                                                         <th>Hostel Type</th>
@@ -1097,9 +1102,9 @@
                     <p class="mb-0">Are you sure you want to log out?</p>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-cancel" type="button" data-bs-dismiss="modal"
-                    aria-label="Close">No</button>
-                    <button class="btn btn-submit" type="submit" data-bs-dismiss="modal" aria-label="Close"><a href="login.html"></a>Yes</a></button>
+                    <button class="btn btn-cancel" type="button" data-bs-dismiss="modal" aria-label="Close">No</button>
+                    <button class="btn btn-submit" type="submit" data-bs-dismiss="modal" aria-label="Close"><a
+                            href="login.html"></a>Yes</a></button>
                 </div>
             </div>
         </div>
@@ -1185,7 +1190,7 @@
     <!-- customizer js -->
     <script src="assets/js/customizer.js"></script>
 
-     <!-- Plugins JS -->
+    <!-- Plugins JS -->
     <script src="assets/js/sidebar-menu.js"></script>
     <!-- Data table js -->
     <script src="assets/js/jquery.dataTables.js"></script>
@@ -1194,41 +1199,41 @@
     <!-- Theme js -->
     <script src="assets/js/script.js"></script>
     <script>
-      $("#checkall").change(function () {
-    var checked = $(this).is(":checked");
-    if (checked) {
-        $(".custom-checkbox").each(function () {
-            $(this).prop("checked", true);
+        $("#checkall").change(function () {
+            var checked = $(this).is(":checked");
+            if (checked) {
+                $(".custom-checkbox").each(function () {
+                    $(this).prop("checked", true);
+                });
+
+            } else {
+                $(".custom-checkbox").each(function () {
+                    $(this).prop("checked", false);
+                });
+            }
         });
 
-    } else {
-        $(".custom-checkbox").each(function () {
-            $(this).prop("checked", false);
-        });
-    }
-});
-
-function searchTable() {
-    var input, filter, found, table, tr, td, i, j;
-    input = document.getElementById("myInput");
-    filter = input.value.toUpperCase();
-    table = document.getElementById("table_id");
-    tr = table.getElementsByTagName("tr");
-    for (i = 0; i < tr.length; i++) {
-        td = tr[i].getElementsByTagName("td");
-        for (j = 0; j < td.length; j++) {
-            if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
-                found = true;
+        function searchTable() {
+            var input, filter, found, table, tr, td, i, j;
+            input = document.getElementById("myInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("table_id");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td");
+                for (j = 0; j < td.length; j++) {
+                    if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        found = true;
+                    }
+                }
+                if (found) {
+                    tr[i].style.display = "";
+                    found = false;
+                } else {
+                    tr[i].style.display = "none";
+                }
             }
         }
-        if (found) {
-            tr[i].style.display = "";
-            found = false;
-        } else {
-            tr[i].style.display = "none";
-        }
-    }
-}
     </script>
 </body>
 

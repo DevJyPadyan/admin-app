@@ -13,7 +13,7 @@
     <meta name="author" content="pixelstrap">
     <link rel="icon" href="assets/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="assets/images/favicon.png" type="image/x-icon">
-    <title>Perikitis - Add New Hostel</title>
+    <title>Perikitis - Edit Hostel</title>
 
     <!-- Google font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -97,11 +97,11 @@
                 </div>
                 <div class="welcome-title">
                     <h5>
-                        Add the hostel details to show it to users
+                        Edit the hostel details to show it to users
                         <img src="./assets/images/header.gif" alt="">
                     </h5>
                     <span>
-                        Please enter the details below
+                        Modify and enter the details below
                     </span>
                 </div>
                 <div class="nav-right col-xl-6 col-5 pull-right right-header p-0">
@@ -530,7 +530,7 @@
             <div class="page-body">
 
                 <!-- New Product Add Start -->
-                <div class="container-fluid" id="hostelDetailsForm">
+                <div class="container-fluid">
                     <div class="row">
                         <div class="col-12">
                             <div class="row">
@@ -554,7 +554,7 @@
                                                             <h6>Hostel Type</h6>
                                                             <select class="js-example-basic-single w-100" name="state"
                                                                 id="hosteltype">
-                                                                <option disabled>Static Menu</option>
+                                                                <!--<option disabled>Static Menu</option>-->
                                                                 <option>Men</option>
                                                                 <option>Women</option>
                                                                 <option>Both</option>
@@ -607,93 +607,18 @@
                                                             <input type="number" placeholder="Pincode" id="hostelpin">
                                                         </div>
                                                     </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>No. of floors</h6>
-                                                            <input type="number" placeholder="No.of floors"
-                                                                id="hostelfloors">
-                                                        </div>
-                                                    </div>
-                                                    <!--<div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Category</h6>
-                                                            <select class="js-example-basic-single w-100" name="state">
-                                                                <option disabled>Category Menu</option>
-                                                                <option>Electronics</option>
-                                                                <option>TV & Appliances</option>
-                                                                <option>Home & Furniture</option>
-                                                                <option>Another</option>
-                                                                <option>Baby & Kids</option>
-                                                                <option>Health, Beauty & Perfumes</option>
-                                                                <option>Uncategorized</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Subcategory</h6>
-                                                            <select class="js-example-basic-single w-100" name="state">
-                                                                <option disabled>Subcategory Menu</option>
-                                                                <option>Ethnic Wear</option>
-                                                                <option>Ethnic Bottoms</option>
-                                                                <option>Women Western Wear</option>
-                                                                <option>Sandels</option>
-                                                                <option>Shoes</option>
-                                                                <option>Beauty & Grooming</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>-->
-                                                    <!--<div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Brand</h6>
-                                                            <select class="js-example-basic-single w-100">
-                                                                <option disabled>Brand Menu</option>
-                                                                <option value="puma">Puma</option>
-                                                                <option value="hrx">HRX</option>
-                                                                <option value="roadster">Roadster</option>
-                                                                <option value="zara">Zara</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Unit</h6>
-                                                            <select class="js-example-basic-single w-100">
-                                                                <option disabled>Unit Menu</option>
-                                                                <option>Kilogram</option>
-                                                                <option>Pieces</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <div class="input-box">
-                                                            <h6>Tags</h6>
-                                                            <input type="text" placeholder="Type tag & hit enter">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <div class="input-box">
-                                                            <div class="icon-state">
-                                                                <label class="switch-xsm mb-0">
-                                                                    <input type="checkbox" id="flexSwitchCheckDefault-1"
-                                                                        checked=""><span class="slider round"></span>
-                                                                </label>
-                                                                <label class="form-check-label"
-                                                                    for="flexSwitchCheckDefault-1">A/C</label>
-                                                            </div>
-                                                        </div>
-                                                    </div>-->
-                                                    <div class="col-xl-6" id="checkboxContainer">
 
-                                                    </div>
+                                                    <div id="floorDropdownContainer"></div>
+                                                   
                                                     <!--<div class="col-12">
                                                         <div class="input-box">
                                                             <div class="icon-state">
                                                                 <label class="switch-xsm mb-0">
-                                                                    <input type="checkbox" id="wifi"><span
+                                                                    <input type="checkbox"
+                                                                        id="flexSwitchCheckDefault-2"><span
                                                                         class="slider round"></span>
                                                                 </label>
-                                                                <label class="form-check-label" name="facility"
+                                                                <label class="form-check-label"
                                                                     for="flexSwitchCheckDefault-2">Wifi</label>
                                                             </div>
                                                         </div>
@@ -702,29 +627,21 @@
                                                         <div class="input-box">
                                                             <div class="icon-state">
                                                                 <label class="switch-xsm mb-0">
-                                                                    <input type="checkbox" id="laundry"><span
+                                                                    <input type="checkbox"
+                                                                        id="flexSwitchCheckDefault-2"><span
                                                                         class="slider round"></span>
                                                                 </label>
-                                                                <label class="form-check-label" name="facility"
+                                                                <label class="form-check-label"
                                                                     for="flexSwitchCheckDefault-2">Laundry</label>
                                                             </div>-->
-
                                                             <div class="col-12" id="rooms">
-                                                                <button type="button" id="addroom"
-                                                                    class="btn restaurant-button">Add room</button>
+                                                                <button type="button" id="getroom"
+                                                                    class="btn restaurant-button">Get room</button>
 
                                                             </div>
                                                             <br>
                                                             <br>
-
                                                             <div class="col-12" id="room-container"></div>
-
-                                                            <!--<div class="col-12">
-                                                                <button type="button" data-bs-toggle="modal"
-                                                                    data-bs-target="#room"
-                                                                    class="btn restaurant-button">Add room</a>
-                                                            </div>-->
-
                                                         </div>
                                                     </div>
                                                 </div>
@@ -732,7 +649,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-12" id="main-container">
+                                <div class="col-12">
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Food Pricing details</h5>
@@ -750,7 +667,7 @@
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
                                                             <h6>Veg price</h6>
-                                                            <input type="number" placeholder="Veg price" id="vegp">
+                                                            <input type="number" placeholder="veg price" id="vegp">
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
@@ -760,49 +677,41 @@
                                                                 id="bothp">
                                                         </div>
                                                     </div>
-                                                    <!--<div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Non A/C price</h6>
-                                                            <input type="number" placeholder="Non A/C Room price"
-                                                                id="nonprice">
-                                                        </div>
-                                                    </div>-->
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Hostel Images</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="input-items">
-                                                <div class="row gy-3">
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Images</h6>
-                                                            <input type="file" id="files" multiple>
-                                                        </div>
-                                                        <button id="uploadImage">Upload Image</button>
-                                                        <!--<p id="uploading"></p>
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5>Hostel Images</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="input-items">
+                                                    <div class="row gy-3">
+                                                        <div class="col-xl-6">
+                                                            <div class="input-box">
+                                                                <h6>Images</h6>
+                                                                <input type="file" id="files" multiple>
+                                                            </div>
+                                                            <button id="uploadImage">Upload Image</button>
+                                                            <!--<p id="uploading"></p>
                                                         <progress value="0" max="100" id="progress"></progress>
                                                         <img id="imagePreview" src="" alt="Image Preview">-->
 
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Thumbnail Image</h6>
-                                                            <input type="file" id="formFile1" multiple>
+                                                        </div>
+                                                        <div class="col-xl-6">
+                                                            <div class="input-box">
+                                                                <h6>Thumbnail Image</h6>
+                                                                <input type="file" id="formFile1" multiple>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <!--<div class="col-12">
+                                    <!--<div class="col-12">
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Hostel Videos</h5>
@@ -832,7 +741,7 @@
                                         </div>
                                     </div>
                                 </div>-->
-                                <!--<div class="col-12">
+                                    <!--<div class="col-12">
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Product variations</h5>
@@ -972,11 +881,10 @@
                                         </div>
                                     </div>
                                 </div>-->
-                                <div class="col-12">
-                                    <button type="button" id="registerHostel"
-                                        class="btn restaurant-button">Save</button>
-                                </div>
-                                <!--<div class="col-12">
+                                    <div class="col-12">
+                                        <button type="button" id="updateHostel" class="btn restaurant-button">Update</a>
+                                    </div>
+                                    <!--<div class="col-12">
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Search engine listing</h5>
@@ -1018,134 +926,95 @@
                                         </div>
                                     </div>
                                 </div>-->
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <!-- New Product Add End -->
+                    <!-- New Product Add End -->
 
-                <!-- footer Start -->
-                <div class="container-fluid">
-                    <footer class="footer">
-                        <div class="row">
-                            <div class="col-md-12 footer-copyright text-center">
-                                <p class="mb-0">Copyright 2024 ©Perikitis</p>
+                    <!-- footer Start -->
+                    <div class="container-fluid">
+                        <footer class="footer">
+                            <div class="row">
+                                <div class="col-md-12 footer-copyright text-center">
+                                    <p class="mb-0">Copyright 2024 ©Perikitis</p>
+                                </div>
                             </div>
-                        </div>
-                    </footer>
+                        </footer>
+                    </div>
+                    <!-- footer En -->
                 </div>
-                <!-- footer En -->
+                <!-- Container-fluid End -->
             </div>
-            <!-- Container-fluid End -->
+            <!-- Page Body End -->
         </div>
-        <!-- Page Body End -->
-    </div>
-    <!-- page-wrapper End -->
+        <!-- page-wrapper End -->
 
-    <!--Add room Modal start-->
-    <div class="modal fade location-modal" id="room" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div class="modal-title">
-                        <h5 class="fw-semibold">Add room details</h5>
+        <!-- Modal Start -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog  modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <h5 class="modal-title" id="staticBackdropLabel">Logging Out</h5>
+                        <p>Are you sure you want to log out?</p>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                </div>
-                <div class="modal-body">
-                    <label>
-                        Room type:
-                    </label>
-                    <input type="text" name="roomtype" id="rtype" placeholder="Room type"><br>
-                    <label>
-                        No. of rooms:
-                    </label>
-                    <input type="text" name="roomtype" id="rnumber" placeholder="Room count"><br>
-                    <label>
-                        Room price:
-                    </label>
-                    <input type="text" name="roomtype" id="rprice" placeholder="Room price"><br>
-                    <label>
-                        Room facility:
-                    </label>
-                    <input type="text" name="roomtype" id="rfac" placeholder="Room facility"><br>
 
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn gray-btn" data-bs-dismiss="modal">Close</button>
-                    <!--<button type="button" class="btn theme-btn mt-0" data-bs-dismiss="modal" id="addroom">Save</button>-->
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--Add room Modal End-->
-
-
-    <!-- Modal Start -->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog  modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <h5 class="modal-title" id="staticBackdropLabel">Logging Out</h5>
-                    <p>Are you sure you want to log out?</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-
-                    <div class="button-box">
-                        <button type="button" class="btn btn--no" data-bs-dismiss="modal">No</button>
-                        <button type="button" class="btn  btn--yes btn-primary">Yes</button>
+                        <div class="button-box">
+                            <button type="button" class="btn btn--no" data-bs-dismiss="modal">No</button>
+                            <button type="button" class="btn  btn--yes btn-primary">Yes</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- Modal End -->
+        <!-- Modal End -->
 
 
-    <!-- latest js -->
-    <script src="assets/js/jquery-3.6.0.min.js"></script>
+        <!-- latest js -->
+        <script src="assets/js/jquery-3.6.0.min.js"></script>
 
-    <!-- Bootstrap js -->
-    <script src="assets/js/bootstrap/bootstrap.bundle.min.js"></script>
+        <!-- Bootstrap js -->
+        <script src="assets/js/bootstrap/bootstrap.bundle.min.js"></script>
 
-    <!-- feather icon js -->
-    <script src="assets/js/icons/feather-icon/feather.min.js"></script>
-    <script src="assets/js/icons/feather-icon/feather-icon.js"></script>
+        <!-- feather icon js -->
+        <script src="assets/js/icons/feather-icon/feather.min.js"></script>
+        <script src="assets/js/icons/feather-icon/feather-icon.js"></script>
 
-    <!-- scrollbar simplebar js -->
-    <script src="assets/js/scrollbar/simplebar.js"></script>
-    <script src="assets/js/scrollbar/custom.js"></script>
+        <!-- scrollbar simplebar js -->
+        <script src="assets/js/scrollbar/simplebar.js"></script>
+        <script src="assets/js/scrollbar/custom.js"></script>
 
-    <!-- Sidebar js -->
-    <script src="assets/js/config.js"></script>
+        <!-- Sidebar js -->
+        <script src="assets/js/config.js"></script>
 
-    <!-- New hostel register js -->
-    <script src="assets/js/hostel-register.js" type="module" defer></script>
+        <!-- Edit hostel register js -->
+        <script src="assets/js/edit-hostel.js" type="module" defer></script>
 
-    <!-- Firebase config js -->
-    <script src="assets/js/firebase-config.js" type="module" defer></script>
+        <!-- Firebase config js -->
+        <script src="assets/js/firebase-config.js" type="module" defer></script>
 
-    <!-- bootstrap tag-input js -->
-    <script src="assets/js/bootstrap-tagsinput.min.js"></script>
-    <script src="assets/js/sidebar-menu.js"></script>
+        <!-- bootstrap tag-input js -->
+        <script src="assets/js/bootstrap-tagsinput.min.js"></script>
+        <script src="assets/js/sidebar-menu.js"></script>
 
-    <!-- customizer js -->
-    <script src="assets/js/customizer.js"></script>
+        <!-- customizer js -->
+        <script src="assets/js/customizer.js"></script>
 
-    <!--Dropzon js -->
-    <script src="assets/js/dropzone/dropzone.js"></script>
-    <script src="assets/js/dropzone/dropzone-script.js"></script>
+        <!--Dropzon js -->
+        <script src="assets/js/dropzone/dropzone.js"></script>
+        <script src="assets/js/dropzone/dropzone-script.js"></script>
 
-    <!-- ck editor js -->
-    <script src="assets/js/ckeditor.js"></script>
-    <script src="assets/js/ckeditor-custom.js"></script>
+        <!-- ck editor js -->
+        <script src="assets/js/ckeditor.js"></script>
+        <script src="assets/js/ckeditor-custom.js"></script>
 
-    <!-- select2 js -->
-    <script src="assets/js/select2.min.js"></script>
-    <script src="assets/js/select2-custom.js"></script>
+        <!-- select2 js -->
+        <script src="assets/js/select2.min.js"></script>
+        <script src="assets/js/select2-custom.js"></script>
 
-    <!-- Theme js -->
-    <script src="assets/js/script.js"></script>
+        <!-- Theme js -->
+        <script src="assets/js/script.js"></script>
 </body>
 
 </html>
