@@ -24,7 +24,7 @@ let tbody = document.getElementById("tbody1");
 
 }*/
 
-/*Functionality for editing a data*
+/*Functionality for editing a data*/
 function view(){
     var table = document.getElementById('table_id');
     var cells = table.getElementsByTagName('td');
@@ -55,10 +55,9 @@ function view(){
             var hosphone = rowSelected.cells[7].innerHTML;
             var hosemail = rowSelected.cells[8].innerHTML;
             var hospin = rowSelected.cells[9].innerHTML;
-            var hosrent = rowSelected.cells[10].innerHTML;
-            var hosfood = rowSelected.cells[11].innerHTML;
-            var hosac = rowSelected.cells[12].innerHTML;
-            var hosnonac = rowSelected.cells[13].innerHTML;
+            var hosvegp = rowSelected.cells[10].innerHTML;
+            var hosnvegp = rowSelected.cells[11].innerHTML;
+            var both = rowSelected.cells[12].innerHTML;
             var data = [];
             data.push(hosname);
             data.push(hostype);
@@ -69,17 +68,16 @@ function view(){
             data.push(hosphone);
             data.push(hosemail);
             data.push(hospin);
-            data.push(hosrent);
-            data.push(hosfood);
-            data.push(hosac);
-            data.push(hosnonac);
-            sessionStorage.setItem('hosteldetails', data);
-            window.location.href = "././edit-hostel.html";
-            //window.open('edit-hostel.html', '_self');
+            data.push(hosvegp);
+            data.push(hosnvegp);
+            data.push(both);
+            localStorage.setItem('hosteldetails', JSON.stringify(data));
+            console.log(data);
+            window.location.href = 'edit-hostel.html';
+
         }
     }
-  }*/
-
+  }
 
 const SelectAlldataReal = () => {
     const dbref = ref(db, 'Hostel details');
@@ -96,7 +94,7 @@ const SelectAlldataReal = () => {
 }
 
 const AddsingleRecord = (Hostelname, Hosteltype, Hosteladd1, Hosteladd2, Hostelcity, Hostelstate, Hostelphone, Hostelemail, Hostelpin,
-    Hostelvegp, Hostelnvegp, Hostelbothp) => {
+    HostelNvegprice, Hostevegprice, Hostelboth) => {
 
     var trow = document.createElement('tr');
     var td1 = document.createElement('td');
@@ -127,10 +125,10 @@ const AddsingleRecord = (Hostelname, Hosteltype, Hosteladd1, Hosteladd2, Hostelc
     td8.innerHTML = Hostelphone;
     td9.innerHTML = Hostelemail;
     td10.innerHTML = Hostelpin;
-    td11.innerHTML = Hostelvegp;
-    td12.innerHTML = Hostelnvegp;
-    td13.innerHTML = Hostelbothp;
-    td14.innerHTML='<button type="button" onclick="view()"><i class="fas fa-edit"></i></button>';
+    td11.innerHTML = HostelNvegprice;
+    td12.innerHTML = Hostevegprice;
+    td13.innerHTML = Hostelboth;
+    td14.innerHTML='<button type="button" class="edit-btn"><i class="fas fa-edit"></i></button>';
     td15.innerHTML='<button type="button" onclick="remove()"><i class="fas fa-trash"></i></button>';
 
     trow.append(td1, td2, td3, td4, td5, td6, td7, td8, td9, td10, td11, td12, td13, td14,td15);
@@ -143,8 +141,9 @@ const AddAllRecords = () => {
     tbody.innerHTML = "";
     hostelist.forEach(h => {
         AddsingleRecord(h.Hostelname, h.Hosteltype, h.Hosteladd1, h.Hosteladd2, h.Hostelcity, h.Hostelstate, h.Hostelphone,h.Hostelemail, h.Hostelpin,
-            h.Hostelvegp, h.Hostelnvegp, h.Hostelbothp)
+            h.HostelNvegprice, h.Hostevegprice, h.Hostelboth)
     })
+    view();
 }
 
 window.addEventListener('load', SelectAlldataReal);
