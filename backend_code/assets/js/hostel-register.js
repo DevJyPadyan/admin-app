@@ -214,7 +214,6 @@ uploadImage.addEventListener('click', (e) => {
     upload();
 });
 async function upload() {
-    console.log("hi");
     const fileInput = document.getElementById("files");
     const file = fileInput.files[0];
 
@@ -280,11 +279,6 @@ registerHostel.addEventListener('click', async (e) => {
   var both = document.getElementById("bothp").value;
 
   // Correctly select WiFi and laundry options
-
-  var laundryChecked = document.getElementById('laundry').checked;
-  var WifiChecked = document.getElementById('wifi').checked;
-
-  //console.log(laundryChecked);
 
   let rooms = [];
 
