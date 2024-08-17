@@ -103,15 +103,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Air Conditioning
     const acElem = createSelectBox('Air Conditioning', `ac-${roomCount}`, true, [
-      { value: 'ac', text: 'AC' },
-      { value: 'non-ac', text: 'Non-AC' },
+      { value: 'ac', text: 'ac' },
+      { value: 'non-ac', text: 'non-ac' },
     ]);
     rowElem.appendChild(acElem);
 
     // Bathroom
     const bathroomElem = createSelectBox('Bathroom', `bathroom-${roomCount}`, true, [
-      { value: 'attached', text: 'Attached' },
-      { value: 'common', text: 'Common' },
+      { value: 'attached', text: 'attached' },
+      { value: 'common', text: 'common' },
     ]);
     rowElem.appendChild(bathroomElem);
 
