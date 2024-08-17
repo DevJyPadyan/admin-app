@@ -95,8 +95,8 @@ const SelectAlldataReal = () => {
 
 
 //Function which is used to append the data from firebase database to table
-const AddsingleRecord = (hostelName, hostelType, hostelAddress1, hostelAddress2, City, State, Phone, Email, Pin,
-    Nonvegprice, Vegprice, bothFoods) => {
+const AddsingleRecord = (hostelName, hostelType, hostelAddress1, hostelAddress2, hostelCity, hostelState, hostelPhone, hostelEmail, hostelPin,
+    hostelNonvegprice, hostelVegprice, hostelBothfoods) => {
 
     var trow = document.createElement('tr');
     var td1 = document.createElement('td');
@@ -120,14 +120,14 @@ const AddsingleRecord = (hostelName, hostelType, hostelAddress1, hostelAddress2,
     td3.innerHTML = hostelType;
     td4.innerHTML = hostelAddress1;
     td5.innerHTML = hostelAddress2;
-    td6.innerHTML = City;
-    td7.innerHTML = State;
-    td8.innerHTML = Phone;
-    td9.innerHTML = Email;
-    td10.innerHTML = Pin;
-    td11.innerHTML = Nonvegprice;
-    td12.innerHTML = Vegprice;
-    td13.innerHTML = bothFoods;
+    td6.innerHTML = hostelCity;
+    td7.innerHTML = hostelState;
+    td8.innerHTML = hostelPhone;
+    td9.innerHTML = hostelEmail;
+    td10.innerHTML = hostelPin;
+    td11.innerHTML = hostelNonvegprice;
+    td12.innerHTML = hostelVegprice;
+    td13.innerHTML = hostelBothfoods;
 
     var removeButton = document.createElement('button');
     removeButton.type = 'button';
@@ -147,8 +147,8 @@ const AddAllRecords = () => {
     flag = 0;
     tbody.innerHTML = "";
     hostelist.forEach(h => {
-        AddsingleRecord(h.hostelName, h.hostelType, h.hostelAddress1, h.hostelAddress2, h.City, h.State, h.Phone, h.Email, h.Pin,
-            h.Nonvegprice, h.Vegprice, h.bothFoods)
+        AddsingleRecord(h.hostelName, h.hostelType, h.hostelAddress1, h.hostelAddress2, h.hostelCity, h.hostelState, h.hostelPhone, h.hostelEmail, h.hostelPin,
+            h.hostelNonvegprice, h.hostelVegprice, h.hostelBothfoods)
     })
     view();
 }
