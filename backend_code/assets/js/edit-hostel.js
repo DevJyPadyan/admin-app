@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Create and prefill form fields
         rowElem.appendChild(createInputBox('Floor', `floor-${roomNumber}`, 'text', true, '', false, roomData.floor, true));
         rowElem.appendChild(createSelectBox('Room Type', `roomType-${roomNumber}`, true, ['1 sharing', '2 sharing', '3 sharing', '4 sharing'], roomData.roomtype));
-        rowElem.appendChild(createInputBox('Room Count', `roomCount-${roomNumber}`, 'number', true, '', false, roomData.roomcount));
+        rowElem.appendChild(createInputBox('Room Count', `roomCount-${roomNumber}`, 'number', true, '', false, roomData.roomCount));
         rowElem.appendChild(createInputBox('Amenities', `amenities-${roomNumber}`, 'text', false, 'e.g. WiFi, Laundry', false, roomData.amenities));
         rowElem.appendChild(createSelectBox('Air Conditioning', `ac-${roomNumber}`, true, ['AC', 'NON-AC'], roomData.ac));
         rowElem.appendChild(createSelectBox('Bathroom', `bathroom-${roomNumber}`, true, ['Attached', 'Common'], roomData.bathroom));
@@ -336,8 +336,8 @@ updateHostel.addEventListener('click', async (e) => {
 
         rooms.push({
             floor: floor,
-            roomtype: roomType,
-            roomcount: roomCountVal,
+            roomType: roomType,
+            roomCount: roomCountVal,
             amenities: amenities,
             ac: ac,
             bathroom: bathroom,
@@ -358,7 +358,7 @@ updateHostel.addEventListener('click', async (e) => {
         hostelPin: hpin,
         hostelVegprice: vegp,
         hostelNonvegprice: nonvegp,
-        hostelBothfoods: both,
+        hostelbothfoods: both,
         rooms: rooms
 
     })
