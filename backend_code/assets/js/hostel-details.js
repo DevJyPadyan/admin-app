@@ -9,26 +9,26 @@ let hostelist = [];
 let flag = 0;
 let tbody = document.getElementById("tbody1");
 
+//Remove functionality code 
+const removeHostel = (event, hostelName) => {
+    event.stopPropagation(); // Prevent the row click event (i.e this function will work when delete button is clicked)
 
-/*const SelectAlldataonce = () => {
-    const dbref = ref(db);
-    get(child(dbref,'Hostel details')).then((snapshot)=> {
-
-        hostelist = [];
-        snapshot.forEach(h=> {
-            hostelist.push(h.val());
+    const rowRef = ref(db, `Hostel details/${hostelName}`);
+    remove(rowRef)
+        .then(() => {
+            alert(`${hostelName} removed successfully!`);
+            SelectAlldataReal();  // Refresh data after removal
         })
-        AddAllRecords();
+        .catch((error) => {
+            alert("Error removing record: " + error.message);
+        });
+};
 
-    })
-
-}*/
-
-/*Functionality for editing a data*/
-function view(){
+//Functionality for editing a data//
+function view() {
     var table = document.getElementById('table_id');
     var cells = table.getElementsByTagName('td');
-  
+
     for (var i = 0; i < cells.length; i++) {
         // Take each cell
         var cell = cells[i];
@@ -36,16 +36,15 @@ function view(){
         cell.onclick = function () {
             // Get the row id where the cell exists
             var rowId = this.parentNode.rowIndex;
-  
+
             var rowsNotSelected = table.getElementsByTagName('tr');
             for (var row = 0; row < rowsNotSelected.length; row++) {
                 rowsNotSelected[row].style.backgroundColor = "";
                 rowsNotSelected[row].classList.remove('selected');
             }
             var rowSelected = table.getElementsByTagName('tr')[rowId];
-            rowSelected.style.backgroundColor = "yellow";
+            rowSelected.style.backgroundColor = "orange";
             rowSelected.className += " selected";
-            // msg = 'The ID of the company is: ' + rowSelected.cells[0].innerHTML;
             var hosname = rowSelected.cells[1].innerHTML;
             var hostype = rowSelected.cells[2].innerHTML;
             var hosadd1 = rowSelected.cells[3].innerHTML;
@@ -77,8 +76,9 @@ function view(){
 
         }
     }
-  }
+}
 
+//Function which is used to fetch details from firebase database
 const SelectAlldataReal = () => {
     const dbref = ref(db, 'Hostel details');
     onValue(dbref, (snapshot) => {
@@ -93,8 +93,10 @@ const SelectAlldataReal = () => {
 
 }
 
-const AddsingleRecord = (Hostelname, Hosteltype, Hosteladd1, Hosteladd2, Hostelcity, Hostelstate, Hostelphone, Hostelemail, Hostelpin,
-    HostelNvegprice, Hostevegprice, Hostelboth) => {
+
+//Function which is used to append the data from firebase database to table
+const AddsingleRecord = (hostelName, hostelType, hostelAddress1, hostelAddress2, City, State, Phone, Email, Pin,
+    Nonvegprice, Vegprice, bothFoods) => {
 
     var trow = document.createElement('tr');
     var td1 = document.createElement('td');
@@ -111,27 +113,32 @@ const AddsingleRecord = (Hostelname, Hosteltype, Hosteladd1, Hosteladd2, Hostelc
     var td12 = document.createElement('td');
     var td13 = document.createElement('td');
     var td14 = document.createElement('td');
-    var td15 = document.createElement('td');
     
-
     flag = flag + 1;
     td1.innerHTML = flag;
-    td2.innerHTML = Hostelname;
-    td3.innerHTML = Hosteltype;
-    td4.innerHTML = Hosteladd1;
-    td5.innerHTML = Hosteladd2;
-    td6.innerHTML = Hostelcity;
-    td7.innerHTML = Hostelstate;
-    td8.innerHTML = Hostelphone;
-    td9.innerHTML = Hostelemail;
-    td10.innerHTML = Hostelpin;
-    td11.innerHTML = HostelNvegprice;
-    td12.innerHTML = Hostevegprice;
-    td13.innerHTML = Hostelboth;
-    td14.innerHTML='<button type="button" class="edit-btn"><i class="fas fa-edit"></i></button>';
-    td15.innerHTML='<button type="button" onclick="remove()"><i class="fas fa-trash"></i></button>';
+    td2.innerHTML = hostelName;
+    td3.innerHTML = hostelType;
+    td4.innerHTML = hostelAddress1;
+    td5.innerHTML = hostelAddress2;
+    td6.innerHTML = City;
+    td7.innerHTML = State;
+    td8.innerHTML = Phone;
+    td9.innerHTML = Email;
+    td10.innerHTML = Pin;
+    td11.innerHTML = Nonvegprice;
+    td12.innerHTML = Vegprice;
+    td13.innerHTML = bothFoods;
 
-    trow.append(td1, td2, td3, td4, td5, td6, td7, td8, td9, td10, td11, td12, td13, td14,td15);
+    var removeButton = document.createElement('button');
+    removeButton.type = 'button';
+    removeButton.innerHTML = '<i class="fas fa-trash"></i>';
+    removeButton.onclick = function (event) {
+    event.stopPropagation(); // Prevent row click event
+    removeHostel(event, hostelName);
+    };
+    td14.appendChild(removeButton);
+
+    trow.append(td1, td2, td3, td4, td5, td6, td7, td8, td9, td10, td11, td12, td13, td14);
     tbody.append(trow);
 
 }
@@ -140,8 +147,8 @@ const AddAllRecords = () => {
     flag = 0;
     tbody.innerHTML = "";
     hostelist.forEach(h => {
-        AddsingleRecord(h.Hostelname, h.Hosteltype, h.Hosteladd1, h.Hosteladd2, h.Hostelcity, h.Hostelstate, h.Hostelphone,h.Hostelemail, h.Hostelpin,
-            h.HostelNvegprice, h.Hostevegprice, h.Hostelboth)
+        AddsingleRecord(h.hostelName, h.hostelType, h.hostelAddress1, h.hostelAddress2, h.City, h.State, h.Phone, h.Email, h.Pin,
+            h.Nonvegprice, h.Vegprice, h.bothFoods)
     })
     view();
 }

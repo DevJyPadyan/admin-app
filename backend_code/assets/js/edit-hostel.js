@@ -8,6 +8,32 @@ const db = getDatabase();
 const storage = getStorage(app);
 
 
+async function displayHostelImages(hostelName) {
+    const imageRef = ref(db, `Hostel details/${hostelName}/ImageData/`);
+    try {
+        const snapshot = await get(imageRef);
+        if (snapshot.exists()) {
+            const imageUrls = snapshot.val();
+            const imageContainer = document.getElementById('hostelImageContainer');
+            imageContainer.innerHTML = ''; // Clear existing images
+
+            imageUrls.forEach(url => {
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = 'Hostel Image';
+                img.style.width = '100px';
+                img.style.height = '100px';
+                img.style.margin = '5px';
+                imageContainer.appendChild(img);
+            });
+        } else {
+            console.log('No images found for this hostel.');
+        }
+    } catch (error) {
+        console.error('Error fetching images:', error);
+    }
+}
+
 /*Multiple images upload*/
 var files = [];
 let imagelink = [];
@@ -51,67 +77,6 @@ document.getElementById("uploadImage").addEventListener("click", async function 
     }
 });
 
-
-let hostelist = [];
-let flag = 0;
-let tbody = document.getElementById("tbody1");
-
-
-/*Functionality for editing a data*/
-function view() {
-    var table = document.getElementById('table_id');
-    var cells = table.getElementsByTagName('td');
-
-    for (var i = 0; i < cells.length; i++) {
-        // Take each cell
-        var cell = cells[i];
-        // do something on onclick event for cell
-        cell.onclick = function () {
-            // Get the row id where the cell exists
-            var rowId = this.parentNode.rowIndex;
-
-            var rowsNotSelected = table.getElementsByTagName('tr');
-            for (var row = 0; row < rowsNotSelected.length; row++) {
-                rowsNotSelected[row].style.backgroundColor = "";
-                rowsNotSelected[row].classList.remove('selected');
-            }
-            var rowSelected = table.getElementsByTagName('tr')[rowId];
-            rowSelected.style.backgroundColor = "yellow";
-            rowSelected.className += " selected";
-            // msg = 'The ID of the company is: ' + rowSelected.cells[0].innerHTML;
-            var hosname = rowSelected.cells[1].innerHTML;
-            var hostype = rowSelected.cells[2].innerHTML;
-            var hosadd1 = rowSelected.cells[3].innerHTML;
-            var hosadd2 = rowSelected.cells[4].innerHTML;
-            var hoscity = rowSelected.cells[5].innerHTML;
-            var hosstate = rowSelected.cells[6].innerHTML;
-            var hosphone = rowSelected.cells[7].innerHTML;
-            var hosemail = rowSelected.cells[8].innerHTML;
-            var hospin = rowSelected.cells[9].innerHTML;
-            var hosvegp = rowSelected.cells[10].innerHTML;
-            var hosnvegp = rowSelected.cells[11].innerHTML;
-            var both = rowSelected.cells[12].innerHTML;
-            var data = [];
-            data.push(hosname);
-            data.push(hostype);
-            data.push(hosadd1);
-            data.push(hosadd2);
-            data.push(hoscity);
-            data.push(hosstate);
-            data.push(hosphone);
-            data.push(hosemail);
-            data.push(hospin);
-            data.push(hosvegp);
-            data.push(hosnvegp);
-            data.push(both);
-            localStorage.setItem('hosteldetails', JSON.stringify(data));
-            console.log(data);
-            //window.location.href = 'edit-hostel.html';
-
-        }
-    }
-}
-
 let roomCount = 0; // Track the number of rooms
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -137,6 +102,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     roomCount = index + 1;
 
                     addRoomForm(roomCount, roomData); // Prefill the form with room data
+                    displayRoomImages(roomCount, roomData.images || []);
                 });
             } else {
                 alert('No rooms found for this hostel.');
@@ -145,6 +111,30 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error fetching rooms:', error);
         }
     });
+
+    //Function which displays the room images from firebase database
+    function displayRoomImages(roomNumber, images) {
+        const roomCard = document.getElementById(`room-${roomNumber}`);
+        if (roomCard) {
+            const imageContainer = document.createElement('div');
+            imageContainer.classList.add('image-preview-container');
+
+            images.forEach((imageUrl) => {
+
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.alt = 'Hostel Image';
+                img.style.width = '100px';
+                img.style.height = '100px';
+                img.style.margin = '5px';
+                img.classList.add('image-preview');
+                imageContainer.appendChild(img);
+            });
+
+            const fileInputBox = roomCard.querySelector(`#roomImage-${roomNumber}`).parentElement;
+            fileInputBox.appendChild(imageContainer);
+        }
+    }
 
     // Function to create and prefill the room form
     function addRoomForm(roomNumber, roomData = {}) {
@@ -170,14 +160,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Create and prefill form fields
         rowElem.appendChild(createInputBox('Floor', `floor-${roomNumber}`, 'text', true, '', false, roomData.floor, true));
-        rowElem.appendChild(createSelectBox('Room Type', `roomType-${roomNumber}`, true, ['single', 'double', 'triple', '4 sharing'], roomData.roomtype));
+        rowElem.appendChild(createSelectBox('Room Type', `roomType-${roomNumber}`, true, ['1 sharing', '2 sharing', '3 sharing', '4 sharing'], roomData.roomtype));
         rowElem.appendChild(createInputBox('Room Count', `roomCount-${roomNumber}`, 'number', true, '', false, roomData.roomcount));
         rowElem.appendChild(createInputBox('Amenities', `amenities-${roomNumber}`, 'text', false, 'e.g. WiFi, Laundry', false, roomData.amenities));
-        rowElem.appendChild(createSelectBox('Air Conditioning', `ac-${roomNumber}`, true, ['ac', 'non-ac'], roomData.ac));
-        rowElem.appendChild(createSelectBox('Bathroom', `bathroom-${roomNumber}`, true, ['attached', 'common'], roomData.bathroom));
+        rowElem.appendChild(createSelectBox('Air Conditioning', `ac-${roomNumber}`, true, ['AC', 'NON-AC'], roomData.ac));
+        rowElem.appendChild(createSelectBox('Bathroom', `bathroom-${roomNumber}`, true, ['Attached', 'Common'], roomData.bathroom));
         rowElem.appendChild(createInputBox('Price', `price-${roomNumber}`, 'number', true, '', false, roomData.price));
 
-        // Add image upload input
+        // Add image upload input 
         const imageInput = document.createElement('input');
         imageInput.type = 'file';
         imageInput.id = `roomImage-${roomNumber}`;
@@ -293,6 +283,9 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById("vegp").value = hostelData[9] || "";
             document.getElementById("nonvegp").value = hostelData[10] || "";
             document.getElementById("bothp").value = hostelData[11] || "";
+
+            displayHostelImages(hostelData[0]);
+
         } else {
             console.log("No hostel data found in localStorage.");
         }
@@ -354,19 +347,20 @@ updateHostel.addEventListener('click', async (e) => {
     }
 
     update(ref(db, "Hostel details/" + hname + '/'), {
-        Hostelname: hname,
-        Hosteltype: htype,
-        Hostelphone: hphone,
-        Hostelemail: hemail,
-        Hosteladd1: hadd1,
-        Hosteladd2: hadd2,
-        Hostelcity: hcity,
-        Hostelstate: hstate,
-        Hostelpin: hpin,
-        Hostevegprice: vegp,
-        HostelNvegprice: nonvegp,
-        Hostelboth: both,
+        hostelName: hname,
+        hostelType: htype,
+        hostelPhone: hphone,
+        hostelEmail: hemail,
+        hostelAddress1: hadd1,
+        hostelAddress2: hadd2,
+        hostelCity: hcity,
+        hostelState: hstate,
+        hostelPin: hpin,
+        hostelVegprice: vegp,
+        hostelNonvegprice: nonvegp,
+        hostelBothfoods: both,
         rooms: rooms
+
     })
         .then(() => {
             alert("Hostel details updated successfully");
