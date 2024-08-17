@@ -88,9 +88,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Room Type
     const roomTypeElem = createSelectBox('Room Type', `roomType-${roomCount}`, true, [
-      { value: 'single', text: 'Single' },
-      { value: 'double', text: 'Double' },
-      { value: 'triple', text: 'Triple' },
+      { value: '1 sharing', text: '1 sharing' },
+      { value: '2 sharing', text: '2 sharing' },
+      { value: '3 sharing', text: '3 sharing' },
       { value: '4 sharing', text: '4 sharing' },
     ]);
     rowElem.appendChild(roomTypeElem);
@@ -277,10 +277,7 @@ registerHostel.addEventListener('click', async (e) => {
   var nonvegp = document.getElementById("vegp").value;
   var both = document.getElementById("bothp").value;
 
-  // Correctly select WiFi and laundry options
-
   let rooms = [];
-
   for (let i = 1; i <= roomCount; i++) {
     const floor = document.getElementById(`floor-${i}`).value;
     const roomType = document.getElementById(`roomType-${i}`).value;
@@ -289,11 +286,11 @@ registerHostel.addEventListener('click', async (e) => {
     const ac = document.getElementById(`ac-${i}`).value;
     const bathroom = document.getElementById(`bathroom-${i}`).value;
     const price = document.getElementById(`price-${i}`).value;
-
     const imageInput = document.getElementById(`roomImage-${i}`);
     const files = imageInput.files;
     let imagelink1 = [];
 
+    //Storing room images data into an array called imagelink1[]
     if (files.length != 0) {
       for (let j = 0; j < files.length; j++) {
         const storageRef = ref2(storage, 'Roomimages/' + hname + '/room-' + i + '/' + files[j].name);
@@ -304,8 +301,8 @@ registerHostel.addEventListener('click', async (e) => {
     }
     rooms.push({
       floor: floor,
-      roomtype: roomType,
-      roomcount: roomCountVal,
+      roomType: roomType,
+      roomCount: roomCountVal,
       amenities: amenities,
       ac: ac,
       bathroom: bathroom,
@@ -314,18 +311,18 @@ registerHostel.addEventListener('click', async (e) => {
     });
   }
   update(ref(db, "Hostel details/" + hname + '/'), {
-    Hostelname: hname,
-    Hosteltype: htype,
-    Hostelphone: hphone,
-    Hostelemail: hemail,
-    Hosteladd1: hadd1,
-    Hosteladd2: hadd2,
-    Hostelcity: hcity,
-    Hostelstate: hstate,
-    Hostelpin: hpin,
-    Hostevegprice: vegp,
-    HostelNvegprice: nonvegp,
-    Hostelboth: both,
+    hostelName: hname,
+    hostelType: htype,
+    hostelPhone: hphone,
+    hostelEmail: hemail,
+    hostelAddress1: hadd1,
+    hostelAddress2: hadd2,
+    hostelCity: hcity,
+    hostelState: hstate,
+    hostelPin: hpin,
+    hostelVegprice: vegp,
+    hostelNonvegprice: nonvegp,
+    hostelBothfoods: both,
     rooms: rooms
   })
     .then(() => {
