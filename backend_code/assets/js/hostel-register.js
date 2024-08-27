@@ -7,6 +7,234 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 const storage = getStorage(app);
 
+const addWeekButton = document.getElementById("addWeekButton");
+const weekContainer = document.getElementById("weekContainer");
+
+let weekCount = 0;
+
+addWeekButton.addEventListener('click', () => {
+    if (weekCount < 5) {
+        weekCount++;
+        createWeekForm(weekCount);
+    } else {
+        alert("You can only add up to 5 weeks.");
+    }
+});
+
+function createWeekForm(weekNum) {
+    const mainParentElem = document.createElement('div');
+    mainParentElem.classList.add('col-12');
+
+    const cardElem = document.createElement('div');
+    cardElem.classList.add('card');
+    cardElem.id = `week-${weekNum}`;
+
+    const cardHeaderElem = document.createElement('div');
+    cardHeaderElem.classList.add('card-header', 'd-flex', 'justify-content-between', 'align-items-center');
+
+    // Add a clickable arrow to toggle the collapse
+    const headerContent = document.createElement('div');
+    headerContent.classList.add('d-flex', 'align-items-center');
+    headerContent.innerHTML = `<h5 class="mb-0">Week ${weekNum}</h5>`;
+
+    const dropdownArrow = document.createElement('span');
+    dropdownArrow.classList.add('dropdown-arrow');
+    dropdownArrow.style.cursor = 'pointer';
+    dropdownArrow.innerHTML = '&#9662;'; // Down arrow
+
+    dropdownArrow.addEventListener('click', () => {
+        const collapseElem = document.getElementById(`collapseWeek${weekNum}`);
+        collapseElem.classList.toggle('show');
+
+        // Toggle the arrow direction
+        if (collapseElem.classList.contains('show')) {
+            dropdownArrow.innerHTML = '&#9662;'; // Down arrow
+        } else {
+            dropdownArrow.innerHTML = '&#9656;'; // Right arrow
+        }
+    });
+
+    cardHeaderElem.appendChild(headerContent);
+    headerContent.appendChild(dropdownArrow);
+
+    const headerButtonsContainer = document.createElement('div');
+    headerButtonsContainer.classList.add('d-flex', 'gap-2'); // Ensures buttons have some spacing
+
+    const removeWeekBtn = document.createElement('button');
+    removeWeekBtn.className = 'btn restaurant-button';
+    removeWeekBtn.innerHTML = 'Remove Week';
+    removeWeekBtn.onclick = () => {
+        mainParentElem.remove();
+        weekCount--;
+    };
+
+    const saveWeekBtn = document.createElement('button');
+    saveWeekBtn.className = 'btn restaurant-button';
+    saveWeekBtn.innerHTML = `Save Week ${weekNum}`;
+    saveWeekBtn.onclick = () => saveWeek(weekNum);
+
+    headerButtonsContainer.appendChild(saveWeekBtn);
+    headerButtonsContainer.appendChild(removeWeekBtn);
+    cardHeaderElem.appendChild(headerButtonsContainer);
+
+    const collapseElem = document.createElement('div');
+    collapseElem.id = `collapseWeek${weekNum}`;
+    collapseElem.classList.add('collapse', 'show'); // Start with content shown
+
+    const cardBodyElem = document.createElement('div');
+    cardBodyElem.classList.add('card-body');
+
+    const inputItemsElem = document.createElement('div');
+    inputItemsElem.classList.add('input-items');
+
+    const rowElem = document.createElement('div');
+    rowElem.classList.add('row', 'gy-3');
+
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    days.forEach(day => {
+        // Day Label
+        const dayLabelElem = document.createElement('h4');
+        dayLabelElem.innerText = day;
+        rowElem.appendChild(dayLabelElem);
+
+        // Meal times
+        const mealTimes = ['Morning', 'Afternoon', 'Night'];
+
+        mealTimes.forEach(mealTime => {
+            // Meal Time Label
+            const mealTimeLabelElem = document.createElement('h5');
+            mealTimeLabelElem.innerText = `${mealTime}:`;
+            mealTimeLabelElem.classList.add('mt-2'); // Adds margin top for spacing
+            rowElem.appendChild(mealTimeLabelElem);
+
+            // Main Dish Name
+            rowElem.appendChild(createInputBox(`Main Dish Name`, `dishName-${weekNum}-${day}-${mealTime}`, 'text', true));
+
+            // Side Dish Name
+            rowElem.appendChild(createInputBox(`Side Dish Name`, `sideDishName-${weekNum}-${day}-${mealTime}`, 'text', true));
+
+            // Dish Timing
+            rowElem.appendChild(createTimeRangeInput(`dishTimingStart-${weekNum}-${day}-${mealTime}`, `dishTimingEnd-${weekNum}-${day}-${mealTime}`));
+        });
+
+        // Add a horizontal line to divide each day's section
+        const horizontalLine = document.createElement('hr');
+        rowElem.appendChild(horizontalLine);
+    });
+
+    // Append elements
+    inputItemsElem.appendChild(rowElem);
+    cardBodyElem.appendChild(inputItemsElem);
+    collapseElem.appendChild(cardBodyElem);
+    cardElem.appendChild(cardHeaderElem);
+    cardElem.appendChild(collapseElem);
+    mainParentElem.appendChild(cardElem);
+    weekContainer.appendChild(mainParentElem);
+}
+
+// Helper function to create input boxes
+function createInputBox(labelText, inputId, inputType, required, placeholder = '', multiple = false) {
+    const colElem = document.createElement('div');
+    colElem.classList.add('col-xl-6');
+
+    const inputBoxElem = document.createElement('div');
+    inputBoxElem.classList.add('input-box');
+
+    const labelElem = document.createElement('h6');
+    labelElem.innerText = labelText;
+
+    const inputElem = document.createElement('input');
+    inputElem.type = inputType;
+    inputElem.id = inputId;
+    inputElem.name = inputId;
+    if (required) inputElem.required = true;
+    if (placeholder) inputElem.placeholder = placeholder;
+    if (multiple) inputElem.multiple = true;
+
+    inputBoxElem.appendChild(labelElem);
+    inputBoxElem.appendChild(inputElem);
+    colElem.appendChild(inputBoxElem);
+
+    return colElem;
+}
+
+// Helper function to create time range input fields
+function createTimeRangeInput(startId, endId) {
+    const colElem = document.createElement('div');
+    colElem.classList.add('col-xl-6');
+
+    const inputBoxElem = document.createElement('div');
+    inputBoxElem.classList.add('input-box');
+
+    const labelElem = document.createElement('h6');
+    labelElem.innerText = 'Dish Timings';
+
+    // Create a container for the time inputs
+    const timeInputContainer = document.createElement('div');
+    timeInputContainer.classList.add('d-flex', 'gap-2'); // Flexbox for horizontal alignment
+
+    const startInputElem = document.createElement('input');
+    startInputElem.type = 'time';
+    startInputElem.id = startId;
+    startInputElem.name = startId;
+    startInputElem.classList.add('form-control');
+
+    const endInputElem = document.createElement('input');
+    endInputElem.type = 'time';
+    endInputElem.id = endId;
+    endInputElem.name = endId;
+    endInputElem.classList.add('form-control');
+
+    // Append time inputs to the container
+    timeInputContainer.appendChild(startInputElem);
+    timeInputContainer.appendChild(endInputElem);
+
+    inputBoxElem.appendChild(labelElem);
+    inputBoxElem.appendChild(timeInputContainer);
+    colElem.appendChild(inputBoxElem);
+
+    return colElem;
+}
+
+function saveWeek(weekNumber) {
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const hostelName = document.getElementById('hostelname').value;
+    const weekData = {};
+
+    days.forEach(day => {
+        const mealTimes = ['Morning', 'Afternoon', 'Night'];
+        weekData[day] = {};
+
+        mealTimes.forEach(mealTime => {
+            const dishName = document.getElementById(`dishName-${weekNumber}-${day}-${mealTime}`).value;
+            const sideDishName = document.getElementById(`sideDishName-${weekNumber}-${day}-${mealTime}`).value;
+            const dishTimingStart = document.getElementById(`dishTimingStart-${weekNumber}-${day}-${mealTime}`).value;
+            const dishTimingEnd = document.getElementById(`dishTimingEnd-${weekNumber}-${day}-${mealTime}`).value;
+
+            if (dishName && sideDishName && dishTimingStart && dishTimingEnd) {
+                weekData[day][mealTime] = {
+                    mainDish: dishName,
+                    sideDish: sideDishName,
+                    timing: `${dishTimingStart} - ${dishTimingEnd}`
+                };
+            } else {
+                alert(`Please fill out all fields for ${day} (${mealTime})`);
+                return;
+            }
+        });
+    });
+
+    if (Object.keys(weekData).length === days.length) {
+        set(ref(db, `Hostel details/${hostelName}/weeks/week${weekNumber}`), weekData)
+            .then(() => {
+                alert(`Week ${weekNumber} saved successfully!`);
+            })
+            .catch((error) => {
+                alert(`Error saving Week ${weekNumber}: ${error.message}`);
+            });
+    }
+}
 
 /*Hostel Multiple images upload*/
 var files = [];
