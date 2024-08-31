@@ -39,6 +39,7 @@ function createWeekForm(weekNum) {
 
     const dropdownArrow = document.createElement('span');
     dropdownArrow.classList.add('dropdown-arrow');
+    dropdownArrow.style.fontSize = '27px';
     dropdownArrow.style.cursor = 'pointer';
     dropdownArrow.innerHTML = '&#9662;'; // Down arrow
 
@@ -60,9 +61,10 @@ function createWeekForm(weekNum) {
     const headerButtonsContainer = document.createElement('div');
     headerButtonsContainer.classList.add('d-flex', 'gap-2'); // Ensures buttons have some spacing
 
-    const removeWeekBtn = document.createElement('button');
-    removeWeekBtn.className = 'btn restaurant-button';
-    removeWeekBtn.innerHTML = 'Remove Week';
+    const removeWeekBtn = document.createElement('a');
+    removeWeekBtn.className = 'ri-delete-bin-line';
+    //removeWeekBtn.innerHTML = 'Remove Week';
+    removeWeekBtn.style.fontSize = '24px';
     removeWeekBtn.onclick = () => {
         mainParentElem.remove();
         weekCount--;
