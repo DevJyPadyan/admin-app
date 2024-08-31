@@ -12,6 +12,7 @@ const weekContainer = document.getElementById("weekContainer");
 
 let weekCount = 0;
 
+//function that generates container for each week when add week button is clicked
 addWeekButton.addEventListener('click', () => {
     if (weekCount < 5) {
         weekCount++;
@@ -21,120 +22,154 @@ addWeekButton.addEventListener('click', () => {
     }
 });
 
+//function to create week containers
 function createWeekForm(weekNum) {
-    const mainParentElem = document.createElement('div');
-    mainParentElem.classList.add('col-12');
+  const mainParentElem = document.createElement('div');
+  mainParentElem.classList.add('col-12');
 
-    const cardElem = document.createElement('div');
-    cardElem.classList.add('card');
-    cardElem.id = `week-${weekNum}`;
+  const cardElem = document.createElement('div');
+  cardElem.classList.add('card');
+  cardElem.id = `week-${weekNum}`;
 
-    const cardHeaderElem = document.createElement('div');
-    cardHeaderElem.classList.add('card-header', 'd-flex', 'justify-content-between', 'align-items-center');
+  const cardHeaderElem = document.createElement('div');
+  cardHeaderElem.classList.add('card-header', 'd-flex', 'justify-content-between', 'align-items-center');
 
-    // Add a clickable arrow to toggle the collapse
-    const headerContent = document.createElement('div');
-    headerContent.classList.add('d-flex', 'align-items-center');
-    headerContent.innerHTML = `<h5 class="mb-0">Week ${weekNum}</h5>`;
+  // Add a clickable arrow to toggle the collapse
+  const headerContent = document.createElement('div');
+  headerContent.classList.add('d-flex', 'align-items-center');
+  headerContent.innerHTML = `<h5 class="mb-0">Week ${weekNum}</h5>`;
 
-    const dropdownArrow = document.createElement('span');
-    dropdownArrow.classList.add('dropdown-arrow');
-    dropdownArrow.style.fontSize = '27px';
-    dropdownArrow.style.cursor = 'pointer';
-    dropdownArrow.innerHTML = '&#9662;'; // Down arrow
+  const dropdownArrow = document.createElement('span');
+  dropdownArrow.classList.add('dropdown-arrow', 'ri-arrow-down-s-line');
+  dropdownArrow.style.fontSize = '27px';
+  dropdownArrow.style.marginLeft= '10px';  // Adds left margin for the drop down
+  dropdownArrow.style.marginBottom = '15px'; // Adds bottom margin for the drop down
+  dropdownArrow.style.marginTop = '10px'; // Adds top margin for the drop down
 
-    dropdownArrow.addEventListener('click', () => {
-        const collapseElem = document.getElementById(`collapseWeek${weekNum}`);
-        collapseElem.classList.toggle('show');
+  dropdownArrow.addEventListener('click', () => {
+    const collapseElem = document.getElementById(`collapseWeek${weekNum}`);
+    collapseElem.classList.toggle('show');
 
-        // Toggle the arrow direction
-        if (collapseElem.classList.contains('show')) {
-            dropdownArrow.innerHTML = '&#9662;'; // Down arrow
-        } else {
-            dropdownArrow.innerHTML = '&#9656;'; // Right arrow
-        }
-    });
+    if (collapseElem.classList.contains('show')) {
+        dropdownArrow.classList.replace('ri-arrow-right-s-line', 'ri-arrow-down-s-line'); // Down arrow
+    } else {
+        dropdownArrow.classList.replace('ri-arrow-down-s-line', 'ri-arrow-right-s-line'); // Right arrow
+    }
+});
 
-    cardHeaderElem.appendChild(headerContent);
-    headerContent.appendChild(dropdownArrow);
+  cardHeaderElem.appendChild(headerContent);
+  headerContent.appendChild(dropdownArrow);
 
-    const headerButtonsContainer = document.createElement('div');
-    headerButtonsContainer.classList.add('d-flex', 'gap-2'); // Ensures buttons have some spacing
+  const headerButtonsContainer = document.createElement('div');
+  headerButtonsContainer.classList.add('d-flex', 'gap-2');
 
-    const removeWeekBtn = document.createElement('a');
-    removeWeekBtn.className = 'ri-delete-bin-line';
-    //removeWeekBtn.innerHTML = 'Remove Week';
-    removeWeekBtn.style.fontSize = '24px';
-    removeWeekBtn.onclick = () => {
-        mainParentElem.remove();
-        weekCount--;
-    };
+  const removeWeekBtn = document.createElement('a');
+  removeWeekBtn.className = 'ri-delete-bin-line';
+  removeWeekBtn.style.fontSize = '24px';
+  removeWeekBtn.onclick = () => {
+      mainParentElem.remove();
+      weekCount--;
+  };
 
-    const saveWeekBtn = document.createElement('button');
-    saveWeekBtn.className = 'btn restaurant-button';
-    saveWeekBtn.innerHTML = `Save Week ${weekNum}`;
-    saveWeekBtn.onclick = () => saveWeek(weekNum);
+  const saveWeekBtn = document.createElement('button');
+  saveWeekBtn.className = 'btn restaurant-button';
+  saveWeekBtn.innerHTML = `Save Week ${weekNum}`;
+  saveWeekBtn.onclick = () => saveWeek(weekNum);
 
-    headerButtonsContainer.appendChild(saveWeekBtn);
-    headerButtonsContainer.appendChild(removeWeekBtn);
-    cardHeaderElem.appendChild(headerButtonsContainer);
+  headerButtonsContainer.appendChild(saveWeekBtn);
+  headerButtonsContainer.appendChild(removeWeekBtn);
+  cardHeaderElem.appendChild(headerButtonsContainer);
 
-    const collapseElem = document.createElement('div');
-    collapseElem.id = `collapseWeek${weekNum}`;
-    collapseElem.classList.add('collapse', 'show'); // Start with content shown
+  const collapseElem = document.createElement('div');
+  collapseElem.id = `collapseWeek${weekNum}`;
+  collapseElem.classList.add('collapse', 'show'); // Start with content shown
 
-    const cardBodyElem = document.createElement('div');
-    cardBodyElem.classList.add('card-body');
+  const cardBodyElem = document.createElement('div');
+  cardBodyElem.classList.add('card-body');
 
-    const inputItemsElem = document.createElement('div');
-    inputItemsElem.classList.add('input-items');
+  // Create tab navigation
+  const navTabs = document.createElement('ul');
+  navTabs.classList.add('nav', 'nav-tabs');
+  navTabs.role = 'tablist';
 
-    const rowElem = document.createElement('div');
-    rowElem.classList.add('row', 'gy-3');
+  const tabContent = document.createElement('div');
+  tabContent.classList.add('tab-content', 'mt-3');
 
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-    days.forEach(day => {
-        // Day Label
-        const dayLabelElem = document.createElement('h4');
-        dayLabelElem.innerText = day;
-        rowElem.appendChild(dayLabelElem);
+  days.forEach((day, index) => {
+      // Create tab navigable days
+      const navItem = document.createElement('li');
+      navItem.classList.add('nav-item');
 
-        // Meal times
-        const mealTimes = ['Morning', 'Afternoon', 'Night'];
+      const navLink = document.createElement('a');
+      navLink.classList.add('nav-link');
+      if (index === 0) navLink.classList.add('active');
+      navLink.id = `week${weekNum}-${day}-tab`;
+      navLink.dataset.bsToggle = 'tab';
+      navLink.href = `#week${weekNum}-${day}`;
+      navLink.role = 'tab';
+      navLink.innerText = day.substring(0, 3); // Display only the first 3 letters
 
-        mealTimes.forEach(mealTime => {
-            // Meal Time Label
-            const mealTimeLabelElem = document.createElement('h5');
-            mealTimeLabelElem.innerText = `${mealTime}:`;
-            mealTimeLabelElem.classList.add('mt-2'); // Adds margin top for spacing
-            rowElem.appendChild(mealTimeLabelElem);
+      navItem.appendChild(navLink);
+      navTabs.appendChild(navItem);
 
-            // Main Dish Name
-            rowElem.appendChild(createInputBox(`Main Dish Name`, `dishName-${weekNum}-${day}-${mealTime}`, 'text', true));
+      // Create tab pane content
+      const tabPane = document.createElement('div');
+      tabPane.classList.add('tab-pane', 'fade');
+      if (index === 0) tabPane.classList.add('show', 'active');
+      tabPane.id = `week${weekNum}-${day}`;
+      tabPane.role = 'tabpanel';
 
-            // Side Dish Name
-            rowElem.appendChild(createInputBox(`Side Dish Name`, `sideDishName-${weekNum}-${day}-${mealTime}`, 'text', true));
+      // Now create a separate card body for each meal time within this tab
+      const mealTimes = ['Morning', 'Afternoon', 'Night'];
 
-            // Dish Timing
-            rowElem.appendChild(createTimeRangeInput(`dishTimingStart-${weekNum}-${day}-${mealTime}`, `dishTimingEnd-${weekNum}-${day}-${mealTime}`));
-        });
+      mealTimes.forEach(mealTime => {
+          const mealCard = document.createElement('div');
+          mealCard.classList.add('card', 'mb-3', 'mt-3'); // Adds margin top for spacing
 
-        // Add a horizontal line to divide each day's section
-        const horizontalLine = document.createElement('hr');
-        rowElem.appendChild(horizontalLine);
-    });
+          const mealCardBodyElem = document.createElement('div');
+          mealCardBodyElem.classList.add('card-body', 'bg-light', 'input-items');
+          mealCardBodyElem.style.padding = '15px'; // Adds padding inside the container
+          mealCardBodyElem.style.marginLeft = '-15px'; // Adds left margin for the container
+          mealCardBodyElem.style.marginBottom = '15px'; // Adds bottom margin for the container
+          mealCardBodyElem.style.marginTop = '10px'; // Adds top margin for the container
 
-    // Append elements
-    inputItemsElem.appendChild(rowElem);
-    cardBodyElem.appendChild(inputItemsElem);
-    collapseElem.appendChild(cardBodyElem);
-    cardElem.appendChild(cardHeaderElem);
-    cardElem.appendChild(collapseElem);
-    mainParentElem.appendChild(cardElem);
-    weekContainer.appendChild(mainParentElem);
+          const mealTimeLabelElem = document.createElement('h5');
+          mealTimeLabelElem.innerText = `${mealTime}:`;
+          mealTimeLabelElem.classList.add('mt-2', 'mb-3'); // Adds margin top and bottom for spacing
+          mealCardBodyElem.appendChild(mealTimeLabelElem);
+
+          const rowElem = document.createElement('div');
+          rowElem.classList.add('row', 'gy-3');
+
+          // Main Dish Name
+          rowElem.appendChild(createInputBox(`Main Dish Name`, `dishName-${weekNum}-${day}-${mealTime}`, 'text', true));
+
+          // Side Dish Name
+          rowElem.appendChild(createInputBox(`Side Dish Name`, `sideDishName-${weekNum}-${day}-${mealTime}`, 'text', true));
+
+          // Dish Timing
+          rowElem.appendChild(createTimeRangeInput(`dishTimingStart-${weekNum}-${day}-${mealTime}`, `dishTimingEnd-${weekNum}-${day}-${mealTime}`));
+
+          mealCardBodyElem.appendChild(rowElem);
+          mealCard.appendChild(mealCardBodyElem);
+          tabPane.appendChild(mealCard);
+      });
+
+      // Append tab pane to tab content
+      tabContent.appendChild(tabPane);
+  });
+
+  // Append the tab navigation and content to the card body
+  cardBodyElem.appendChild(navTabs);
+  cardBodyElem.appendChild(tabContent);
+  collapseElem.appendChild(cardBodyElem);
+  cardElem.appendChild(cardHeaderElem);
+  cardElem.appendChild(collapseElem);
+  mainParentElem.appendChild(cardElem);
+  weekContainer.appendChild(mainParentElem);
 }
-
 // Helper function to create input boxes
 function createInputBox(labelText, inputId, inputType, required, placeholder = '', multiple = false) {
     const colElem = document.createElement('div');
@@ -238,7 +273,8 @@ function saveWeek(weekNumber) {
     }
 }
 
-/*Hostel Multiple images upload*/
+/* Start of Multiple image upload for hostel images*/
+
 var files = [];
 let imagelink = [];
 document.getElementById("files").addEventListener("change", function (e) {
@@ -280,12 +316,12 @@ document.getElementById("uploadImage").addEventListener("click", async function 
     alert("No file chosen");
   }
 });
+/* End of Multiple image upload for hostel images*/
 
+/* Start of adding room details using dynamic form handling*/
 const addroom = document.getElementById("addroom");
 const roomContainer = document.getElementById("room-container");
-
 let roomCount = 0;
-
 document.addEventListener('DOMContentLoaded', function () {
   addroom.addEventListener('click', () => {
     roomCount++;
@@ -435,9 +471,10 @@ document.addEventListener('DOMContentLoaded', function () {
     return colElem;
   }
 });
+/* End of adding room details using dynamic form handling*/
 
 
-/*Single image upload*/
+/*Start of single image upload*/
 /*let hostelimg;
 uploadImage.addEventListener('click', (e) => {
 
@@ -461,8 +498,9 @@ async function upload() {
         //image.append(imageURL);
     }
 }*/
+/*End of single image upload*/
 
-//This code is used when modal is clicked
+/*Start of storing room details inside modal*/
 /*addroom.addEventListener('click', (e) => {
   var hname = document.getElementById("hostelname").value;
   var htype = document.getElementById("hosteltype").value;
@@ -493,6 +531,9 @@ async function upload() {
   })
   alert("Room details added successfully");
 });*/
+/*Start of storing room details inside modal*/
+
+/*Start of storing hostel details when register button is clicked*/
 registerHostel.addEventListener('click', async (e) => {
   var hname = document.getElementById("hostelname").value;
   var htype = document.getElementById("hosteltype").value;
@@ -503,9 +544,6 @@ registerHostel.addEventListener('click', async (e) => {
   var hcity = document.getElementById("hostelcity").value;
   var hstate = document.getElementById("hostelstate").value;
   var hpin = document.getElementById("hostelpin").value;
-  var vegp = document.getElementById("nonvegp").value;
-  var nonvegp = document.getElementById("vegp").value;
-  var both = document.getElementById("bothp").value;
 
   let rooms = [];
   for (let i = 1; i <= roomCount; i++) {
@@ -549,11 +587,7 @@ registerHostel.addEventListener('click', async (e) => {
     hostelAddress2: hadd2,
     hostelCity: hcity,
     hostelState: hstate,
-    hostelPin: hpin,
-    hostelVegprice: vegp,
-    hostelNonvegprice: nonvegp,
-    hostelBothfoods: both,
-    rooms: rooms
+    hostelPin: hpin
   })
     .then(() => {
       //console.log(db, "Hostel details/" + hname)
@@ -564,3 +598,4 @@ registerHostel.addEventListener('click', async (e) => {
       alert(error);
     });
 });
+/*End of storing hostel details when register button is clicked*/
