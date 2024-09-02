@@ -234,44 +234,57 @@ function createTimeRangeInput(startId, endId) {
     return colElem;
 }
 
-function saveWeek(weekNumber) {
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    const hostelName = document.getElementById('hostelname').value;
-    const weekData = {};
-
-    days.forEach(day => {
-        const mealTimes = ['Morning', 'Afternoon', 'Night'];
-        weekData[day] = {};
-
-        mealTimes.forEach(mealTime => {
-            const dishName = document.getElementById(`dishName-${weekNumber}-${day}-${mealTime}`).value;
-            const sideDishName = document.getElementById(`sideDishName-${weekNumber}-${day}-${mealTime}`).value;
-            const dishTimingStart = document.getElementById(`dishTimingStart-${weekNumber}-${day}-${mealTime}`).value;
-            const dishTimingEnd = document.getElementById(`dishTimingEnd-${weekNumber}-${day}-${mealTime}`).value;
-
-            if (dishName && sideDishName && dishTimingStart && dishTimingEnd) {
-                weekData[day][mealTime] = {
-                    mainDish: dishName,
-                    sideDish: sideDishName,
-                    timing: `${dishTimingStart} - ${dishTimingEnd}`
-                };
-            } else {
-                alert(`Please fill out all fields for ${day} (${mealTime})`);
-                return;
-            }
-        });
-    });
-
-    if (Object.keys(weekData).length === days.length) {
-        set(ref(db, `Hostel details/${hostelName}/weeks/week${weekNumber}`), weekData)
-            .then(() => {
-                alert(`Week ${weekNumber} saved successfully!`);
-            })
-            .catch((error) => {
-                alert(`Error saving Week ${weekNumber}: ${error.message}`);
-            });
-    }
+function convertTo12Hour(time24) {
+  const [hours, minutes] = time24.split(':');
+  const period = +hours >= 12 ? 'PM' : 'AM';
+  const hours12 = +hours % 12 || 12;
+  return `${hours12}:${minutes} ${period}`;
 }
+
+
+function saveWeek(weekNumber) {
+  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const hostelName = document.getElementById('hostelname').value;
+  const weekData = {};
+
+  days.forEach(day => {
+      const mealTimes = ['Morning', 'Afternoon', 'Night'];
+      weekData[day] = {};
+
+      mealTimes.forEach(mealTime => {
+          const dishName = document.getElementById(`dishName-${weekNumber}-${day}-${mealTime}`).value;
+          const sideDishName = document.getElementById(`sideDishName-${weekNumber}-${day}-${mealTime}`).value;
+          let dishTimingStart = document.getElementById(`dishTimingStart-${weekNumber}-${day}-${mealTime}`).value;
+          let dishTimingEnd = document.getElementById(`dishTimingEnd-${weekNumber}-${day}-${mealTime}`).value;
+
+          if (dishName && sideDishName && dishTimingStart && dishTimingEnd) {
+              // Convert the timings to 12-hour format with AM/PM
+              dishTimingStart = convertTo12Hour(dishTimingStart);
+              dishTimingEnd = convertTo12Hour(dishTimingEnd);
+
+              weekData[day][mealTime] = {
+                  mainDish: dishName,
+                  sideDish: sideDishName,
+                  timing: `${dishTimingStart} - ${dishTimingEnd}`
+              };
+          } else {
+              alert(`Please fill out all fields for ${day} (${mealTime})`);
+              return;
+          }
+      });
+  });
+
+  if (Object.keys(weekData).length === days.length) {
+      set(ref(db, `Hostel details/${hostelName}/weeks/week${weekNumber}`), weekData)
+          .then(() => {
+              alert(`Week ${weekNumber} saved successfully!`);
+          })
+          .catch((error) => {
+              alert(`Error saving Week ${weekNumber}: ${error.message}`);
+          });
+  }
+}
+
 
 /* Start of Multiple image upload for hostel images*/
 
@@ -587,7 +600,8 @@ registerHostel.addEventListener('click', async (e) => {
     hostelAddress2: hadd2,
     hostelCity: hcity,
     hostelState: hstate,
-    hostelPin: hpin
+    hostelPin: hpin,
+    rooms:rooms
   })
     .then(() => {
       //console.log(db, "Hostel details/" + hname)
