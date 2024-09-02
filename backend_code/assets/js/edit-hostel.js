@@ -309,9 +309,6 @@ updateHostel.addEventListener('click', async (e) => {
     var hcity = document.getElementById("hostelcity").value;
     var hstate = document.getElementById("hostelstate").value;
     var hpin = document.getElementById("hostelpin").value;
-    var vegp = document.getElementById("nonvegp").value;
-    var nonvegp = document.getElementById("vegp").value;
-    var both = document.getElementById("bothp").value;
 
     let rooms = [];
 
@@ -359,9 +356,6 @@ updateHostel.addEventListener('click', async (e) => {
         hostelCity: hcity,
         hostelState: hstate,
         hostelPin: hpin,
-        hostelVegprice: vegp,
-        hostelNonvegprice: nonvegp,
-        hostelbothfoods: both,
         rooms: rooms
 
     })
