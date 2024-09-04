@@ -82,6 +82,239 @@ let roomCount = 0; // Track the number of rooms
 document.addEventListener('DOMContentLoaded', function () {
     const getRoomButton = document.getElementById("getroom");
     const roomContainer = document.getElementById("room-container");
+    const getMenuDetailsButton = document.getElementById("getMenuDetails");
+    const weekContainer = document.getElementById("weekContainer");
+
+    getMenuDetailsButton.addEventListener('click', async () => {
+        const hostelName = document.getElementById("hostelname").value; // Assuming hostel name is prefilled
+        const weeksRef = ref(db, `Hostel details/${hostelName}/weeks`);
+
+        try {
+            const snapshot = await get(weeksRef);
+            if (snapshot.exists()) {
+                const weeksData = snapshot.val();
+                weekContainer.innerHTML = ''; // Clear existing week containers
+
+                Object.keys(weeksData).forEach((weekNum, index) => {
+                    const weekData = weeksData[weekNum];
+                    createWeekForm(index + 1, weekData);
+                });
+            } else {
+                alert('No week details found for this hostel.');
+            }
+        } catch (error) {
+            console.error('Error fetching week details:', error);
+        }
+    });
+
+    // Function to create week containers and prefill them with data
+    function createWeekForm(weekNum, weekData) {
+        const mainParentElem = document.createElement('div');
+        mainParentElem.classList.add('col-12');
+
+        const cardElem = document.createElement('div');
+        cardElem.classList.add('card');
+        cardElem.id = `week-${weekNum}`;
+
+        const cardHeaderElem = document.createElement('div');
+        cardHeaderElem.classList.add('card-header', 'd-flex', 'justify-content-between', 'align-items-center');
+
+        const headerContent = document.createElement('div');
+        headerContent.classList.add('d-flex', 'align-items-center');
+        headerContent.innerHTML = `<h5 class="mb-0">Week ${weekNum}</h5>`;
+
+        const dropdownArrow = document.createElement('span');
+        dropdownArrow.classList.add('dropdown-arrow', 'ri-arrow-down-s-line');
+        dropdownArrow.style.fontSize = '27px';
+        dropdownArrow.style.marginLeft = '10px';
+        dropdownArrow.style.marginBottom = '15px';
+        dropdownArrow.style.marginTop = '10px';
+
+        dropdownArrow.addEventListener('click', () => {
+            const collapseElem = document.getElementById(`collapseWeek${weekNum}`);
+            collapseElem.classList.toggle('show');
+
+            if (collapseElem.classList.contains('show')) {
+                dropdownArrow.classList.replace('ri-arrow-right-s-line', 'ri-arrow-down-s-line');
+            } else {
+                dropdownArrow.classList.replace('ri-arrow-down-s-line', 'ri-arrow-right-s-line');
+            }
+        });
+
+        cardHeaderElem.appendChild(headerContent);
+        headerContent.appendChild(dropdownArrow);
+
+        const collapseElem = document.createElement('div');
+        collapseElem.id = `collapseWeek${weekNum}`;
+        collapseElem.classList.add('collapse', 'show');
+
+        const cardBodyElem = document.createElement('div');
+        cardBodyElem.classList.add('card-body');
+
+        const navTabs = document.createElement('ul');
+        navTabs.classList.add('nav', 'nav-tabs');
+        navTabs.role = 'tablist';
+
+        const tabContent = document.createElement('div');
+        tabContent.classList.add('tab-content', 'mt-3');
+
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+        days.forEach((day, index) => {
+            const navItem = document.createElement('li');
+            navItem.classList.add('nav-item');
+
+            const navLink = document.createElement('a');
+            navLink.classList.add('nav-link');
+            if (index === 0) navLink.classList.add('active');
+            navLink.id = `week${weekNum}-${day}-tab`;
+            navLink.dataset.bsToggle = 'tab';
+            navLink.href = `#week${weekNum}-${day}`;
+            navLink.role = 'tab';
+            navLink.innerText = day.substring(0, 3);
+
+            navItem.appendChild(navLink);
+            navTabs.appendChild(navItem);
+
+            const tabPane = document.createElement('div');
+            tabPane.classList.add('tab-pane', 'fade');
+            if (index === 0) tabPane.classList.add('show', 'active');
+            tabPane.id = `week${weekNum}-${day}`;
+            tabPane.role = 'tabpanel';
+
+            const mealTimes = ['Morning', 'Afternoon', 'Night'];
+            mealTimes.forEach(mealTime => {
+                const mealCard = document.createElement('div');
+                mealCard.classList.add('card', 'mb-3', 'mt-3');
+
+                const mealCardBodyElem = document.createElement('div');
+                mealCardBodyElem.classList.add('card-body', 'bg-light', 'input-items');
+                mealCardBodyElem.style.padding = '15px';
+                mealCardBodyElem.style.marginLeft = '-15px';
+                mealCardBodyElem.style.marginBottom = '15px';
+                mealCardBodyElem.style.marginTop = '10px';
+
+                const mealTimeLabelElem = document.createElement('h5');
+                mealTimeLabelElem.innerText = `${mealTime}:`;
+                mealTimeLabelElem.classList.add('mt-2', 'mb-3');
+                mealCardBodyElem.appendChild(mealTimeLabelElem);
+
+                const rowElem = document.createElement('div');
+                rowElem.classList.add('row', 'gy-3');
+
+                // Main Dish Name
+                rowElem.appendChild(createInputBox(`Main Dish Name`, `dishName-${weekNum}-${day}-${mealTime}`, 'text', true, '', false, weekData[day]?.[mealTime]?.mainDish || ''));
+
+                // Side Dish Name
+                rowElem.appendChild(createInputBox(`Side Dish Name`, `sideDishName-${weekNum}-${day}-${mealTime}`, 'text', true, '', false, weekData[day]?.[mealTime]?.sideDish || ''));
+
+                // Dish Timing
+                const timingRange = weekData[day]?.[mealTime]?.timing || '';
+                const [start12h, end12h] = timingRange.split(' - ').map(time => time.trim());
+                const start24h = convertTo24Hour(start12h);
+                const end24h = convertTo24Hour(end12h);
+                rowElem.appendChild(createTimeRangeInput(`dishTimingStart-${weekNum}-${day}-${mealTime}`, `dishTimingEnd-${weekNum}-${day}-${mealTime}`, start24h, end24h));
+
+                mealCardBodyElem.appendChild(rowElem);
+                mealCard.appendChild(mealCardBodyElem);
+                tabPane.appendChild(mealCard);
+            });
+
+            tabContent.appendChild(tabPane);
+        });
+
+        cardBodyElem.appendChild(navTabs);
+        cardBodyElem.appendChild(tabContent);
+        collapseElem.appendChild(cardBodyElem);
+        cardElem.appendChild(cardHeaderElem);
+        cardElem.appendChild(collapseElem);
+        mainParentElem.appendChild(cardElem);
+        weekContainer.appendChild(mainParentElem);
+    }
+
+    // Helper function to convert 12-hour time to 24-hour format for input fields
+    // Helper function to convert 12-hour time to 24-hour format for input fields
+    function convertTo24Hour(time12h) {
+        if (!time12h) return '';
+
+        const [time, modifier] = time12h.split(' ');
+        let [hours, minutes] = time.split(':');
+
+        if (modifier === 'AM' && hours === '12') {
+            hours = '00'; // Convert 12 AM to 00 hours
+        } else if (modifier === 'PM' && hours !== '12') {
+            hours = (parseInt(hours, 10) + 12).toString(); // Convert PM hours
+        }
+
+        // Ensure hours is two digits
+        if (hours.length === 1) hours = '0' + hours;
+
+        return `${hours}:${minutes}`;
+    }
+
+
+    // Helper function to create input boxes
+    function createInputBox(labelText, inputId, inputType, required, placeholder = '', multiple = false, value = '') {
+        const colElem = document.createElement('div');
+        colElem.classList.add('col-xl-6');
+
+        const inputBoxElem = document.createElement('div');
+        inputBoxElem.classList.add('input-box');
+
+        const labelElem = document.createElement('h6');
+        labelElem.innerText = labelText;
+
+        const inputElem = document.createElement('input');
+        inputElem.type = inputType;
+        inputElem.id = inputId;
+        inputElem.name = inputId;
+        if (required) inputElem.required = true;
+        if (placeholder) inputElem.placeholder = placeholder;
+        if (multiple) inputElem.multiple = multiple;
+        inputElem.value = value;
+
+        inputBoxElem.appendChild(labelElem);
+        inputBoxElem.appendChild(inputElem);
+        colElem.appendChild(inputBoxElem);
+
+        return colElem;
+    }
+
+    // Helper function to create time range input fields
+    function createTimeRangeInput(startId, endId, startValue = '', endValue = '') {
+        const colElem = document.createElement('div');
+        colElem.classList.add('col-xl-6');
+
+        const inputBoxElem = document.createElement('div');
+        inputBoxElem.classList.add('input-box');
+
+        const labelElem = document.createElement('h6');
+        labelElem.innerText = 'Dish Timings';
+
+        const timeInputContainer = document.createElement('div');
+        timeInputContainer.classList.add('d-flex', 'align-items-center');
+
+        const startInput = document.createElement('input');
+        startInput.type = 'time';
+        startInput.id = startId;
+        startInput.name = startId;
+        startInput.value = startValue;
+
+        const endInput = document.createElement('input');
+        endInput.type = 'time';
+        endInput.id = endId;
+        endInput.name = endId;
+        endInput.value = endValue;
+
+        timeInputContainer.appendChild(startInput);
+        timeInputContainer.appendChild(endInput);
+
+        inputBoxElem.appendChild(labelElem);
+        inputBoxElem.appendChild(timeInputContainer);
+        colElem.appendChild(inputBoxElem);
+
+        return colElem;
+    }
 
     // Prefill hostel details on page load
     window.addEventListener('load', prefillHostelDetails);
@@ -344,6 +577,35 @@ updateHostel.addEventListener('click', async (e) => {
             price: price,
             images: imagelink1
         });
+    }
+    let weeks = {}; // Collect week details
+    const weekCount = document.querySelectorAll('.card[id^="week-"]').length;
+
+    for (let i = 1; i <= weekCount; i++) {
+        const weekData = {};
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+        days.forEach(day => {
+            const mealTimes = ['Morning', 'Afternoon', 'Night'];
+            weekData[day] = {};
+
+            mealTimes.forEach(mealTime => {
+                const mainDish = document.getElementById(`dishName-${i}-${day}-${mealTime}`).value;
+                const sideDish = document.getElementById(`sideDishName-${i}-${day}-${mealTime}`).value;
+                const dishTimingStart = document.getElementById(`dishTimingStart-${i}-${day}-${mealTime}`).value;
+                const dishTimingEnd = document.getElementById(`dishTimingEnd-${i}-${day}-${mealTime}`).value;
+
+                if (mainDish && sideDish && dishTimingStart && dishTimingEnd) {
+                    weekData[day][mealTime] = {
+                        mainDish,
+                        sideDish,
+                        timing: `${dishTimingStart} - ${dishTimingEnd}`
+                    };
+                }
+            });
+        });
+
+        weeks[`week${i}`] = weekData;
     }
 
     update(ref(db, "Hostel details/" + hname + '/'), {
