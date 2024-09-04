@@ -618,7 +618,8 @@ updateHostel.addEventListener('click', async (e) => {
         hostelCity: hcity,
         hostelState: hstate,
         hostelPin: hpin,
-        rooms: rooms
+        rooms: rooms,
+        weeks: weeks
 
     })
         .then(() => {
