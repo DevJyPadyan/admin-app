@@ -64,7 +64,6 @@ function view() {
             var data = [];
             data.push(userName);
             data.push(userFullName);
-            data.push(userAge);
             data.push(userGender);
             data.push(userEmail);
             data.push(userAddress1);
@@ -80,7 +79,7 @@ function view() {
             data.push(roomPrice);
             localStorage.setItem('userDetails', JSON.stringify(data));
             console.log(data);
-            window.location.href = 'edit-hostel.html';
+            window.location.href = 'edit-users.html';
 
         }
     }
@@ -101,9 +100,8 @@ const SelectAlldataReal = () => {
 
 }
 
-
 //Function which is used to append the data from firebase database to table
-const AddsingleRecord = (userName,userGender,userPhone,userEmail,userAddress1,userAddress2,userCity,userState,userPin,roomType,floorNumber,
+const AddsingleRecord = (userName,userFullName,userGender,userPhone,userEmail,userAddress1,userAddress2,userCity,userState,userPin,password1,roomType,floorNumber,
     AirConditioning,roomPrice
 ) => {
 
@@ -122,33 +120,39 @@ const AddsingleRecord = (userName,userGender,userPhone,userEmail,userAddress1,us
     var td12 = document.createElement('td');
     var td13 = document.createElement('td');
     var td14 = document.createElement('td');
+    var td15 = document.createElement('td');
+    var td16 = document.createElement('td');
+    var td17 = document.createElement('td');
+
 
     flag = flag + 1;
     td1.innerHTML = flag;
     td2.innerHTML = userName;
-    td3.innerHTML = userGender;
-    td4.innerHTML = userPhone;
-    td5.innerHTML = userEmail;
-    td6.innerHTML = userAddress1;
-    td7.innerHTML = userAddress2;
-    td8.innerHTML = userCity;
-    td9.innerHTML = userState;
-    td10.innerHTML = userPin;
-    td11.innerHTML = roomType;
-    td12.innerHTML = floorNumber;
-    td13.innerHTML = AirConditioning;
-    td14.innerHTML = roomPrice;
+    td3.innerHTML = userFullName;
+    td4.innerHTML = userGender;
+    td5.innerHTML = userPhone;
+    td6.innerHTML = userEmail;
+    td7.innerHTML = userAddress1;
+    td8.innerHTML = userAddress2;
+    td9.innerHTML = userCity;
+    td10.innerHTML = userState;
+    td11.innerHTML = userPin;
+    td12.innerHTML = password1;
+    td13.innerHTML = roomType;
+    td14.innerHTML = floorNumber;
+    td15.innerHTML = AirConditioning;
+    td16.innerHTML = roomPrice;
 
     var removeButton = document.createElement('button');
     removeButton.type = 'button';
     removeButton.innerHTML = '<i class="fas fa-trash"></i>';
     removeButton.onclick = function (event) {
         event.stopPropagation(); // Prevent row click event
-        removeHostel(event, hostelName);
+        removeHostel(event, userName);
     };
-    td14.appendChild(removeButton);
+    td17.appendChild(removeButton);
 
-    trow.append(td1, td2, td3, td4, td5, td6, td7, td8, td9, td10, td11, td12, td13, td14);
+    trow.append(td1, td2, td3, td4, td5, td6, td7, td8, td9, td10, td11, td12, td13, td14,td15,td16,td17);
     tbody.append(trow);
 
 }
@@ -157,7 +161,7 @@ const AddAllRecords = () => {
     flag = 0;
     tbody.innerHTML = "";
     userList.forEach(u => {
-        AddsingleRecord(u.userName,u.userGender,u.userPhone,u.userEmail,u.userAddress1,u.userAddress2,u.userCity,u.userState,u.userPin,u.roomType,u.floorNumber,
+        AddsingleRecord(u.userName,u.userFullName,u.userGender,u.userPhone,u.userEmail,u.userAddress1,u.userAddress2,u.userCity,u.userState,u.userPin,u.password1,u.roomType,u.floorNumber,
             u.AirConditioning,u.roomPrice)
     })
     view();

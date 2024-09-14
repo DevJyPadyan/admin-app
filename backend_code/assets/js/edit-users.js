@@ -1,0 +1,86 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, get, set, child, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"
+import { getStorage, ref as ref2, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js"
+import { firebaseConfig } from "./firebase-config.js";
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase();
+const storage = getStorage(app);
+
+function prefillUserDetails() {
+    const storedData = localStorage.getItem('userDetails');
+    if (storedData) {
+        const userData = JSON.parse(storedData);
+
+        // Prefill form fields with user data
+        document.getElementById("username").value = userData[0] || "";
+        document.getElementById("userfullname").value = userData[1] || "";
+        document.getElementById("usergender").value = userData[2] || "";
+        document.getElementById("userphone").value = userData[3] || "";
+        document.getElementById("usermail").value = userData[4] || "";
+        document.getElementById("useradd1").value = userData[5] || "";
+        document.getElementById("useradd2").value = userData[6] || "";
+        document.getElementById("usercity").value = userData[7] || "";
+        document.getElementById("userstate").value = userData[8] || "";
+        document.getElementById("userpin").value = userData[9] || "";
+        document.getElementById("pwd1").value = userData[10] || ""; // Fix: Should be password2
+        document.getElementById("roomtype").value = userData[11] || "";
+        document.getElementById("floornum").value = userData[12] || "";
+        document.getElementById("aircond").value = userData[13] || "";
+        document.getElementById("roomprice").value = userData[14] || "";
+    } else {
+        console.log("No User data found in localStorage.");
+    }
+}
+
+// Ensure the form is prefilled when the page loads
+window.addEventListener('DOMContentLoaded', prefillUserDetails);
+
+
+updateUser.addEventListener('click', async (e) => {
+    e.preventDefault();
+
+    var userName = document.getElementById("username").value;
+    var userFullName = document.getElementById("userfullname").value;
+    var userPhone = document.getElementById("userphone").value;
+    var userGender = document.getElementById("usergender").value;
+    var userEmail = document.getElementById("usermail").value;
+    var userAddress1 = document.getElementById("useradd1").value;
+    var userAddress2 = document.getElementById("useradd2").value;
+    var userCity = document.getElementById("usercity").value;
+    var userState = document.getElementById("userstate").value;
+    var userPin = document.getElementById("userpin").value;
+    var password1 = document.getElementById("pwd1").value;
+    var password2 = document.getElementById("pwd2").value;
+    var roomType = document.getElementById("roomtype").value;
+    var floorNumber = document.getElementById("floornum").value;
+    var AirConditioning = document.getElementById("aircond").value;
+    var roomPrice = document.getElementById("roomprice").value;
+
+    update(ref(db, "User details/" + userName + '/'), {
+        userName: userName,
+        userFullName: userFullName,
+        userPhone: userPhone,
+        userGender: userGender,
+        userEmail: userEmail,
+        userAddress1: userAddress1,
+        userAddress2: userAddress2,
+        userCity: userCity,
+        userState: userState,
+        userPin: userPin,
+        password1: password1,
+        password2: password2,
+        roomType: roomType,
+        floorNumber: floorNumber,
+        AirConditioning: AirConditioning,
+        roomPrice:roomPrice
+
+    })
+        .then(() => {
+            alert("User details updated successfully");
+            window.location.href = "././users.html";
+        })
+        .catch((error) => {
+            alert(error);
+        });
+});
