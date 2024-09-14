@@ -484,6 +484,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return colElem;
   }
 });
+
 /* End of adding room details using dynamic form handling*/
 
 

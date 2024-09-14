@@ -13,7 +13,7 @@
     <meta name="author" content="pixelstrap">
     <link rel="icon" href="assets/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="assets/images/favicon.png" type="image/x-icon">
-    <title>Perikitis - Edit Hostel</title>
+    <title>Perikitis - Edit User</title>
 
     <!-- Google font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -97,11 +97,11 @@
                 </div>
                 <div class="welcome-title">
                     <h5>
-                        Edit the hostel details to show it to users
+                        Edit user details to modify if any changes
                         <img src="./assets/images/header.gif" alt="">
                     </h5>
                     <span>
-                        Modify and enter the details below
+                        Please enter the details below
                     </span>
                 </div>
                 <div class="nav-right col-xl-6 col-5 pull-right right-header p-0">
@@ -295,7 +295,6 @@
                         <div id="sidebar-menu">
                             <ul class="sidebar-links" id="simple-bar">
                                 <li class="back-btn"></li>
-
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title link-nav" href="index.html">
                                         <i class="ri-home-line"></i>
@@ -318,7 +317,7 @@
                                     </ul>
                                 </li>
                                 <li class="sidebar-list">
-                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
+                                    <a class="sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-user-3-line"></i>
                                         <span>Users</span>
                                     </a>
@@ -326,28 +325,12 @@
                                         <li>
                                             <a href="users.html">User List</a>
                                         </li>
-
                                         <li>
                                             <a href="admin-add-user.html">Register User</a>
                                         </li>
                                     </ul>
                                 </li>
                                 <!--<li class="sidebar-list">
-                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-bowl-line"></i>
-                                        <span>Category</span>
-                                    </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="category.html">Category List</a>
-                                        </li>
-
-                                        <li>
-                                            <a href="add-new-categorys.html">Create Category</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-list-settings-line"></i>
                                         <span>Attributes</span>
@@ -390,23 +373,8 @@
                                             <a href="add-new-food.html">Create Food</a>
                                         </li>
                                     </ul>
-                                </li>
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-user-3-line"></i>
-                                        <span>Users</span>
-                                    </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="all-users.html">All users</a>
-                                        </li>
-                                        <li>
-                                            <a href="add-new-user.html">Add new user</a>
-                                        </li>
-                                    </ul>
-                                </li>
-
-                                <li class="sidebar-list">
+                                </li>-->
+                                <!--<li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-user-3-line"></i>
                                         <span>Roles</span>
@@ -544,101 +512,197 @@
             <div class="page-body">
 
                 <!-- New Product Add Start -->
-                <div class="container-fluid">
+                <div class="container-fluid" id="hostelDetailsForm">
                     <div class="row">
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-12">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h5>Hostel Information</h5>
+                                            <h5>Personal Information</h5>
                                         </div>
                                         <div class="card-body">
                                             <div class="input-items">
                                                 <div class="row gy-3">
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Hostel Name</h6>
-                                                            <input type="text" placeholder="Hostel Name"
-                                                                id="hostelname">
+                                                            <h6>User Name</h6>
+                                                            <input type="text" placeholder="Enter User Name"
+                                                                id="username">
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Hostel Type</h6>
+                                                            <h6>Full Name</h6>
+                                                            <input type="text" placeholder="Enter Full Name"
+                                                                id="userfullname">
+                                                        </div>
+                                                    </div>
+                                                    <!--<div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <form class="radio-section">
+                                                                <label>
+                                                                    <input type="radio" name="gender" checked>
+                                                                    <i></i>
+                                                                    <span>Men</span>
+                                                                </label>
+
+                                                                <label>
+                                                                    <input type="radio" name="gender" />
+                                                                    <i></i>
+                                                                    <span>Female</span>
+                                                                </label>
+                                                            </form>
+                                                        </div>
+                                                    </div>-->
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Gender</h6>
                                                             <select class="js-example-basic-single w-100" name="state"
-                                                                id="hosteltype">
-                                                                <!--<option disabled>Static Menu</option>-->
+                                                                id="usergender">
                                                                 <option>Men</option>
                                                                 <option>Women</option>
-                                                                <option>Both</option>
                                                             </select>
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
                                                             <h6>Phone number </h6>
-                                                            <input type="tel" placeholder="Hostel Phone"
-                                                                id="hostelphone">
+                                                            <input type="tel" placeholder="Enter Phone number"
+                                                                id="userphone">
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
                                                             <h6>Email address</h6>
-                                                            <input type="email" placeholder="Hostel Email address"
-                                                                id="hostelemail">
+                                                            <input type="email" placeholder="Enter Email address"
+                                                                id="usermail">
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
                                                             <h6>Address Line 1</h6>
                                                             <input type="text" placeholder="Address line 1"
-                                                                id="hosteladd1">
+                                                                id="useradd1">
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
                                                             <h6>Address Line 2</h6>
                                                             <input type="text" placeholder="Address line 2"
-                                                                id="hosteladd2">
+                                                                id="useradd2">
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
                                                             <h6>City</h6>
-                                                            <input type="text" placeholder="City" id="hostelcity">
+                                                            <input type="text" placeholder="Enter City" id="usercity">
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
                                                             <h6>State</h6>
-                                                            <input type="text" placeholder="State" id="hostelstate">
+                                                            <input type="text" placeholder="Enter State" id="userstate">
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
                                                             <h6>Pincode</h6>
-                                                            <input type="number" placeholder="Pincode" id="hostelpin">
+                                                            <input type="number" placeholder="Enter Pincode"
+                                                                id="userpin">
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>No. of floors</h6>
-                                                            <input type="number" placeholder="No.of floors"
-                                                                id="hostelfloors">
+                                                            <h6>Password</h6>
+                                                            <input type="password" placeholder="Enter Pasword"
+                                                                id="pwd1">
                                                         </div>
                                                     </div>
-                                                    <div id="floorDropdownContainer"></div>
-
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Confirm Password</h6>
+                                                            <input type="password" placeholder="Re-Enter Password"
+                                                                id="pwd2">
+                                                        </div>
+                                                    </div>
+                                                    <!--<div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Category</h6>
+                                                            <select class="js-example-basic-single w-100" name="state">
+                                                                <option disabled>Category Menu</option>
+                                                                <option>Electronics</option>
+                                                                <option>TV & Appliances</option>
+                                                                <option>Home & Furniture</option>
+                                                                <option>Another</option>
+                                                                <option>Baby & Kids</option>
+                                                                <option>Health, Beauty & Perfumes</option>
+                                                                <option>Uncategorized</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Subcategory</h6>
+                                                            <select class="js-example-basic-single w-100" name="state">
+                                                                <option disabled>Subcategory Menu</option>
+                                                                <option>Ethnic Wear</option>
+                                                                <option>Ethnic Bottoms</option>
+                                                                <option>Women Western Wear</option>
+                                                                <option>Sandels</option>
+                                                                <option>Shoes</option>
+                                                                <option>Beauty & Grooming</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>-->
+                                                    <!--<div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Brand</h6>
+                                                            <select class="js-example-basic-single w-100">
+                                                                <option disabled>Brand Menu</option>
+                                                                <option value="puma">Puma</option>
+                                                                <option value="hrx">HRX</option>
+                                                                <option value="roadster">Roadster</option>
+                                                                <option value="zara">Zara</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Unit</h6>
+                                                            <select class="js-example-basic-single w-100">
+                                                                <option disabled>Unit Menu</option>
+                                                                <option>Kilogram</option>
+                                                                <option>Pieces</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="input-box">
+                                                            <h6>Tags</h6>
+                                                            <input type="text" placeholder="Type tag & hit enter">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="input-box">
+                                                            <div class="icon-state">
+                                                                <label class="switch-xsm mb-0">
+                                                                    <input type="checkbox" id="flexSwitchCheckDefault-1"
+                                                                        checked=""><span class="slider round"></span>
+                                                                </label>
+                                                                <label class="form-check-label"
+                                                                    for="flexSwitchCheckDefault-1">A/C</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>-->
                                                     <!--<div class="col-12">
                                                         <div class="input-box">
                                                             <div class="icon-state">
                                                                 <label class="switch-xsm mb-0">
-                                                                    <input type="checkbox"
-                                                                        id="flexSwitchCheckDefault-2"><span
+                                                                    <input type="checkbox" id="wifi"><span
                                                                         class="slider round"></span>
                                                                 </label>
-                                                                <label class="form-check-label"
+                                                                <label class="form-check-label" name="facility"
                                                                     for="flexSwitchCheckDefault-2">Wifi</label>
                                                             </div>
                                                         </div>
@@ -647,27 +711,18 @@
                                                         <div class="input-box">
                                                             <div class="icon-state">
                                                                 <label class="switch-xsm mb-0">
-                                                                    <input type="checkbox"
-                                                                        id="flexSwitchCheckDefault-2"><span
+                                                                    <input type="checkbox" id="laundry"><span
                                                                         class="slider round"></span>
                                                                 </label>
-                                                                <label class="form-check-label"
+                                                                <label class="form-check-label" name="facility"
                                                                     for="flexSwitchCheckDefault-2">Laundry</label>
                                                             </div>-->
-                                                    <div class="col-12" id="rooms">
-                                                        <button type="button" id="addroom"
-                                                            class="btn restaurant-button">Add room</button>
-                                                        <button type="button" id="getroom" class="btn restaurant-button"
-                                                            style='margin-right:16px'>Get room</button>
-                                                        <button type="button" id="getMenuDetails"
-                                                            class="btn restaurant-button" style='margin-right:16px'>Get
-                                                            Menu</button>
+                                                    <!--<div class="col-12">
+                                                                <button type="button" data-bs-toggle="modal"
+                                                                    data-bs-target="#room"
+                                                                    class="btn restaurant-button">Add room</a>
+                                                            </div>-->
 
-
-                                                    </div>
-                                                    <br>
-                                                    <br>
-                                                    <div class="col-12" id="room-container"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -678,46 +733,171 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5>Hostel Images</h5>
+                                    <h5>Upload Documents</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="input-items">
                                         <div class="row gy-3">
-                                            <div class="col-xl-12">
+                                            <div class="col-xl-6">
                                                 <div class="input-box">
                                                     <h6>Images</h6>
-                                                    <input type="file" id="files" multiple><br><br>
-                                                    <div id="hostelImageContainer"></div>
+                                                    <input type="file" id="files" multiple>
+                                                    <br>
+                                                    <br>
                                                 </div>
-                                                <br>
-                                                <br>
-                                                <button id="uploadImage" class="btn restaurant-button">Upload
-                                                    Image</button>
+                                                <button type="button" id="uploadImage"
+                                                    class="btn restaurant-button">Upload Image</button>
                                                 <!--<p id="uploading"></p>
                                                         <progress value="0" max="100" id="progress"></progress>
                                                         <img id="imagePreview" src="" alt="Image Preview">-->
                                             </div>
-                                            <!--<div class="col-xl-6">
-                                                    <div class="input-box">
-                                                        <h6>Thumbnail Image</h6>
-                                                        <input type="file" id="formFile1" multiple>
-                                                    </div>
-                                                </div>-->
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div id="weekContainer"></div>
-
+                        <!--<div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Guardian Details</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="input-items">
+                                        <div class="row gy-3">
+                                            <div class="col-xl-6">
+                                                <div class="input-box">
+                                                    <h6>Full Name</h6>
+                                                    <input type="text" placeholder="Enter Full Name" id="guardname">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <div class="input-box">
+                                                    <h6>Relationship</h6>
+                                                    <input type="text" placeholder="Enter Relationship" id="guardrel">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <div class="input-box">
+                                                    <h6>Phone number </h6>
+                                                    <input type="tel" placeholder="Enter Phone number" id="guardphone">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <div class="input-box">
+                                                    <h6>Email address</h6>
+                                                    <input type="email" placeholder="Enter Email address"
+                                                        id="guardmail">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <div class="input-box">
+                                                    <h6>Address Line 1</h6>
+                                                    <input type="text" placeholder="Address line 1" id="guardadd1">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <div class="input-box">
+                                                    <h6>Address Line 2</h6>
+                                                    <input type="text" placeholder="Address line 2" id="guardadd2">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <div class="input-box">
+                                                    <h6>City</h6>
+                                                    <input type="text" placeholder="Enter City" id="guardcity">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <div class="input-box">
+                                                    <h6>State</h6>
+                                                    <input type="text" placeholder="Enter State" id="guardstate">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <div class="input-box">
+                                                    <h6>Pincode</h6>
+                                                    <input type="number" placeholder="Enter Pincode" id="guardpin">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>-->
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Room Booking</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="input-items">
+                                        <div class="row gy-3">
+                                            <div class="col-xl-6">
+                                                <div class="input-box">
+                                                    <h6>Floor</h6>
+                                                    <input type="text" placeholder="Enter Floor number" id="floornum">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <div class="input-box">
+                                                    <h6>Room type</h6>
+                                                    <select class="js-example-basic-single w-100" name="state"
+                                                        id="roomtype">
+                                                        <option>1 Sharing</option>
+                                                        <option>2 Sharing</option>
+                                                        <option>3 Sharing</option>
+                                                        <option>4 Sharing</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <div class="input-box">
+                                                    <h6>Air conditioning</h6>
+                                                    <select class="js-example-basic-single w-100" name="state"
+                                                        id="aircond">
+                                                        <option>AC</option>
+                                                        <option>Non AC</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <div class="input-box">
+                                                    <h6>Room price</h6>
+                                                    <input type="number" placeholder="Enter Room price" id="roomprice">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <!--<div class="col-12">
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Hostel Videos</h5>
                                         </div>
                                         <div class="card-body">
-                                           
-
+                                            <div class="input-items">
+                                                <div class="row gy-3">
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Video Provider</h6>
+                                                            <select class="js-example-basic-single w-100" name="state">
+                                                                <option>Video</option>
+                                                                <option>Youtube</option>
+                                                                <option>Dailymotion</option>
+                                                                <option>Vimeo</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Video Link</h6>
+                                                            <input type="text" placeholder="Video Link">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>-->
@@ -862,7 +1042,7 @@
                                     </div>
                                 </div>-->
                         <div class="col-12">
-                            <button type="button" id="updateHostel" class="btn restaurant-button">Update</a>
+                            <button type="button" id="updateUser" class="btn restaurant-button">Update</button>
                         </div>
                         <!--<div class="col-12">
                                     <div class="card">
@@ -930,6 +1110,45 @@
     </div>
     <!-- page-wrapper End -->
 
+    <!--Add room Modal start-->
+    <div class="modal fade location-modal" id="room" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">
+                        <h5 class="fw-semibold">Add room details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <label>
+                        Room type:
+                    </label>
+                    <input type="text" name="roomtype" id="rtype" placeholder="Room type"><br>
+                    <label>
+                        No. of rooms:
+                    </label>
+                    <input type="text" name="roomtype" id="rnumber" placeholder="Room count"><br>
+                    <label>
+                        Room price:
+                    </label>
+                    <input type="text" name="roomtype" id="rprice" placeholder="Room price"><br>
+                    <label>
+                        Room facility:
+                    </label>
+                    <input type="text" name="roomtype" id="rfac" placeholder="Room facility"><br>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn gray-btn" data-bs-dismiss="modal">Close</button>
+                    <!--<button type="button" class="btn theme-btn mt-0" data-bs-dismiss="modal" id="addroom">Save</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Add room Modal End-->
+
+
     <!-- Modal Start -->
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -968,8 +1187,8 @@
     <!-- Sidebar js -->
     <script src="assets/js/config.js"></script>
 
-    <!-- Edit hostel register js -->
-    <script src="assets/js/edit-hostel.js" type="module" defer></script>
+    <!-- New hostel register js -->
+    <script src="assets/js/edit-users.js" type="module" defer></script>
 
     <!-- Firebase config js -->
     <script src="assets/js/firebase-config.js" type="module" defer></script>
