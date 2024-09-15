@@ -51,7 +51,14 @@ updateUser.addEventListener('click', async (e) => {
     var userState = document.getElementById("userstate").value;
     var userPin = document.getElementById("userpin").value;
     var password1 = document.getElementById("pwd1").value;
-    var password2 = document.getElementById("pwd2").value;
+    var guardName = document.getElementById("guardname").value;
+    var guardRelation = document.getElementById("guardrel").value;
+    var guardMail = document.getElementById("guardmail").value;
+    var guardPhone = document.getElementById("guardphone").value;
+    var guardAddress1 = document.getElementById("guardadd1").value;
+    var guardAddress2 = document.getElementById("guardadd2").value;
+    var guardState = document.getElementById("guardstate").value;
+    var guardPin = document.getElementById("guardpin").value;
     var roomType = document.getElementById("roomtype").value;
     var floorNumber = document.getElementById("floornum").value;
     var AirConditioning = document.getElementById("aircond").value;
@@ -69,11 +76,18 @@ updateUser.addEventListener('click', async (e) => {
         userState: userState,
         userPin: userPin,
         password1: password1,
-        password2: password2,
+        guardName: guardName,
+        guardRelation: guardRelation,
+        guardMail: guardMail,
+        guardPhone: guardPhone,
+        guardAddress1: guardAddress1,
+        guardAddress2: guardAddress2,
+        guardState: guardState,
+        guardPin: guardPin,
         roomType: roomType,
         floorNumber: floorNumber,
         AirConditioning: AirConditioning,
-        roomPrice:roomPrice
+        roomPrice: roomPrice
 
     })
         .then(() => {

@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const cardHeaderElem = document.createElement('div');
         cardHeaderElem.classList.add('card-header');
         cardHeaderElem.innerHTML = `<h5>Room ${roomNumber}</h5>
-        <button class="btn btn-danger btn-sm" id="delete-room-${roomNumber}">Delete Room</button>`;
+        <button class="btn restaurant-button" id="delete-room-${roomNumber}">Delete Room</button>`;
 
         const cardBodyElem = document.createElement('div');
         cardBodyElem.classList.add('card-body');
