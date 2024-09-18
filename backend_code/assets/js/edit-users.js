@@ -46,7 +46,6 @@ function prefillUserDetails() {
 // Ensure the form is prefilled when the page loads
 window.addEventListener('DOMContentLoaded', prefillUserDetails);
 
-
 updateUser.addEventListener('click', async (e) => {
     e.preventDefault();
 

@@ -194,6 +194,7 @@ const AddsingleRecord = (userName,userFullName,userGender,userPhone,userEmail,us
 
 }
 
+
 const AddAllRecords = () => {
     flag = 0;
     tbody.innerHTML = "";

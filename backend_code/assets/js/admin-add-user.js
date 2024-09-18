@@ -66,7 +66,7 @@ async function upload() {
         //image.append(imageURL);
     }
 }*/
-registerUser.addEventListener('click', async (e) => {
+registerUser.addEventListener('click', async (e) => { 
   var userName = document.getElementById("username").value;
   var userFullName = document.getElementById("userfullname").value;
   var userPhone = document.getElementById("userphone").value;
