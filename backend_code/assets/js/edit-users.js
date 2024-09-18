@@ -11,7 +11,7 @@ function prefillUserDetails() {
     const storedData = localStorage.getItem('userDetails');
     if (storedData) {
         const userData = JSON.parse(storedData);
-
+    
         // Prefill form fields with user data
         document.getElementById("username").value = userData[0] || "";
         document.getElementById("userfullname").value = userData[1] || "";
@@ -23,11 +23,21 @@ function prefillUserDetails() {
         document.getElementById("usercity").value = userData[7] || "";
         document.getElementById("userstate").value = userData[8] || "";
         document.getElementById("userpin").value = userData[9] || "";
-        document.getElementById("pwd1").value = userData[10] || ""; // Fix: Should be password2
-        document.getElementById("roomtype").value = userData[11] || "";
-        document.getElementById("floornum").value = userData[12] || "";
-        document.getElementById("aircond").value = userData[13] || "";
-        document.getElementById("roomprice").value = userData[14] || "";
+        document.getElementById("guardname").value = userData[10] || "";
+        document.getElementById("guardrel").value = userData[11] || "";
+        document.getElementById("guardphone").value = userData[12] || "";
+        document.getElementById("guardmail").value = userData[13] || "";
+        document.getElementById("guardadd1").value = userData[14] || "";
+        document.getElementById("guardadd2").value = userData[15] || "";
+        document.getElementById("guardcity").value = userData[16] || "";
+        document.getElementById("guardstate").value = userData[17] || "";
+        document.getElementById("guardpin").value = userData[18] || "";
+        document.getElementById("roomtype").value = userData[19] || "";
+        document.getElementById("floornum").value = userData[20] || "";
+        document.getElementById("aircond").value = userData[21] || "";
+        document.getElementById("roomprice").value = userData[22] || "";
+        console.log(userData);
+
     } else {
         console.log("No User data found in localStorage.");
     }
@@ -50,14 +60,14 @@ updateUser.addEventListener('click', async (e) => {
     var userCity = document.getElementById("usercity").value;
     var userState = document.getElementById("userstate").value;
     var userPin = document.getElementById("userpin").value;
-    var password1 = document.getElementById("pwd1").value;
     var guardName = document.getElementById("guardname").value;
     var guardRelation = document.getElementById("guardrel").value;
-    var guardMail = document.getElementById("guardmail").value;
+    var guardEmail = document.getElementById("guardmail").value;
     var guardPhone = document.getElementById("guardphone").value;
     var guardAddress1 = document.getElementById("guardadd1").value;
     var guardAddress2 = document.getElementById("guardadd2").value;
     var guardState = document.getElementById("guardstate").value;
+    var guardCity = document.getElementById("guardcity").value;
     var guardPin = document.getElementById("guardpin").value;
     var roomType = document.getElementById("roomtype").value;
     var floorNumber = document.getElementById("floornum").value;
@@ -75,15 +85,15 @@ updateUser.addEventListener('click', async (e) => {
         userCity: userCity,
         userState: userState,
         userPin: userPin,
-        password1: password1,
         guardName: guardName,
         guardRelation: guardRelation,
-        guardMail: guardMail,
+        guardEmail: guardEmail,
         guardPhone: guardPhone,
         guardAddress1: guardAddress1,
         guardAddress2: guardAddress2,
         guardState: guardState,
         guardPin: guardPin,
+        guardCity: guardCity,
         roomType: roomType,
         floorNumber: floorNumber,
         AirConditioning: AirConditioning,
