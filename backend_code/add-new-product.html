@@ -37,6 +37,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.min.js"></script>
 
+
+
     <!-- Linear Icon css -->
     <link rel="stylesheet" href="assets/css/linearicon.css">
 
@@ -567,7 +569,6 @@
                                                             <h6>Hostel Type</h6>
                                                             <select class="js-example-basic-single w-100" name="state"
                                                                 id="hosteltype">
-                                                                <option disabled>Static Menu</option>
                                                                 <option>Men</option>
                                                                 <option>Women</option>
                                                                 <option>Both</option>
@@ -751,7 +752,22 @@
                                     <h5>Menu details</h5>
                                 </div>
                                 <div class="card-body">
-                                    <button id="addWeekButton" class="btn btn-primary">Add week</button>
+                                    <div id="mealTimeContainer" class="container">
+                                        <div class="row gy-3">
+                                            <div class="col-xl-6" id="morningTimeContainer">
+                                                <label>Morning Timings</label>
+                                            </div>
+                                            <div class="col-xl-6" id="afternoonTimeContainer">
+                                                <label>Afternoon Timings</label>
+                                            </div>
+
+                                            <div class="col-xl-6" id="nightTimeContainer">
+                                                <label>Night Timings</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <button id="addWeekButton" class="btn btn-primary" style="margin-left: 25px";>Add week</button>
                                     <div id="weekContainer" class="mt-4"></div>
                                 </div>
                             </div>
@@ -790,29 +806,165 @@
                                 </div>
                             </div>
                         </div>
+
                         <!--<div class="col-12">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h5>Hostel Videos</h5>
+                                            <h5>Add Extra Food</h5>
                                         </div>
                                         <div class="card-body">
                                             <div class="input-items">
                                                 <div class="row gy-3">
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Video Provider</h6>
+                                                            <h6>Food Name</h6>
+                                                            <input type="text" placeholder="Enter Food Name">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Food Price</h6>
+                                                            <input type="text" placeholder="Enter Food Price (in Rs)">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>-->
+                        <!--<div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Product variations</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="input-items">
+                                                <div class="row gy-3">
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Option Name</h6>
                                                             <select class="js-example-basic-single w-100" name="state">
-                                                                <option>Video</option>
-                                                                <option>Youtube</option>
-                                                                <option>Dailymotion</option>
-                                                                <option>Vimeo</option>
+                                                                <option>Color</option>
+                                                                <option>Size</option>
+                                                                <option>Material</option>
+                                                                <option>Style</option>
                                                             </select>
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Video Link</h6>
-                                                            <input type="text" placeholder="Video Link">
+                                                            <h6>Option Value</h6>
+                                                            <input type="text" class="px-0"
+                                                                placeholder="Type tag & hit enter"
+                                                                data-role="tagsinput">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Shipping</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="input-items">
+                                                <div class="row gy-3">
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Weight (kg)</h6>
+                                                            <input type="number" placeholder="Weight">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Dimensions (cm)</h6>
+                                                            <select class="js-example-basic-single w-100" name="state">
+                                                                <option>Length</option>
+                                                                <option>Width</option>
+                                                                <option>Height</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Product Price</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="input-items">
+                                                <div class="row gy-3">
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>price</h6>
+                                                            <input type="number" placeholder="0">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Compare at price</h6>
+                                                            <input type="number" placeholder="0">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Product Inventory</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="input-items">
+                                                <div class="row gy-3">
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>SKU</h6>
+                                                            <input type="text">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Stock Status</h6>
+                                                            <select class="js-example-basic-single w-100" name="state">
+                                                                <option>In Stock</option>
+                                                                <option>Out Of Stock</option>
+                                                                <option>On Backorder</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Link Products</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="input-items">
+                                                <div class="row gy-3">
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Upsells</h6>
+                                                            <input type="text" name="text">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Cross-Sells</h6>
+                                                            <input type="text" name="text">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -821,144 +973,9 @@
                                     </div>
                                 </div>-->
                         <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5>Add Extra Items (Food) </h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="input-items">
-                                        <div class="row gy-3">
-                                            <div class="col-xl-6">
-                                                <div class="input-box">
-                                                    <h6>Food Name</h6>
-                                                    <input type="text" placeholder="Enter food name" id="extraFoodName">
-                                                </div>
-                                            </div>
-                                            <div class="col-xl-6">
-                                                <div class="input-box">
-                                                    <h6>Food Price</h6>
-                                                    <input type="number" placeholder="Enter food price">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <button type="button" id="registerHostel" class="btn restaurant-button">Save</button>
                         </div>
-                    </div>
-                </div>
-                <!--<div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5>Shipping</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="input-items">
-                                <div class="row gy-3">
-                                    <div class="col-xl-6">
-                                        <div class="input-box">
-                                            <h6>Weight (kg)</h6>
-                                            <input type="number" placeholder="Weight">
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <div class="input-box">
-                                            <h6>Dimensions (cm)</h6>
-                                            <select class="js-example-basic-single w-100" name="state">
-                                                <option>Length</option>
-                                                <option>Width</option>
-                                                <option>Height</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5>Product Price</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="input-items">
-                                <div class="row gy-3">
-                                    <div class="col-xl-6">
-                                        <div class="input-box">
-                                            <h6>price</h6>
-                                            <input type="number" placeholder="0">
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <div class="input-box">
-                                            <h6>Compare at price</h6>
-                                            <input type="number" placeholder="0">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5>Product Inventory</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="input-items">
-                                <div class="row gy-3">
-                                    <div class="col-xl-6">
-                                        <div class="input-box">
-                                            <h6>SKU</h6>
-                                            <input type="text">
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <div class="input-box">
-                                            <h6>Stock Status</h6>
-                                            <select class="js-example-basic-single w-100" name="state">
-                                                <option>In Stock</option>
-                                                <option>Out Of Stock</option>
-                                                <option>On Backorder</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5>Link Products</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="input-items">
-                                <div class="row gy-3">
-                                    <div class="col-xl-6">
-                                        <div class="input-box">
-                                            <h6>Upsells</h6>
-                                            <input type="text" name="text">
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-6">
-                                        <div class="input-box">
-                                            <h6>Cross-Sells</h6>
-                                            <input type="text" name="text">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>-->
-                <div class="col-12">
-                    <button type="button" id="registerHostel" class="btn restaurant-button">Save</button>
-                </div>
-                <!--<div class="col-12">
+                        <!--<div class="col-12">
                                     <div class="card">
                                         <div class="card-header">
                                             <h5>Search engine listing</h5>
@@ -1000,23 +1017,23 @@
                                         </div>
                                     </div>
                                 </div>-->
-            </div>
-        </div>
-    </div>
-    </div>
-    <!-- New Product Add End -->
-
-    <!-- footer Start -->
-    <div class="container-fluid">
-        <footer class="footer">
-            <div class="row">
-                <div class="col-md-12 footer-copyright text-center">
-                    <p class="mb-0">Copyright 2024 ©Perikitis</p>
+                    </div>
                 </div>
             </div>
-        </footer>
-    </div>
-    <!-- footer En -->
+        </div>
+        <!-- New Product Add End -->
+
+        <!-- footer Start -->
+        <div class="container-fluid">
+            <footer class="footer">
+                <div class="row">
+                    <div class="col-md-12 footer-copyright text-center">
+                        <p class="mb-0">Copyright 2024 ©Perikitis</p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        <!-- footer En -->
     </div>
     <!-- Container-fluid End -->
     </div>
@@ -1111,8 +1128,8 @@
     <script src="assets/js/bootstrap-tagsinput.min.js"></script>
     <script src="assets/js/sidebar-menu.js"></script>
 
-    <!-- customizer js
-    <script src="assets/js/customizer.js"></script>-->
+    <!-- customizer js -->
+    <script src="assets/js/customizer.js"></script>
 
     <!--Dropzon js -->
     <script src="assets/js/dropzone/dropzone.js"></script>

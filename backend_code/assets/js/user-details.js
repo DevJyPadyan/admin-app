@@ -39,46 +39,66 @@ function view() {
             var rowId = this.parentNode.rowIndex;
 
             var rowsNotSelected = table.getElementsByTagName('tr');
+            
             for (var row = 0; row < rowsNotSelected.length; row++) {
                 rowsNotSelected[row].style.backgroundColor = "";
                 rowsNotSelected[row].classList.remove('selected');
             }
             var rowSelected = table.getElementsByTagName('tr')[rowId];
+
             rowSelected.style.backgroundColor = "orange";
             rowSelected.className += " selected";
             var userName = rowSelected.cells[1].innerHTML;
             var userFullName = rowSelected.cells[2].innerHTML;
             var userGender = rowSelected.cells[3].innerHTML;
-            var userEmail = rowSelected.cells[4].innerHTML;
-            var userAddress1 = rowSelected.cells[5].innerHTML;
-            var userAddress2 = rowSelected.cells[6].innerHTML;
-            var userCity = rowSelected.cells[7].innerHTML;
-            var userState=rowSelected.cells[8].innerHTML;
-            var userPin = rowSelected.cells[9].innerHTML;
-            var password1 = rowSelected.cells[10].innerHTML;
-            var password2 = rowSelected.cells[11].innerHTML;
-            var roomType = rowSelected.cells[12].innerHTML;
-            var floorNumber = rowSelected.cells[13].innerHTML;
-            var AirConditioning = rowSelected.cells[14].innerHTML;
-            var roomPrice = rowSelected.cells[15].innerHTML;
+            var userPhone = rowSelected.cells[4].innerHTML;  // Corrected this to fetch phone
+            var userEmail = rowSelected.cells[5].innerHTML;  // Corrected this to fetch email
+            var userAddress1 = rowSelected.cells[6].innerHTML;
+            var userAddress2 = rowSelected.cells[7].innerHTML;
+            var userCity = rowSelected.cells[8].innerHTML;
+            var userState = rowSelected.cells[9].innerHTML;
+            var userPin = rowSelected.cells[10].innerHTML;
+
+            var guardName = rowSelected.cells[11].innerHTML;
+            var guardRelation = rowSelected.cells[12].innerHTML;
+            var guardPhone = rowSelected.cells[13].innerHTML;
+            var guardEmail = rowSelected.cells[14].innerHTML;
+            var guardAddress1 = rowSelected.cells[15].innerHTML;
+            var guardAddress2 = rowSelected.cells[16].innerHTML;
+            var guardCity = rowSelected.cells[17].innerHTML;
+            var guardState = rowSelected.cells[18].innerHTML;
+            var guardPin = rowSelected.cells[19].innerHTML;
+
+            var roomType = rowSelected.cells[20].innerHTML;
+            var floorNumber = rowSelected.cells[21].innerHTML;
+            var AirConditioning = rowSelected.cells[22].innerHTML;
+            var roomPrice = rowSelected.cells[23].innerHTML;
+
             var data = [];
             data.push(userName);
             data.push(userFullName);
             data.push(userGender);
+            data.push(userPhone);
             data.push(userEmail);
             data.push(userAddress1);
             data.push(userAddress2);
             data.push(userCity);
             data.push(userState);
             data.push(userPin);
-            data.push(password1);
-            data.push(password2);
+            data.push(guardName);
+            data.push(guardRelation);
+            data.push(guardPhone);
+            data.push(guardEmail);
+            data.push(guardAddress1);
+            data.push(guardAddress2);
+            data.push(guardCity);
+            data.push(guardState);
+            data.push(guardPin);
             data.push(roomType);
             data.push(floorNumber);
             data.push(AirConditioning);
             data.push(roomPrice);
             localStorage.setItem('userDetails', JSON.stringify(data));
-            console.log(data);
             window.location.href = 'edit-users.html';
 
         }
@@ -101,9 +121,9 @@ const SelectAlldataReal = () => {
 }
 
 //Function which is used to append the data from firebase database to table
-const AddsingleRecord = (userName,userFullName,userGender,userPhone,userEmail,userAddress1,userAddress2,userCity,userState,userPin,password1,roomType,floorNumber,
-    AirConditioning,roomPrice
-) => {
+const AddsingleRecord = (userName,userFullName,userGender,userPhone,userEmail,userAddress1,userAddress2,userCity,userState,userPin,
+    guardName,guardRelation,guardPhone,guardEmail,guardAddress1,guardAddress2,guardCity,guardState,guardPin,roomType,floorNumber,
+    AirConditioning,roomPrice) => {
 
     var trow = document.createElement('tr');
     var td1 = document.createElement('td');
@@ -123,6 +143,15 @@ const AddsingleRecord = (userName,userFullName,userGender,userPhone,userEmail,us
     var td15 = document.createElement('td');
     var td16 = document.createElement('td');
     var td17 = document.createElement('td');
+    var td18 = document.createElement('td');
+    var td19 = document.createElement('td');
+    var td20 = document.createElement('td');
+    var td21 = document.createElement('td');
+    var td22 = document.createElement('td');
+    var td23 = document.createElement('td');
+    var td24 = document.createElement('td');
+    var td25 = document.createElement('td');
+
 
 
     flag = flag + 1;
@@ -137,11 +166,19 @@ const AddsingleRecord = (userName,userFullName,userGender,userPhone,userEmail,us
     td9.innerHTML = userCity;
     td10.innerHTML = userState;
     td11.innerHTML = userPin;
-    td12.innerHTML = password1;
-    td13.innerHTML = roomType;
-    td14.innerHTML = floorNumber;
-    td15.innerHTML = AirConditioning;
-    td16.innerHTML = roomPrice;
+    td12.innerHTML = guardName;
+    td13.innerHTML = guardRelation;
+    td14.innerHTML = guardPhone;
+    td15.innerHTML = guardEmail;
+    td16.innerHTML = guardAddress1;
+    td17.innerHTML = guardAddress2;
+    td18.innerHTML = guardCity;
+    td19.innerHTML = guardState;
+    td20.innerHTML = guardPin;
+    td21.innerHTML = roomType;
+    td22.innerHTML = floorNumber;
+    td23.innerHTML = AirConditioning;
+    td24.innerHTML = roomPrice;
 
     var removeButton = document.createElement('button');
     removeButton.type = 'button';
@@ -150,9 +187,9 @@ const AddsingleRecord = (userName,userFullName,userGender,userPhone,userEmail,us
         event.stopPropagation(); // Prevent row click event
         removeHostel(event, userName);
     };
-    td17.appendChild(removeButton);
+    td25.appendChild(removeButton);
 
-    trow.append(td1, td2, td3, td4, td5, td6, td7, td8, td9, td10, td11, td12, td13, td14,td15,td16,td17);
+    trow.append(td1, td2, td3, td4, td5, td6, td7, td8, td9, td10, td11, td12, td13, td14,td15,td16,td17,td18,td19,td20,td21,td22,td23,td24,td25);
     tbody.append(trow);
 
 }
@@ -161,7 +198,8 @@ const AddAllRecords = () => {
     flag = 0;
     tbody.innerHTML = "";
     userList.forEach(u => {
-        AddsingleRecord(u.userName,u.userFullName,u.userGender,u.userPhone,u.userEmail,u.userAddress1,u.userAddress2,u.userCity,u.userState,u.userPin,u.password1,u.roomType,u.floorNumber,
+        AddsingleRecord(u.userName,u.userFullName,u.userGender,u.userPhone,u.userEmail,u.userAddress1,u.userAddress2,u.userCity,u.userState,u.userPin,
+            u.guardName,u.guardRelation,u.guardPhone,u.guardEmail,u.guardAddress1,u.guardAddress2,u.guardCity,u.guardState,u.guardPin,u.roomType,u.floorNumber,
             u.AirConditioning,u.roomPrice)
     })
     view();
