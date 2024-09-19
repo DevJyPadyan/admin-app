@@ -43,31 +43,6 @@ document.getElementById("uploadImage").addEventListener("click", async function 
     alert("No file chosen");
   }
 });
-
-/*Single image upload*/
-/*let hostelimg;
-uploadImage.addEventListener('click', (e) => {
-
-    upload();
-});
-async function upload() {
-    const fileInput = document.getElementById("files");
-    const file = fileInput.files[0];
-
-    if (file) {
-        const storageRef = ref2(storage, `uploaded_images/${file.name}`);
-        await uploadBytes(storageRef, file);
-
-        const imageURL = await getDownloadURL(storageRef);
-        const imagePreview = document.getElementById("imagePreview");
-        imagePreview.src = imageURL;
-        //console.log(imageURL);
-        hostelimg = imageURL;
-        sessionStorage.setItem('hostelurl', hostelimg);
-        console.log(hostelimg);
-        //image.append(imageURL);
-    }
-}*/
 registerUser.addEventListener('click', async (e) => { 
   var userName = document.getElementById("username").value;
   var userFullName = document.getElementById("userfullname").value;
@@ -96,42 +71,54 @@ registerUser.addEventListener('click', async (e) => {
   var roomPrice = document.getElementById("roomprice").value;
 
 
-  set(ref(db, "User details/" + userName + '/'), {
+  // Reference to user data
+  const userRef = ref(db, "User details/" + userName + '/');
+  
+  // Fetch existing proof data
+  try {
+    const snapshot = await get(userRef);
+    let existingData = snapshot.exists() ? snapshot.val() : {};
 
-  userName: userName,
-  userFullName: userFullName,
-  userPhone: userPhone,
-  userGender: userGender,
-  userEmail: userEmail,
-  userAddress1: userAddress1,
-  userAddress2: userAddress2,
-  userCity: userCity,
-  userState: userState,
-  userPin: userPin,
-  password1: password1,
-  password2: password2,
-  guardName: guardName,
-  guardRelation: guardRelation,
-  guardEmail: guardEmail,
-  guardPhone: guardPhone,
-  guardAddress1: guardAddress1,
-  guardAddress2: guardAddress2,
-  guardState: guardState,
-  guardCity: guardCity,
-  guardPin:guardPin,
-  roomType: roomType,
-  floorNumber: floorNumber,
-  AirConditioning: AirConditioning,
-  roomPrice:roomPrice
+    // If there is existing proofData, merge it with new user details
+    let newUserDetails = {
+      userName: userName,
+      userFullName: userFullName,
+      userPhone: userPhone,
+      userGender: userGender,
+      userEmail: userEmail,
+      userAddress1: userAddress1,
+      userAddress2: userAddress2,
+      userCity: userCity,
+      userState: userState,
+      userPin: userPin,
+      password1: password1,
+      password2: password2,
+      guardName: guardName,
+      guardRelation: guardRelation,
+      guardEmail: guardEmail,
+      guardPhone: guardPhone,
+      guardAddress1: guardAddress1,
+      guardAddress2: guardAddress2,
+      guardState: guardState,
+      guardCity: guardCity,
+      guardPin: guardPin,
+      roomType: roomType,
+      floorNumber: floorNumber,
+      AirConditioning: AirConditioning,
+      roomPrice: roomPrice
+    };
 
-    
-  })
-    .then(() => {
-      //console.log(db, "Hostel details/" + hname)
-      alert("User details added successfully");
-      window.location.href = "././users.html";
-    })
-    .catch((error) => {
-      alert(error);
-    });
+    // Merge with existing proofData if available
+    if (existingData.proofData) {
+      newUserDetails.proofData = existingData.proofData;
+    }
+
+    // Update the user details along with proofData
+    await set(userRef, newUserDetails);
+
+    alert("User details added successfully");
+    window.location.href = "././users.html";
+  } catch (error) {
+    alert("Error fetching or saving user details: " + error.message);
+  }
 });
