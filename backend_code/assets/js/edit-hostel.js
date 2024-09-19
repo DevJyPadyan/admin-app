@@ -242,6 +242,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const weekContainer = document.getElementById("weekContainer");
 
 
+   
     getMenuDetailsButton.addEventListener('click', async () => {
         const hostelName = document.getElementById("hostelname").value; // Assuming hostel name is prefilled
         const weeksRef = ref(db, `Hostel details/${hostelName}/weeks`);
@@ -472,7 +473,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return colElem;
     }
-
     // Prefill hostel details on page load
     window.addEventListener('load', prefillHostelDetails);
 
