@@ -86,8 +86,8 @@ const roomContainer = document.getElementById("room-container");
 
 document.addEventListener('DOMContentLoaded', function () {
     let roomCount = 0; // This will track the number of rooms
- 
-    addroom.addEventListener('click', async() => {
+
+    addroom.addEventListener('click', async () => {
         try {
             var hostelName = document.getElementById("hostelname").value;
             const roomsRef = ref(db, `Hostel details/${hostelName}/rooms`);
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (error) {
             console.error('Error fetching room count:', error);
         }
-       
+
     });
 
     function addRoomForm(roomNumber, roomData = {}) {
@@ -118,8 +118,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const cardHeaderElem = document.createElement('div');
         cardHeaderElem.classList.add('card-header');
-        cardHeaderElem.innerHTML = `<h5>Room ${roomNumber}</h5>
-        <button class="btn restaurant-button" id="delete-room-${roomNumber}">Delete Room</button>`;
+        cardHeaderElem.innerHTML = `<h5>Room ${roomNumber}</h5>`;
+        const removeRoomBtn = document.createElement('span');
+        removeRoomBtn.className = 'btn restaurant-button';
+        removeRoomBtn.innerHTML = 'Remove Room';
+        removeRoomBtn.onclick = () => {
+            cardElem.remove();
+        };
+        cardHeaderElem.appendChild(removeRoomBtn);
 
         const cardBodyElem = document.createElement('div');
         cardBodyElem.classList.add('card-body');
@@ -244,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const weekContainer = document.getElementById("weekContainer");
 
 
-   
+
     getMenuDetailsButton.addEventListener('click', async () => {
         const hostelName = document.getElementById("hostelname").value; // Assuming hostel name is prefilled
         const weeksRef = ref(db, `Hostel details/${hostelName}/weeks`);
@@ -540,7 +546,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const cardHeaderElem = document.createElement('div');
         cardHeaderElem.classList.add('card-header');
         cardHeaderElem.innerHTML = `<h5>Room ${roomNumber}</h5>
-        <button class="btn btn-danger btn-sm" id="delete-room-${roomNumber}">Delete Room</button>`;
+          <button class="btn restaurant-button" id="delete-room-${roomNumber}">Delete Room</button>`;
 
         const cardBodyElem = document.createElement('div');
         cardBodyElem.classList.add('card-body');
@@ -589,7 +595,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (confirm('Are you sure you want to delete this room?')) {
                 try {
                     const hostelName = document.getElementById("hostelname").value;
-                    const roomIndex=roomNumber-1;
+                    const roomIndex = roomNumber - 1;
 
                     // Log the path to check if it's correct
                     const roomPath = `Hostel details/${hostelName}/rooms/${roomIndex}`;
@@ -725,7 +731,7 @@ updateHostel.addEventListener('click', async (e) => {
     let rooms = [];
 
     const roomElements = document.querySelectorAll('.card[id^="room-"]');
-    
+
     for (let roomElem of roomElements) {
         const roomNumber = roomElem.id.split('-')[1];
         const floor = document.getElementById(`floor-${roomNumber}`).value;
@@ -762,39 +768,39 @@ updateHostel.addEventListener('click', async (e) => {
     }
 
 
-/*    for (let i = 1; i <= roomCount; i++) {
-        const floor = document.getElementById(`floor-${i}`).value;
-        const roomType = document.getElementById(`roomType-${i}`).value;
-        const roomCountVal = document.getElementById(`roomCount-${i}`).value;
-        const amenities = document.getElementById(`amenities-${i}`).value;
-        const ac = document.getElementById(`ac-${i}`).value;
-        const bathroom = document.getElementById(`bathroom-${i}`).value;
-        const price = document.getElementById(`price-${i}`).value;
-
-        const imageInput = document.getElementById(`roomImage-${i}`);
-        const files = imageInput.files;
-        let imagelink1 = [];
-
-        if (files.length != 0) {
-            for (let j = 0; j < files.length; j++) {
-                const storageRef = ref2(storage, 'images/' + hname + '/room-' + i + '/' + files[j].name);
-                await uploadBytes(storageRef, files[j]);
-                const imageUrl = await getDownloadURL(storageRef);
-                imagelink1.push(imageUrl);
+    /*    for (let i = 1; i <= roomCount; i++) {
+            const floor = document.getElementById(`floor-${i}`).value;
+            const roomType = document.getElementById(`roomType-${i}`).value;
+            const roomCountVal = document.getElementById(`roomCount-${i}`).value;
+            const amenities = document.getElementById(`amenities-${i}`).value;
+            const ac = document.getElementById(`ac-${i}`).value;
+            const bathroom = document.getElementById(`bathroom-${i}`).value;
+            const price = document.getElementById(`price-${i}`).value;
+    
+            const imageInput = document.getElementById(`roomImage-${i}`);
+            const files = imageInput.files;
+            let imagelink1 = [];
+    
+            if (files.length != 0) {
+                for (let j = 0; j < files.length; j++) {
+                    const storageRef = ref2(storage, 'images/' + hname + '/room-' + i + '/' + files[j].name);
+                    await uploadBytes(storageRef, files[j]);
+                    const imageUrl = await getDownloadURL(storageRef);
+                    imagelink1.push(imageUrl);
+                }
             }
-        }
-
-        rooms.push({
-            floor: floor,
-            roomType: roomType,
-            roomCount: roomCountVal,
-            amenities: amenities,
-            ac: ac,
-            bathroom: bathroom,
-            price: price,
-            images: imagelink1
-        });
-    }*/
+    
+            rooms.push({
+                floor: floor,
+                roomType: roomType,
+                roomCount: roomCountVal,
+                amenities: amenities,
+                ac: ac,
+                bathroom: bathroom,
+                price: price,
+                images: imagelink1
+            });
+        }*/
     let weeks = {}; // Collect week details
     const weekCount = document.querySelectorAll('.card[id^="week-"]').length;
 
