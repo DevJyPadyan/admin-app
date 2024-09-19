@@ -6,6 +6,38 @@ import { firebaseConfig } from "./firebase-config.js";
 const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 const storage = getStorage(app);
+var files = [];
+let imagelink = [];
+document.getElementById("files").addEventListener("change", function (e) {
+  files = e.target.files;
+  for (let i = 0; i < files.length; i++) {
+  }
+});
+
+document.getElementById("uploadImage").addEventListener("click", async function () {
+
+  var userName = document.getElementById("username").value;
+  //checks if files are selected
+  if (files.length != 0) {
+    //Loops through all the selected files
+    for (let i = 0; i < files.length; i++) {
+      const storageRef = ref2(storage, 'userProof/' + userName + '/govtProof/' + files[i].name);
+      const upload = await uploadBytes(storageRef, files[i]);
+      const imageUrl = await getDownloadURL(storageRef);
+      imagelink.push(imageUrl);
+    }
+
+    const imageRef = ref(db, 'User details/' + userName + '/proofData/' + '/');
+    update(imageRef, imagelink)
+      .then(() => {
+        alert("Image is uploading.. Give OK after 5 secs");
+        console.log('Image URLs have been successfully stored!');
+      })
+
+  } else {
+    alert("No file chosen");
+  }
+});
 
 function prefillUserDetails() {
     const storedData = localStorage.getItem('userDetails');
