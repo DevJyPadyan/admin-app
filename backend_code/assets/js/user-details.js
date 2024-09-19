@@ -194,16 +194,39 @@ const AddsingleRecord = (userName,userFullName,userGender,userPhone,userEmail,us
 
 }
 
-
+// Updated function to retrieve both user and booking records
 const AddAllRecords = () => {
     flag = 0;
     tbody.innerHTML = "";
     userList.forEach(u => {
-        AddsingleRecord(u.userName,u.userFullName,u.userGender,u.userPhone,u.userEmail,u.userAddress1,u.userAddress2,u.userCity,u.userState,u.userPin,
-            u.guardName,u.guardRelation,u.guardPhone,u.guardEmail,u.guardAddress1,u.guardAddress2,u.guardCity,u.guardState,u.guardPin,u.roomType,u.floorNumber,
-            u.AirConditioning,u.roomPrice)
-    })
+        // Fetch bookings details separately
+        const userRef = ref(db, "User details/" + u.userName + "/Bookings");
+        get(userRef).then((snapshot) => {
+            if (snapshot.exists()) {
+                const bookings = snapshot.val();
+                AddsingleRecord(
+                    u.userName, u.userFullName, u.userGender, u.userPhone, u.userEmail,
+                    u.userAddress1, u.userAddress2, u.userCity, u.userState, u.userPin,
+                    u.guardName, u.guardRelation, u.guardPhone, u.guardEmail,
+                    u.guardAddress1, u.guardAddress2, u.guardCity, u.guardState, u.guardPin,
+                    bookings.roomType, bookings.floor, bookings.airConditioning, bookings.roomPrice
+                );
+            } else {
+                // If no bookings exist, pass empty values for room details
+                AddsingleRecord(
+                    u.userName, u.userFullName, u.userGender, u.userPhone, u.userEmail,
+                    u.userAddress1, u.userAddress2, u.userCity, u.userState, u.userPin,
+                    u.guardName, u.guardRelation, u.guardPhone, u.guardEmail,
+                    u.guardAddress1, u.guardAddress2, u.guardCity, u.guardState, u.guardPin,
+                    "", "", "", "" // No booking details
+                );
+            }
+        }).catch((error) => {
+            console.error(error);
+        });
+    });
     view();
 }
 
+// Trigger data fetching when the window is loaded
 window.addEventListener('load', SelectAlldataReal);
