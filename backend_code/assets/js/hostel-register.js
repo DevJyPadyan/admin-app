@@ -320,7 +320,9 @@ document.getElementById("uploadImage").addEventListener("click", async function 
     const imageRef = ref(db, 'Hostel details/' + hname + '/ImageData/' + '/');
     set(imageRef, imagelink)
       .then(() => {
-        alert("Image is uploading.. Give OK after 5 secs");
+        alert("To start uploading, please click OK");
+        alert("Image is uploading, please click OK");
+        alert("Image is uploaded");
         console.log('Image URLs have been successfully stored!');
       })
 
