@@ -2,7 +2,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getDatabase, ref, get, set, onValue, child, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"
 import { firebaseConfig } from "./firebase-config.js";
 
-
 const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 
@@ -37,22 +36,32 @@ function view() {
         cell.onclick = function () {
             // Get the row id where the cell exists
             var rowId = this.parentNode.rowIndex;
-
+            var table = document.getElementById('table_id');
             var rowsNotSelected = table.getElementsByTagName('tr');
             
+            // Unselect previous rows
             for (var row = 0; row < rowsNotSelected.length; row++) {
                 rowsNotSelected[row].style.backgroundColor = "";
                 rowsNotSelected[row].classList.remove('selected');
             }
-            var rowSelected = table.getElementsByTagName('tr')[rowId];
 
+            // Select the clicked row
+            var rowSelected = table.getElementsByTagName('tr')[rowId];
             rowSelected.style.backgroundColor = "orange";
             rowSelected.className += " selected";
+
+            // Get total number of cells
+            var totalCells = rowSelected.cells.length;
+
+            // Safely access the paymentComplete field
+            var paymentComplete = totalCells > 25 ? rowSelected.cells[25].innerHTML : 'N/A';
+
+            // Fetch other fields (ensure indices match)
             var userName = rowSelected.cells[1].innerHTML;
             var userFullName = rowSelected.cells[2].innerHTML;
             var userGender = rowSelected.cells[3].innerHTML;
-            var userPhone = rowSelected.cells[4].innerHTML;  // Corrected this to fetch phone
-            var userEmail = rowSelected.cells[5].innerHTML;  // Corrected this to fetch email
+            var userPhone = rowSelected.cells[4].innerHTML;  
+            var userEmail = rowSelected.cells[5].innerHTML;
             var userAddress1 = rowSelected.cells[6].innerHTML;
             var userAddress2 = rowSelected.cells[7].innerHTML;
             var userCity = rowSelected.cells[8].innerHTML;
@@ -74,8 +83,8 @@ function view() {
             var AirConditioning = rowSelected.cells[22].innerHTML;
             var roomPrice = rowSelected.cells[23].innerHTML;
             var hostelName = rowSelected.cells[24].innerHTML;
-            var paymentComplete =rowSelected.cells[25].innerHTML;
 
+            // Store data in localStorage
             var data = [];
             data.push(userName);
             data.push(userFullName);
@@ -102,9 +111,10 @@ function view() {
             data.push(roomPrice);
             data.push(hostelName);
             data.push(paymentComplete);
-            localStorage.setItem('userDetails', JSON.stringify(data));
-            window.location.href = 'edit-users.html';
 
+            localStorage.setItem('userDetails', JSON.stringify(data));
+            console.log(data);
+            //window.location.href="././edit-user.html";
         }
     }
 }
@@ -113,15 +123,12 @@ function view() {
 const SelectAlldataReal = () => {
     const dbref = ref(db, 'User details');
     onValue(dbref, (snapshot) => {
-
         userList = [];
-        snapshot.forEach(u=> {
+        snapshot.forEach(u => {
             userList.push(u.val());
         })
         AddAllRecords();
-
-    })
-
+    });
 }
 
 function loadOrderDetails(user) {
@@ -145,38 +152,38 @@ const AddsingleRecord = (user, bookingDetails) => {
     // User details
     var cells = [
         flag,
-        user.userName,
-        user.userFullName,
-        user.userGender,
-        user.userPhone,
-        user.userEmail,
-        user.userAddress1,
-        user.userAddress2,
-        user.userCity,
-        user.userState,
-        user.userPin,
-        user.guardName,
-        user.guardRelation,
-        user.guardPhone,
-        user.guardEmail,
-        user.guardAddress1,
-        user.guardAddress2,
-        user.guardCity,
-        user.guardState,
-        user.guardPin,
+        user.userName || 'N/A',
+        user.userFullName || 'N/A',
+        user.userGender || 'N/A',
+        user.userPhone || 'N/A',
+        user.userEmail || 'N/A',
+        user.userAddress1 || 'N/A',
+        user.userAddress2 || 'N/A',
+        user.userCity || 'N/A',
+        user.userState || 'N/A',
+        user.userPin || 'N/A',
+        user.guardName || 'N/A',
+        user.guardRelation || 'N/A',
+        user.guardPhone || 'N/A',
+        user.guardEmail || 'N/A',
+        user.guardAddress1 || 'N/A',
+        user.guardAddress2 || 'N/A',
+        user.guardCity || 'N/A',
+        user.guardState || 'N/A',
+        user.guardPin || 'N/A'
     ];
 
     // Booking details
     if (bookingDetails) {
         cells.push(
-            bookingDetails.roomType|| 'N/A',
+            bookingDetails.roomType || 'N/A',
             bookingDetails.floor || 'N/A',
             bookingDetails.ac || 'N/A',
             bookingDetails.totalAmount || 'N/A',
-            bookingDetails.paymentComplete || 'N/A',
+            bookingDetails.paymentComplete || 'N/A'
         );
     } else {
-        cells.push('N/A', 'N/A', 'N/A', 'N/A');
+        cells.push('N/A', 'N/A', 'N/A', 'N/A', 'N/A');
     }
 
     cells.forEach(data => {
@@ -185,7 +192,7 @@ const AddsingleRecord = (user, bookingDetails) => {
         trow.appendChild(td);
     });
 
-    // Remove button
+    // Remove button - append before the paymentComplete cell
     var removeButton = document.createElement('button');
     removeButton.type = 'button';
     removeButton.innerHTML = '<i class="fas fa-trash"></i>';
@@ -193,12 +200,15 @@ const AddsingleRecord = (user, bookingDetails) => {
         event.stopPropagation(); // Prevent row click event
         removeHostel(event, user.userName);
     };
-    var td25 = document.createElement('td');
-    td25.appendChild(removeButton);
-    trow.appendChild(td25);
+
+    var tdRemoveButton = document.createElement('td');
+    tdRemoveButton.appendChild(removeButton);
+    
+    // Append the delete button at the end
+    trow.appendChild(tdRemoveButton);
 
     tbody.append(trow);
-}
+};
 
 // Function to add all records
 const AddAllRecords = () => {
