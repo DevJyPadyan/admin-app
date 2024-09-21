@@ -827,11 +827,47 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
+                                    <h5>Available Rooms</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="roomContainer"> 
+                                        <table id="roomTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Room Id</th>
+                                                    <th>Room Type</th>
+                                                    <th>Floor</th>
+                                                    <th>AC</th>
+                                                    <th>Amenities</th>
+                                                    <th>Bathroom</th>
+                                                    <th>Room Count</th>
+                                                    <th>Room Price</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Room details will be injected here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <br>
+                                </div>
+                            </div>
+                        </div>                        
+                    
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
                                     <h5>Room Booking</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="input-items">
                                         <div class="row gy-3">
+                                            <div class="col-xl-6">
+                                                <div class="input-box">
+                                                    <h6>Hostel Name</h6>
+                                                    <input type="text" placeholder="Enter Hostel Name" id="hostelName">
+                                                </div>
+                                            </div>
                                             <div class="col-xl-6">
                                                 <div class="input-box">
                                                     <h6>Floor</h6>
@@ -843,10 +879,10 @@
                                                     <h6>Room type</h6>
                                                     <select class="js-example-basic-single w-100" name="state"
                                                         id="roomtype">
-                                                        <option>1 Sharing</option>
-                                                        <option>2 Sharing</option>
-                                                        <option>3 Sharing</option>
-                                                        <option>4 Sharing</option>
+                                                        <option>1 sharing</option>
+                                                        <option>2 sharing</option>
+                                                        <option>3 sharing</option>
+                                                        <option>4 sharing</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -855,8 +891,8 @@
                                                     <h6>Air conditioning</h6>
                                                     <select class="js-example-basic-single w-100" name="state"
                                                         id="aircond">
-                                                        <option>AC</option>
-                                                        <option>Non AC</option>
+                                                        <option>ac</option>
+                                                        <option>non-ac</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -864,6 +900,12 @@
                                                 <div class="input-box">
                                                     <h6>Room price</h6>
                                                     <input type="number" placeholder="Enter Room price" id="roomprice">
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-6">
+                                                <div class="input-box">
+                                                    <h6>Payment Status</h6>
+                                                    <input type="text" placeholder="Booking Status" value="Yes" id="paymentComplete">
                                                 </div>
                                             </div>
                                         </div>
