@@ -112,13 +112,25 @@ function view() {
             data.push(hostelName);
             data.push(paymentComplete);
 
-            localStorage.setItem('userDetails', JSON.stringify(data));
-            console.log(data);
-            //window.location.href="././edit-user.html";
+            const dbRef = ref(db, `User details/${userName}/password1`);
+            get(dbRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const password1 = snapshot.val();  // Password fetched from Firebase
+
+                    // Add the password to localStorage
+                    data.push(password1);
+                    localStorage.setItem('userDetails', JSON.stringify(data));
+                    window.location.href="././edit-users.html";
+                    console.log("User details with password:", data);
+                } else {
+                    console.log("No password found for user: " + userName);
+                }
+            }).catch((error) => {
+                console.error("Error fetching password: ", error);
+            });
         }
     }
 }
-
 //Function which is used to fetch details from firebase database
 const SelectAlldataReal = () => {
     const dbref = ref(db, 'User details');
