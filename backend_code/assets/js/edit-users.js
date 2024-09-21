@@ -91,7 +91,7 @@ async function prefillUserDetails() {
     document.getElementById("aircond").value = userData[21] || "";
     document.getElementById("roomprice").value = userData[22] || "";
     document.getElementById("paymentComplete").value = userData[23] || ""; // Fix here
-    console.log("Payment Complete Value:", document.getElementById("paymentComplete").value);
+    document.getElementById("password1").value = userData[25] || ""; 
 
     const userName = userData[0]; // Assuming the username is the first element in userData
     const bookingsRef = ref(db, "User details/" + userName + '/Bookings/');
@@ -144,6 +144,7 @@ updateUser.addEventListener('click', async (e) => {
   var guardState = document.getElementById("guardstate").value;
   var guardCity = document.getElementById("guardcity").value;
   var guardPin = document.getElementById("guardpin").value;
+  var password1 = document.getElementById("password1").value;
   var roomType = document.getElementById("roomtype").value;
   var floor = document.getElementById("floornum").value;
   var ac = document.getElementById("aircond").value;
@@ -179,6 +180,7 @@ updateUser.addEventListener('click', async (e) => {
       userCity: userCity,
       userState: userState,
       userPin: userPin,
+      password1,password1,
       guardName: guardName,
       guardRelation: guardRelation,
       guardEmail: guardEmail,
