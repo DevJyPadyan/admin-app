@@ -1,11 +1,63 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, get, set, child, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"
-import { getStorage, ref as ref2, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js"
+import { getDatabase, ref, get, set, child, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getStorage, ref as ref2, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 import { firebaseConfig } from "./firebase-config.js";
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 const storage = getStorage(app);
+
+const roomContainer = document.getElementById("roomContainer"); // Ensure you have a container for room details
+
+const fetchRoomDetails = async () => {
+  const hostelName = 'Perikitis'; // Assuming hostel name is prefilled
+  const roomsRef = ref(db, `Hostel details/${hostelName}/rooms`);
+
+  try {
+      const snapshot = await get(roomsRef);
+      const roomTableBody = document.querySelector("#roomTable tbody"); // Select the tbody element
+
+      if (snapshot.exists()) {
+          const roomsData = snapshot.val();
+          roomTableBody.innerHTML = ''; // Clear existing room details
+
+          Object.keys(roomsData).forEach((key) => {
+              const roomData = roomsData[key];
+              console.log('Room Data:', roomData);
+
+              
+              // Create a table row for each room
+              const roomRow = document.createElement("tr");
+              
+              // Check if amenities is an array, otherwise set it to an empty string
+              const amenities = typeof roomData.amenities === 'string' 
+                    ? roomData.amenities.split(',').map(item => item.trim()).join(", ")
+                    : '';
+
+              roomRow.innerHTML = `
+                  <td>${key}</td>
+                  <td>${roomData.roomType}</td>
+                  <td>${roomData.floor}</td>
+                  <td>${roomData.ac}</td>
+                  <td>${amenities}</td>
+                  <td>${roomData.bathroom}</td>
+                  <td>${roomData.roomCount}</td>
+                  <td>${roomData.price}</td>
+              `;
+              roomTableBody.appendChild(roomRow); // Append the row to the tbody
+          });
+      } else {
+          alert('No rooms found for this hostel.');
+      }
+  } catch (error) {
+      console.error('Error fetching rooms:', error);
+  }
+};
+
+// Call fetchRoomDetails immediately when the JS file loads
+fetchRoomDetails();
+
+
 
 
 /*Hostel Multiple images upload*/
@@ -13,16 +65,13 @@ var files = [];
 let imagelink = [];
 document.getElementById("files").addEventListener("change", function (e) {
   files = e.target.files;
-  for (let i = 0; i < files.length; i++) {
-  }
 });
 
 document.getElementById("uploadImage").addEventListener("click", async function () {
-
   var userName = document.getElementById("username").value;
+  
   //checks if files are selected
   if (files.length != 0) {
-    //Loops through all the selected files
     for (let i = 0; i < files.length; i++) {
       const storageRef = ref2(storage, 'userProof/' + userName + '/govtProof/' + files[i].name);
       const upload = await uploadBytes(storageRef, files[i]);
@@ -30,20 +79,19 @@ document.getElementById("uploadImage").addEventListener("click", async function 
       imagelink.push(imageUrl);
     }
 
-    const imageRef = ref(db, 'User details/' + userName + '/proofData/' + '/');
+    const imageRef = ref(db, 'User details/' + userName + '/proofData/');
     set(imageRef, imagelink)
       .then(() => {
-        alert("To start uploading, please click OK");
-        alert("Image is uploading, Please click OK");
-        alert("Image is uploaded, Please click OK");
+        alert("Image is uploading.. please click OK");
+        alert("Image is uploaded. Please click OK");
         console.log('Image URLs have been successfully stored!');
       })
-
   } else {
     alert("No file chosen");
   }
 });
-registerUser.addEventListener('click', async (e) => { 
+
+registerUser.addEventListener('click', async (e) => {
   var userName = document.getElementById("username").value;
   var userFullName = document.getElementById("userfullname").value;
   var userPhone = document.getElementById("userphone").value;
@@ -66,20 +114,29 @@ registerUser.addEventListener('click', async (e) => {
   var guardCity = document.getElementById("guardcity").value;
   var guardPin = document.getElementById("guardpin").value;
   var roomType = document.getElementById("roomtype").value;
-  var floorNumber = document.getElementById("floornum").value;
-  var AirConditioning = document.getElementById("aircond").value;
-  var roomPrice = document.getElementById("roomprice").value;
+  var floor = document.getElementById("floornum").value;
+  var ac = document.getElementById("aircond").value;
+  var totalAmount = document.getElementById("roomprice").value;
+  var paymentComplete = document.getElementById("paymentComplete").value;
+  var hostelName = document.getElementById("hostelName").value;
 
-
-  // Reference to user data
   const userRef = ref(db, "User details/" + userName + '/');
-  
-  // Fetch existing proof data
+  const bookingsRef = ref(db, "User details/" + userName + '/Bookings/' + hostelName + '/RoomDetails/');
+
   try {
     const snapshot = await get(userRef);
     let existingData = snapshot.exists() ? snapshot.val() : {};
 
-    // If there is existing proofData, merge it with new user details
+    // Create room details object
+    const roomDetails = {
+      roomType: roomType,
+      floor: floor,
+      ac: ac,
+      totalAmount: totalAmount,
+      paymentComplete: paymentComplete
+    };
+
+    // Construct new user details
     let newUserDetails = {
       userName: userName,
       userFullName: userFullName,
@@ -102,10 +159,6 @@ registerUser.addEventListener('click', async (e) => {
       guardState: guardState,
       guardCity: guardCity,
       guardPin: guardPin,
-      roomType: roomType,
-      floorNumber: floorNumber,
-      AirConditioning: AirConditioning,
-      roomPrice: roomPrice
     };
 
     // Merge with existing proofData if available
@@ -113,10 +166,13 @@ registerUser.addEventListener('click', async (e) => {
       newUserDetails.proofData = existingData.proofData;
     }
 
-    // Update the user details along with proofData
+    // Update the user details
     await set(userRef, newUserDetails);
 
-    alert("User details added successfully");
+    // Store room details under the hostel's booking
+    await set(bookingsRef, roomDetails);
+
+    alert("User details and room booking added successfully");
     window.location.href = "././users.html";
   } catch (error) {
     alert("Error fetching or saving user details: " + error.message);

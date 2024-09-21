@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, get, set, child, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"
-import { getStorage, ref as ref2, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js"
+import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getStorage, ref as ref2, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 import { firebaseConfig } from "./firebase-config.js";
 
 const app = initializeApp(firebaseConfig);
@@ -10,40 +10,25 @@ var files = [];
 let imagelink = [];
 document.getElementById("files").addEventListener("change", function (e) {
   files = e.target.files;
-  for (let i = 0; i < files.length; i++) {
-  }
 });
+
 // Event listener for file selection
 document.getElementById("uploadImage").addEventListener("click", async function () {
-
   var userName = document.getElementById("username").value;
-  //checks if files are selected
   if (files.length != 0) {
-    const imageRef = ref(db, 'User details/' + userName + '/proofData/' + '/');
-    // Fetch existing proof data
+    const imageRef = ref(db, 'User details/' + userName + '/proofData/');
     const snapshot = await get(imageRef);
     let existingProofData = snapshot.exists() ? snapshot.val() : [];
 
-    //Loops through all the selected files
     for (let i = 0; i < files.length; i++) {
       const storageRef = ref2(storage, 'userProof/' + userName + '/govtProof/' + files[i].name);
-      const upload = await uploadBytes(storageRef, files[i]);
+      await uploadBytes(storageRef, files[i]);
       const imageUrl = await getDownloadURL(storageRef);
       imagelink.push(imageUrl);
     }
     const updatedProofData = [...existingProofData, ...imagelink];
-    // Update proofData in the database
-    set(imageRef, updatedProofData)
-      .then(() => {
-        alert("To start uploading, please click OK");
-        alert("Image is uploading, Please click OK");
-        alert("Image is uploaded, Please click OK");
-        console.log('Image URLs have been successfully updated!');
-      })
-      .catch((error) => {
-        console.error("Error uploading images: ", error);
-      });
-
+    await set(imageRef, updatedProofData);
+    alert("Image(s) uploaded successfully!");
   } else {
     alert("No file chosen");
   }
@@ -54,24 +39,18 @@ async function updateDownloadLinks(userName) {
   const downloadContainer = document.getElementById("downloadimage");
 
   try {
-    // Fetch the proof data from Firebase
     const snapshot = await get(imageRef);
     if (snapshot.exists()) {
       const proofData = snapshot.val();
       downloadContainer.innerHTML = ""; // Clear any existing content
 
-      // Loop through the image URLs and create download links
       proofData.forEach((url, index) => {
         const link = document.createElement('a');
         link.href = url;
         link.innerText = `Download ${index + 1}`;
         link.target = '_blank';
-
-        downloadContainer.appendChild(link); // Append the link to the container
-
-        const br = document.createElement('br'); // Create a <br> element
-        downloadContainer.appendChild(br);
-
+        downloadContainer.appendChild(link);
+        downloadContainer.appendChild(document.createElement('br')); // Create a <br> element
       });
     } else {
       downloadContainer.innerHTML = "No images available for download.";
@@ -82,7 +61,7 @@ async function updateDownloadLinks(userName) {
   }
 }
 
-function prefillUserDetails() {
+async function prefillUserDetails() {
   const storedData = localStorage.getItem('userDetails');
   if (storedData) {
     const userData = JSON.parse(storedData);
@@ -111,9 +90,30 @@ function prefillUserDetails() {
     document.getElementById("floornum").value = userData[20] || "";
     document.getElementById("aircond").value = userData[21] || "";
     document.getElementById("roomprice").value = userData[22] || "";
+    document.getElementById("paymentComplete").value = userData[23] || ""; // Fix here
+    console.log("Payment Complete Value:", document.getElementById("paymentComplete").value);
+
+    const userName = userData[0]; // Assuming the username is the first element in userData
+    const bookingsRef = ref(db, "User details/" + userName + '/Bookings/');
+    
+    try {
+      const snapshot = await get(bookingsRef);
+      if (snapshot.exists()) {
+        const bookingsData = snapshot.val();
+        // Get the first hostel name (you may adjust this logic based on your requirements)
+        const hostelNames = Object.keys(bookingsData);
+        if (hostelNames.length > 0) {
+          document.getElementById("hostelName").value = hostelNames[0]; // Set the first hostel name
+        }
+      } else {
+        console.log("No bookings found for this user.");
+      }
+    } catch (error) {
+      console.error("Error fetching hostel names:", error);
+    }
+
     console.log(userData);
     updateDownloadLinks(userData[0]);
-
   } else {
     console.log("No User data found in localStorage.");
   }
@@ -145,41 +145,65 @@ updateUser.addEventListener('click', async (e) => {
   var guardCity = document.getElementById("guardcity").value;
   var guardPin = document.getElementById("guardpin").value;
   var roomType = document.getElementById("roomtype").value;
-  var floorNumber = document.getElementById("floornum").value;
-  var AirConditioning = document.getElementById("aircond").value;
-  var roomPrice = document.getElementById("roomprice").value;
+  var floor = document.getElementById("floornum").value;
+  var ac = document.getElementById("aircond").value;
+  var totalAmount = document.getElementById("roomprice").value;
+  var paymentComplete = document.getElementById("paymentComplete").value; // Add this line
+  var hostelName = document.getElementById("hostelName").value;
 
-  update(ref(db, "User details/" + userName + '/'), {
-    userName: userName,
-    userFullName: userFullName,
-    userPhone: userPhone,
-    userGender: userGender,
-    userEmail: userEmail,
-    userAddress1: userAddress1,
-    userAddress2: userAddress2,
-    userCity: userCity,
-    userState: userState,
-    userPin: userPin,
-    guardName: guardName,
-    guardRelation: guardRelation,
-    guardEmail: guardEmail,
-    guardPhone: guardPhone,
-    guardAddress1: guardAddress1,
-    guardAddress2: guardAddress2,
-    guardState: guardState,
-    guardPin: guardPin,
-    guardCity: guardCity,
-    roomType: roomType,
-    floorNumber: floorNumber,
-    AirConditioning: AirConditioning,
-    roomPrice: roomPrice
+  const userRef = ref(db, "User details/" + userName + '/');
+  const bookingsRef = ref(db, "User details/" + userName + '/Bookings/' + hostelName + '/RoomDetails/');
 
-  })
-    .then(() => {
-      alert("User details updated successfully");
-      window.location.href = "././users.html";
-    })
-    .catch((error) => {
-      alert(error);
-    });
+  try {
+    const snapshot = await get(userRef);
+    let existingData = snapshot.exists() ? snapshot.val() : {};
+
+    // Create room details object
+    const roomDetails = {
+      roomType: roomType,
+      floor: floor,
+      ac: ac,
+      totalAmount: totalAmount,
+      paymentComplete: paymentComplete || existingData.paymentComplete // Use the new payment status
+    };
+
+    // Construct new user details
+    let newUserDetails = {
+      userName: userName,
+      userFullName: userFullName,
+      userPhone: userPhone,
+      userGender: userGender,
+      userEmail: userEmail,
+      userAddress1: userAddress1,
+      userAddress2: userAddress2,
+      userCity: userCity,
+      userState: userState,
+      userPin: userPin,
+      guardName: guardName,
+      guardRelation: guardRelation,
+      guardEmail: guardEmail,
+      guardPhone: guardPhone,
+      guardAddress1: guardAddress1,
+      guardAddress2: guardAddress2,
+      guardState: guardState,
+      guardCity: guardCity,
+      guardPin: guardPin,
+    };
+
+    // Merge with existing proofData if available
+    if (existingData.proofData) {
+      newUserDetails.proofData = existingData.proofData;
+    }
+
+    // Update the user details
+    await set(userRef, newUserDetails);
+
+    // Store room details under the hostel's booking
+    await set(bookingsRef, roomDetails);
+
+    alert("User details and room booking updated successfully");
+    window.location.href = "././users.html";
+  } catch (error) {
+    alert("Error fetching or saving user details: " + error.message);
+  }
 });

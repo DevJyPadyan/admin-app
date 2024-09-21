@@ -73,6 +73,8 @@ function view() {
             var floorNumber = rowSelected.cells[21].innerHTML;
             var AirConditioning = rowSelected.cells[22].innerHTML;
             var roomPrice = rowSelected.cells[23].innerHTML;
+            var hostelName = rowSelected.cells[24].innerHTML;
+            var paymentComplete =rowSelected.cells[25].innerHTML;
 
             var data = [];
             data.push(userName);
@@ -98,6 +100,8 @@ function view() {
             data.push(floorNumber);
             data.push(AirConditioning);
             data.push(roomPrice);
+            data.push(hostelName);
+            data.push(paymentComplete);
             localStorage.setItem('userDetails', JSON.stringify(data));
             window.location.href = 'edit-users.html';
 
@@ -120,89 +124,89 @@ const SelectAlldataReal = () => {
 
 }
 
-//Function which is used to append the data from firebase database to table
-const AddsingleRecord = (userName,userFullName,userGender,userPhone,userEmail,userAddress1,userAddress2,userCity,userState,userPin,
-    guardName,guardRelation,guardPhone,guardEmail,guardAddress1,guardAddress2,guardCity,guardState,guardPin,roomType,floorNumber,
-    AirConditioning,roomPrice) => {
+function loadOrderDetails(user) {
+    const dbref = ref(db, `User details/${user.userName}/Bookings/`);
+    onValue(dbref, (snapshot) => {
+        let ordersList = [];
+        snapshot.forEach(h => {
+            ordersList.push(h.val());
+        });
+        
+        const bookingDetails = ordersList.length > 0 ? ordersList[0].RoomDetails : null; // Get first booking details
+        AddsingleRecord(user, bookingDetails);
+    });
+}
 
+// Function to append data to table
+const AddsingleRecord = (user, bookingDetails) => {
     var trow = document.createElement('tr');
-    var td1 = document.createElement('td');
-    var td2 = document.createElement('td');
-    var td3 = document.createElement('td');
-    var td4 = document.createElement('td');
-    var td5 = document.createElement('td');
-    var td6 = document.createElement('td');
-    var td7 = document.createElement('td');
-    var td8 = document.createElement('td');
-    var td9 = document.createElement('td');
-    var td10 = document.createElement('td');
-    var td11 = document.createElement('td');
-    var td12 = document.createElement('td');
-    var td13 = document.createElement('td');
-    var td14 = document.createElement('td');
-    var td15 = document.createElement('td');
-    var td16 = document.createElement('td');
-    var td17 = document.createElement('td');
-    var td18 = document.createElement('td');
-    var td19 = document.createElement('td');
-    var td20 = document.createElement('td');
-    var td21 = document.createElement('td');
-    var td22 = document.createElement('td');
-    var td23 = document.createElement('td');
-    var td24 = document.createElement('td');
-    var td25 = document.createElement('td');
+    flag++;
 
+    // User details
+    var cells = [
+        flag,
+        user.userName,
+        user.userFullName,
+        user.userGender,
+        user.userPhone,
+        user.userEmail,
+        user.userAddress1,
+        user.userAddress2,
+        user.userCity,
+        user.userState,
+        user.userPin,
+        user.guardName,
+        user.guardRelation,
+        user.guardPhone,
+        user.guardEmail,
+        user.guardAddress1,
+        user.guardAddress2,
+        user.guardCity,
+        user.guardState,
+        user.guardPin,
+    ];
 
+    // Booking details
+    if (bookingDetails) {
+        cells.push(
+            bookingDetails.roomType|| 'N/A',
+            bookingDetails.floor || 'N/A',
+            bookingDetails.ac || 'N/A',
+            bookingDetails.totalAmount || 'N/A',
+            bookingDetails.paymentComplete || 'N/A',
+        );
+    } else {
+        cells.push('N/A', 'N/A', 'N/A', 'N/A');
+    }
 
-    flag = flag + 1;
-    td1.innerHTML = flag;
-    td2.innerHTML = userName;
-    td3.innerHTML = userFullName;
-    td4.innerHTML = userGender;
-    td5.innerHTML = userPhone;
-    td6.innerHTML = userEmail;
-    td7.innerHTML = userAddress1;
-    td8.innerHTML = userAddress2;
-    td9.innerHTML = userCity;
-    td10.innerHTML = userState;
-    td11.innerHTML = userPin;
-    td12.innerHTML = guardName;
-    td13.innerHTML = guardRelation;
-    td14.innerHTML = guardPhone;
-    td15.innerHTML = guardEmail;
-    td16.innerHTML = guardAddress1;
-    td17.innerHTML = guardAddress2;
-    td18.innerHTML = guardCity;
-    td19.innerHTML = guardState;
-    td20.innerHTML = guardPin;
-    td21.innerHTML = roomType;
-    td22.innerHTML = floorNumber;
-    td23.innerHTML = AirConditioning;
-    td24.innerHTML = roomPrice;
+    cells.forEach(data => {
+        var td = document.createElement('td');
+        td.innerHTML = data;
+        trow.appendChild(td);
+    });
 
+    // Remove button
     var removeButton = document.createElement('button');
     removeButton.type = 'button';
     removeButton.innerHTML = '<i class="fas fa-trash"></i>';
     removeButton.onclick = function (event) {
         event.stopPropagation(); // Prevent row click event
-        removeHostel(event, userName);
+        removeHostel(event, user.userName);
     };
+    var td25 = document.createElement('td');
     td25.appendChild(removeButton);
+    trow.appendChild(td25);
 
-    trow.append(td1, td2, td3, td4, td5, td6, td7, td8, td9, td10, td11, td12, td13, td14,td15,td16,td17,td18,td19,td20,td21,td22,td23,td24,td25);
     tbody.append(trow);
-
 }
 
-
+// Function to add all records
 const AddAllRecords = () => {
     flag = 0;
     tbody.innerHTML = "";
-    userList.forEach(u => {
-        AddsingleRecord(u.userName,u.userFullName,u.userGender,u.userPhone,u.userEmail,u.userAddress1,u.userAddress2,u.userCity,u.userState,u.userPin,
-            u.guardName,u.guardRelation,u.guardPhone,u.guardEmail,u.guardAddress1,u.guardAddress2,u.guardCity,u.guardState,u.guardPin,u.roomType,u.floorNumber,
-            u.AirConditioning,u.roomPrice)
-    })
+    userList.forEach(user => {
+        loadOrderDetails(user); // Load order details for each user
+    });
     view();
 }
 
