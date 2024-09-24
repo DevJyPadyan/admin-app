@@ -559,16 +559,16 @@
                                                 <div class="row gy-3">
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Hostel Name</h6>
-                                                            <input type="text" placeholder="Hostel Name"
-                                                                id="hostelname">
+                                                            <h6>Hostel Name<span class="required">*</span></h6>
+                                                            <input type="text" placeholder="Hostel Name" id="hostelname"
+                                                                required>
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Hostel Type</h6>
+                                                            <h6>Hostel Type<span class="required">*</span></h6>
                                                             <select class="js-example-basic-single w-100" name="state"
-                                                                id="hosteltype">
+                                                                id="hosteltype" required>
                                                                 <option>Men</option>
                                                                 <option>Women</option>
                                                                 <option>Both</option>
@@ -577,55 +577,58 @@
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Phone number </h6>
+                                                            <h6>Phone number<span class="required">*</span></h6>
                                                             <input type="tel" placeholder="Hostel Phone"
-                                                                id="hostelphone">
+                                                                id="hostelphone" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Email address</h6>
+                                                            <h6>Email address<span class="required">*</span></h6>
                                                             <input type="email" placeholder="Hostel Email address"
-                                                                id="hostelemail">
+                                                                id="hostelemail" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Address Line 1</h6>
+                                                            <h6>Address Line 1<span class="required">*</span></h6>
                                                             <input type="text" placeholder="Address line 1"
-                                                                id="hosteladd1">
+                                                                id="hosteladd1" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Address Line 2</h6>
+                                                            <h6>Address Line 2<span class="required">*</span></h6>
                                                             <input type="text" placeholder="Address line 2"
-                                                                id="hosteladd2">
+                                                                id="hosteladd2" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>City</h6>
-                                                            <input type="text" placeholder="City" id="hostelcity">
+                                                            <h6>City<span class="required">*</span></h6>
+                                                            <input type="text" placeholder="City" id="hostelcity"
+                                                                required>
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>State</h6>
-                                                            <input type="text" placeholder="State" id="hostelstate">
+                                                            <h6>State<span class="required">*</span></h6>
+                                                            <input type="text" placeholder="State" id="hostelstate"
+                                                                required>
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Pincode</h6>
-                                                            <input type="number" placeholder="Pincode" id="hostelpin">
+                                                            <h6>Pincode<span class="required">*</span></h6>
+                                                            <input type="number" placeholder="Pincode" id="hostelpin"
+                                                                required>
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>No. of floors</h6>
+                                                            <h6>No. of floors<span class="required">*</span></h6>
                                                             <input type="number" placeholder="No.of floors"
-                                                                id="hostelfloors">
+                                                                id="hostelfloors" required>
                                                         </div>
                                                     </div>
                                                     <!--<div class="col-xl-6">
@@ -753,6 +756,20 @@
                                 </div>
                                 <div class="card-body">
                                     <button id="addWeekButton" class="btn btn-primary">Add week</button>
+                                    <div id="mealTimeContainer" class="container">
+                                        <div class="row gy-3">
+                                            <div class="col-xl-6" id="morningTimeContainer">
+                                                <label>Morning Timings</label>
+                                            </div>
+                                            <div class="col-xl-6" id="afternoonTimeContainer">
+                                                <label>Afternoon Timings</label>
+                                            </div>
+
+                                            <div class="col-xl-6" id="nightTimeContainer">
+                                                <label>Night Timings</label>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div id="weekContainer" class="mt-4"></div>
                                 </div>
                             </div>
@@ -957,7 +974,7 @@
                                         </div>
                                     </div>
                                 </div>-->
-                        <div class="col-12">
+                        <div class="col-12 mb-5">
                             <button type="button" id="registerHostel" class="btn restaurant-button">Save</button>
                         </div>
                         <!--<div class="col-12">

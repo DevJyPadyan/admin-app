@@ -554,10 +554,12 @@
                                     </div>
                                     <div>
                                         <div class="input-box">
-                                            <i class="ri-search-line"></i>
+                                            
                                             <input class="search-box" type="search"
                                                 placeholder="Search hostel details here..." id="myInput"
                                                 onkeyup='searchTable()'>
+                                            <br>
+                                            <br>
                                         </div>
                                         <div class="table-responsive theme-scrollbar">
                                             <table class="table category-table dataTable no-footer" id="table_id">
@@ -1097,28 +1099,27 @@
     </div>
     <!-- page-wrapper End-->
 
-    <!-- Modal Start -->
-    <div class="modal theme-modal fade" id="staticBackdrop" tabindex="-1" role="dialog" aria-modal="true">
+    <!-- Delete Hostel Modal Start -->
+    <div class="modal fade" id="deleteHostelModal" tabindex="-1" role="dialog" aria-modal="true">
         <div class="modal-dialog modal-md modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5>Logging Out</h5>
+                    <h5>Confirm Deletion</h5>
                     <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
                         <i class="ri-close-line"></i>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p class="mb-0">Are you sure you want to log out?</p>
+                    <p class="mb-0">Are you sure you want to delete <span id="hostelToDeleteName"></span>?</p>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-cancel" type="button" data-bs-dismiss="modal" aria-label="Close">No</button>
-                    <button class="btn btn-submit" type="submit" data-bs-dismiss="modal" aria-label="Close"><a
-                            href="login.html"></a>Yes</a></button>
+                    <button class="btn btn-cancel" type="button" data-bs-dismiss="modal">No</button>
+                    <button id="confirmDeleteBtn" class="btn btn-submit" type="button">Yes</button>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Modal End -->
+    <!-- Delete Hostel Modal End -->
 
     <!-- Delete Modal Box Start -->
     <div class="modal fade theme-modal remove-coupon" id="exampleModalToggle" aria-hidden="true" tabindex="-1">
@@ -1228,7 +1229,7 @@
             filter = input.value.toUpperCase();
             table = document.getElementById("table_id");
             tr = table.getElementsByTagName("tr");
-            for (i = 0; i < tr.length; i++) {
+            for (i = 1; i < tr.length; i++) {
                 td = tr[i].getElementsByTagName("td");
                 for (j = 0; j < td.length; j++) {
                     if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {

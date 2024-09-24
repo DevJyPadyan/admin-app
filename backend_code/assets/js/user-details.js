@@ -9,19 +9,28 @@ let userList = [];
 let flag = 0;
 let tbody = document.getElementById("tbody1");
 
-//Remove functionality code 
-const removeHostel = (event, userName) => {
-    event.stopPropagation(); // Prevent the row click event (i.e this function will work when delete button is clicked)
+/// Remove functionality code
+const removeUser = (event, userName) => {
+    event.stopPropagation(); // Prevent the row click event from triggering
 
-    const rowRef = ref(db, `User details/${userName}`);
-    remove(rowRef)
-        .then(() => {
-            alert(`${userName} removed successfully!`);
-            SelectAlldataReal();  // Refresh data after removal
-        })
-        .catch((error) => {
-            alert("Error removing record: " + error.message);
-        });
+    // Show confirmation alert box
+    const userConfirmed = window.confirm(`Are you sure you want to delete the user: ${userName}?`);
+
+    // If the user confirms deletion
+    if (userConfirmed) {
+        const rowRef = ref(db, `User details/${userName}`); // Firebase reference to the user
+
+        remove(rowRef)
+            .then(() => {
+                alert(`${userName} removed successfully!`);
+                SelectAlldataReal();  // Refresh data after removal
+            })
+            .catch((error) => {
+                alert("Error removing user: " + error.message);
+            });
+    } else {
+        console.log('Deletion cancelled by the user.');
+    }
 };
 
 //Functionality for editing a data//
@@ -38,7 +47,7 @@ function view() {
             var rowId = this.parentNode.rowIndex;
             var table = document.getElementById('table_id');
             var rowsNotSelected = table.getElementsByTagName('tr');
-            
+
             // Unselect previous rows
             for (var row = 0; row < rowsNotSelected.length; row++) {
                 rowsNotSelected[row].style.backgroundColor = "";
@@ -60,7 +69,7 @@ function view() {
             var userName = rowSelected.cells[1].innerHTML;
             var userFullName = rowSelected.cells[2].innerHTML;
             var userGender = rowSelected.cells[3].innerHTML;
-            var userPhone = rowSelected.cells[4].innerHTML;  
+            var userPhone = rowSelected.cells[4].innerHTML;
             var userEmail = rowSelected.cells[5].innerHTML;
             var userAddress1 = rowSelected.cells[6].innerHTML;
             var userAddress2 = rowSelected.cells[7].innerHTML;
@@ -120,7 +129,7 @@ function view() {
                     // Add the password to localStorage
                     data.push(password1);
                     localStorage.setItem('userDetails', JSON.stringify(data));
-                    window.location.href="././edit-users.html";
+                    window.location.href = "././edit-users.html";
                     console.log("User details with password:", data);
                 } else {
                     console.log("No password found for user: " + userName);
@@ -150,7 +159,7 @@ function loadOrderDetails(user) {
         snapshot.forEach(h => {
             ordersList.push(h.val());
         });
-        
+
         const bookingDetails = ordersList.length > 0 ? ordersList[0].RoomDetails : null; // Get first booking details
         AddsingleRecord(user, bookingDetails);
     });
@@ -210,12 +219,12 @@ const AddsingleRecord = (user, bookingDetails) => {
     removeButton.innerHTML = '<i class="fas fa-trash"></i>';
     removeButton.onclick = function (event) {
         event.stopPropagation(); // Prevent row click event
-        removeHostel(event, user.userName);
+        removeUser(event, user.userName);
     };
 
     var tdRemoveButton = document.createElement('td');
     tdRemoveButton.appendChild(removeButton);
-    
+
     // Append the delete button at the end
     trow.appendChild(tdRemoveButton);
 

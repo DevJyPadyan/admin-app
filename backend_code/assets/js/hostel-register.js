@@ -7,21 +7,170 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 const storage = getStorage(app);
 
-
 const addWeekButton = document.getElementById("addWeekButton");
 const weekContainer = document.getElementById("weekContainer");
 
-let weekCount = 0;
+const morningTimeContainer = document.getElementById("morningTimeContainer");
+const afternoonTimeContainer = document.getElementById("afternoonTimeContainer");
+const nightTimeContainer = document.getElementById("nightTimeContainer");
 
-//function that generates container for each week when add week button is clicked
-addWeekButton.addEventListener('click', () => {
-    if (weekCount < 5) {
-        weekCount++;
-        createWeekForm(weekCount);
-    } else {
-        alert("You can only add up to 5 weeks.");
+// Append time range inputs for meals at the initial level
+morningTimeContainer.appendChild(createTimeRangeInput('morningStart', 'morningEnd'));
+afternoonTimeContainer.appendChild(createTimeRangeInput('afternoonStart', 'afternoonEnd'));
+nightTimeContainer.appendChild(createTimeRangeInput('nightStart', 'nightEnd'));
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const hostelName = document.getElementById('hostelname').value;
+
+  // Fetch existing weeks from Firebase
+  let existingWeeks = await getExistingWeeks(hostelName);
+
+  // Initialize the week count
+  let weekCount = 1;
+
+  // Create Week 1 container
+  createWeekForm(weekCount);
+
+  // Add checkboxes for Week 2 to Week 5 after Week 1 container
+  addWeekCheckboxes(weekCount, existingWeeks);
+
+  // Add event listener for the Add Week button
+  addWeekButton.addEventListener('click', async () => {
+    const nextWeek = await findNextAvailableWeek(existingWeeks);
+    console.log(`Next available week: ${nextWeek !== null ? nextWeek : 'None'}`);
+
+    if (!nextWeek) {
+      alert('All weeks are already added!');
+      return;
     }
+
+    createWeekForm(nextWeek);
+    addWeekCheckboxes(nextWeek, existingWeeks);
+
+    // Update the existing weeks after adding a new week
+    existingWeeks.push(nextWeek);  // Add the newly created week to the existing weeks array
+  });
 });
+
+// Function to get existing weeks from Firebase
+async function getExistingWeeks(hostelName) {
+  const snapshot = await get(ref(db, `Hostel details/${hostelName}/weeks`));
+  return snapshot.exists() ? Object.keys(snapshot.val()).map(week => week.replace('week', '')) : [];
+}
+
+// Function to add checkboxes for copying week data
+async function addWeekCheckboxes(currentWeekNum, existingWeeks) {
+  const container = document.createElement('div');
+  container.classList.add('mt-3');
+
+  const labelElem = document.createElement('h6');
+  labelElem.innerText = "Choose the below checkboxes to copy week data";
+  labelElem.style.marginBottom = '10px';
+  container.appendChild(labelElem);
+
+  const checkboxContainer = document.createElement('div');
+  checkboxContainer.classList.add('d-flex', 'gap-3');
+
+  // Define the weeks for checkboxes (2 to 5, as per your requirement)
+  const weeks = [2, 3, 4, 5];
+
+  // Iterate through the weeks to create checkboxes
+  weeks.forEach(week => {
+    const checkboxElem = document.createElement('div');
+    checkboxElem.classList.add('form-check', 'form-check-inline');
+
+    const inputElem = document.createElement('input');
+    inputElem.type = 'checkbox';
+    inputElem.id = `week${week}`;
+    inputElem.classList.add('form-check-input');
+
+    const weekLabelElem = document.createElement('label');
+    weekLabelElem.htmlFor = `week${week}`;
+    weekLabelElem.innerText = `Week ${week}`;
+    weekLabelElem.classList.add('form-check-label');
+
+    // Check if the week already exists in Firebase and disable the checkbox if it does
+    const weekExists = existingWeeks.includes(String(week));
+    inputElem.disabled = weekExists; // Disable checkbox if week exists
+    if (weekExists) {
+      weekLabelElem.style.color = 'gray'; // Indicate the week is already added
+    }
+
+    checkboxElem.appendChild(inputElem);
+    checkboxElem.appendChild(weekLabelElem);
+    checkboxContainer.appendChild(checkboxElem);
+
+    // Add event listener to handle the checkbox selection for copying data
+    inputElem.addEventListener('change', async (event) => {
+      if (event.target.checked) {
+        await copyWeekData(currentWeekNum, week);  // Copy from the newly added week to the selected week
+      }
+    });
+  });
+
+  container.appendChild(checkboxContainer);
+  weekContainer.appendChild(container);
+}
+
+// Function to copy Week data to the selected week in Firebase
+async function copyWeekData(sourceWeek, targetWeek) {
+  const weekData = {};
+
+  // Fetch global meal timings
+  const mealTimesData = {
+    morning: {
+      start: document.getElementById('morningStart').value,
+      end: document.getElementById('morningEnd').value
+    },
+    afternoon: {
+      start: document.getElementById('afternoonStart').value,
+      end: document.getElementById('afternoonEnd').value
+    },
+    night: {
+      start: document.getElementById('nightStart').value,
+      end: document.getElementById('nightEnd').value
+    }
+  };
+
+  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  days.forEach(day => {
+    weekData[day] = {};
+    const mealTimes = ['Morning', 'Afternoon', 'Night'];
+
+    mealTimes.forEach(mealTime => {
+      const dishName = document.getElementById(`mainDish-${sourceWeek}-${day}-${mealTime}`).value;
+      const sideDishName = document.getElementById(`sideDish-${sourceWeek}-${day}-${mealTime}`).value;
+
+      if (dishName !== 'select main dish' && sideDishName !== 'select side dish') {
+        const timing = mealTimesData[mealTime.toLowerCase()]; // Get timing for the current meal (morning, afternoon, night)
+        weekData[day][mealTime.toLowerCase()] = {
+          mainDish: dishName,
+          sideDish: sideDishName,
+          timing: `${convertTo12Hour(timing.start)} - ${convertTo12Hour(timing.end)}`
+        };
+      }
+    });
+  });
+
+  const hostelName = document.getElementById('hostelname').value;
+
+  // Save the copied data for the selected week in Firebase
+  await set(ref(db, `Hostel details/${hostelName}/weeks/week${targetWeek}`), weekData)
+    .then(() => {
+      alert(`Week ${sourceWeek} data copied to Week ${targetWeek}!`);
+
+      // Update existingWeeks to include the newly copied week
+      if (!existingWeeks.includes(String(targetWeek))) {
+        existingWeeks.push(String(targetWeek));
+      }
+    })
+    .catch((error) => alert(`Error copying data: ${error.message}`));
+}
+// Helper function to find the next available week number
+async function findNextAvailableWeek(existingWeeks) {
+  const availableWeeks = [2, 3, 4, 5].filter(week => !existingWeeks.includes(String(week)));
+  return availableWeeks.length > 0 ? availableWeeks[0] : null;
+}
 
 //function to create week containers
 function createWeekForm(weekNum) {
@@ -35,7 +184,6 @@ function createWeekForm(weekNum) {
   const cardHeaderElem = document.createElement('div');
   cardHeaderElem.classList.add('card-header', 'd-flex', 'justify-content-between', 'align-items-center');
 
-  // Add a clickable arrow to toggle the collapse
   const headerContent = document.createElement('div');
   headerContent.classList.add('d-flex', 'align-items-center');
   headerContent.innerHTML = `<h5 class="mb-0">Week ${weekNum}</h5>`;
@@ -43,20 +191,14 @@ function createWeekForm(weekNum) {
   const dropdownArrow = document.createElement('span');
   dropdownArrow.classList.add('dropdown-arrow', 'ri-arrow-down-s-line');
   dropdownArrow.style.fontSize = '27px';
-  dropdownArrow.style.marginLeft= '10px';  // Adds left margin for the drop down
-  dropdownArrow.style.marginBottom = '15px'; // Adds bottom margin for the drop down
-  dropdownArrow.style.marginTop = '10px'; // Adds top margin for the drop down
+  dropdownArrow.style.marginLeft = '10px';
 
   dropdownArrow.addEventListener('click', () => {
     const collapseElem = document.getElementById(`collapseWeek${weekNum}`);
     collapseElem.classList.toggle('show');
-
-    if (collapseElem.classList.contains('show')) {
-        dropdownArrow.classList.replace('ri-arrow-right-s-line', 'ri-arrow-down-s-line'); // Down arrow
-    } else {
-        dropdownArrow.classList.replace('ri-arrow-down-s-line', 'ri-arrow-right-s-line'); // Right arrow
-    }
-});
+    dropdownArrow.classList.toggle('ri-arrow-down-s-line');
+    dropdownArrow.classList.toggle('ri-arrow-right-s-line');
+  });
 
   cardHeaderElem.appendChild(headerContent);
   headerContent.appendChild(dropdownArrow);
@@ -64,227 +206,236 @@ function createWeekForm(weekNum) {
   const headerButtonsContainer = document.createElement('div');
   headerButtonsContainer.classList.add('d-flex', 'gap-2');
 
-  const removeWeekBtn = document.createElement('a');
-  removeWeekBtn.className = 'ri-delete-bin-line';
-  removeWeekBtn.style.fontSize = '24px';
-  removeWeekBtn.onclick = () => {
-      mainParentElem.remove();
-      weekCount--;
-  };
-
   const saveWeekBtn = document.createElement('button');
   saveWeekBtn.className = 'btn restaurant-button';
   saveWeekBtn.innerHTML = `Save Week ${weekNum}`;
   saveWeekBtn.onclick = () => saveWeek(weekNum);
 
   headerButtonsContainer.appendChild(saveWeekBtn);
-  headerButtonsContainer.appendChild(removeWeekBtn);
   cardHeaderElem.appendChild(headerButtonsContainer);
 
   const collapseElem = document.createElement('div');
   collapseElem.id = `collapseWeek${weekNum}`;
-  collapseElem.classList.add('collapse', 'show'); // Start with content shown
+  collapseElem.classList.add('collapse', 'show');
 
   const cardBodyElem = document.createElement('div');
   cardBodyElem.classList.add('card-body');
 
-  // Create tab navigation
+  // Container for vertical days and dish inputs
+  const weekLayout = document.createElement('div');
+  weekLayout.classList.add('d-flex');
+
+  // Create vertical days list
   const navTabs = document.createElement('ul');
-  navTabs.classList.add('nav', 'nav-tabs');
+  navTabs.classList.add('nav', 'flex-column', 'nav-pills'); // Vertical layout
   navTabs.role = 'tablist';
 
+  // Container for tab contents (right side)
   const tabContent = document.createElement('div');
-  tabContent.classList.add('tab-content', 'mt-3');
+  tabContent.classList.add('tab-content', 'flex-grow-1', 'ps-3'); // Right side content
 
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
   days.forEach((day, index) => {
-      // Create tab navigable days
-      const navItem = document.createElement('li');
-      navItem.classList.add('nav-item');
+    const navItem = document.createElement('li');
+    navItem.classList.add('nav-item');
 
-      const navLink = document.createElement('a');
-      navLink.classList.add('nav-link');
-      if (index === 0) navLink.classList.add('active');
-      navLink.id = `week${weekNum}-${day}-tab`;
-      navLink.dataset.bsToggle = 'tab';
-      navLink.href = `#week${weekNum}-${day}`;
-      navLink.role = 'tab';
-      navLink.innerText = day.substring(0, 3); // Display only the first 3 letters
+    const navLink = document.createElement('a');
+    navLink.classList.add('nav-link');
+    if (index === 0) navLink.classList.add('active');
+    navLink.id = `week${weekNum}-${day}-tab`;
+    navLink.dataset.bsToggle = 'tab';
+    navLink.href = `#week${weekNum}-${day}`;
+    navLink.role = 'tab';
+    navLink.innerText = day;
 
-      navItem.appendChild(navLink);
-      navTabs.appendChild(navItem);
+    navItem.appendChild(navLink);
+    navTabs.appendChild(navItem);
 
-      // Create tab pane content
-      const tabPane = document.createElement('div');
-      tabPane.classList.add('tab-pane', 'fade');
-      if (index === 0) tabPane.classList.add('show', 'active');
-      tabPane.id = `week${weekNum}-${day}`;
-      tabPane.role = 'tabpanel';
+    const tabPane = document.createElement('div');
+    tabPane.classList.add('tab-pane', 'fade');
+    if (index === 0) tabPane.classList.add('show', 'active');
+    tabPane.id = `week${weekNum}-${day}`;
+    tabPane.role = 'tabpanel';
 
-      // Now create a separate card body for each meal time within this tab
-      const mealTimes = ['Morning', 'Afternoon', 'Night'];
+    // Create meal cards
+    const mealTimes = ['Morning', 'Afternoon', 'Night'];
 
-      mealTimes.forEach(mealTime => {
-          const mealCard = document.createElement('div');
-          mealCard.classList.add('card', 'mb-3', 'mt-3'); // Adds margin top for spacing
+    mealTimes.forEach(mealTime => {
+      const mealCard = document.createElement('div');
+      mealCard.classList.add('card', 'mb-3', 'mt-3');
 
-          const mealCardBodyElem = document.createElement('div');
-          mealCardBodyElem.classList.add('card-body', 'bg-light', 'input-items');
-          mealCardBodyElem.style.padding = '15px'; // Adds padding inside the container
-          mealCardBodyElem.style.marginLeft = '-15px'; // Adds left margin for the container
-          mealCardBodyElem.style.marginBottom = '15px'; // Adds bottom margin for the container
-          mealCardBodyElem.style.marginTop = '10px'; // Adds top margin for the container
+      const mealCardBodyElem = document.createElement('div');
+      mealCardBodyElem.classList.add('card-body', 'bg-light', 'input-items');
+      mealCard.style.marginBottom = '5px'; // Reduce or remove the bottom margin of the meal card
+      mealCardBodyElem.style.padding = '10px'; // Keep reduced padding
+      mealCardBodyElem.style.marginLeft = '0'; // No negative margin
+      mealCardBodyElem.style.marginBottom = '-20px'; // Remove bottom margin inside the card body
+      mealCardBodyElem.style.marginTop = '-10px'; // Keep top margin minimal
 
-          const mealTimeLabelElem = document.createElement('h5');
-          mealTimeLabelElem.innerText = `${mealTime}:`;
-          mealTimeLabelElem.classList.add('mt-2', 'mb-3'); // Adds margin top and bottom for spacing
-          mealCardBodyElem.appendChild(mealTimeLabelElem);
+      const headerWrapper = document.createElement('div');
+      headerWrapper.style.display = 'flex';
+      headerWrapper.style.justifyContent = 'center';
+      headerWrapper.style.marginBottom = '10px'; // Optional margin
 
-          const rowElem = document.createElement('div');
-          rowElem.classList.add('row', 'gy-3');
+      const mealTimeHeader = document.createElement('h5');
+      mealTimeHeader.innerText = mealTime;
+      mealTimeHeader.style.textDecoration = 'underline';
+      mealTimeHeader.style.color = 'orange'; // Set underline color
 
-          // Main Dish Name
-          rowElem.appendChild(createInputBox(`Main Dish Name`, `dishName-${weekNum}-${day}-${mealTime}`, 'text', true));
+      headerWrapper.appendChild(mealTimeHeader);
+      tabPane.appendChild(headerWrapper); // Append to the tabPane before the meal card
 
-          // Side Dish Name
-          rowElem.appendChild(createInputBox(`Side Dish Name`, `sideDishName-${weekNum}-${day}-${mealTime}`, 'text', true));
 
-          // Dish Timing
-          rowElem.appendChild(createTimeRangeInput(`dishTimingStart-${weekNum}-${day}-${mealTime}`, `dishTimingEnd-${weekNum}-${day}-${mealTime}`));
+      const rowElem = document.createElement('div');
+      rowElem.classList.add('row', 'gy-3');
 
-          mealCardBodyElem.appendChild(rowElem);
-          mealCard.appendChild(mealCardBodyElem);
-          tabPane.appendChild(mealCard);
-      });
+      // Main Dish Dropdown
+      const mainDishOptions = ['select main dish', 'Idly', 'Dosa', 'Pongal', 'Chapathi', 'Upma', 'Parotta', 'Sambar rice', 'Tomato rice', 'Veg meals', 'Curd rice', 'Lemon rice', 'Veg briyani'];
+      rowElem.appendChild(createSelectBox1('Main Dish', `mainDish-${weekNum}-${day}-${mealTime}`, mainDishOptions));
 
-      // Append tab pane to tab content
-      tabContent.appendChild(tabPane);
+      // Side Dish Dropdown
+      const sideDishOptions = ['select side dish', 'Chutney', 'Sambar', 'Masala vada', 'Butter masala', 'Betroot poriyal', 'Potato fry', 'Kootu', 'Appalam', 'Paneer butter masala'];
+      rowElem.appendChild(createSelectBox1('Side Dish', `sideDish-${weekNum}-${day}-${mealTime}`, sideDishOptions));
+
+      mealCardBodyElem.appendChild(rowElem);
+      mealCard.appendChild(mealCardBodyElem);
+      tabPane.appendChild(mealCard);
+    });
+
+    tabContent.appendChild(tabPane);
   });
 
-  // Append the tab navigation and content to the card body
-  cardBodyElem.appendChild(navTabs);
-  cardBodyElem.appendChild(tabContent);
+  // Append vertical tabs and right content to layout container
+  weekLayout.appendChild(navTabs); // Left side (days)
+  weekLayout.appendChild(tabContent); // Right side (meal inputs)
+
+  cardBodyElem.appendChild(weekLayout); // Add layout to card body
   collapseElem.appendChild(cardBodyElem);
   cardElem.appendChild(cardHeaderElem);
   cardElem.appendChild(collapseElem);
   mainParentElem.appendChild(cardElem);
   weekContainer.appendChild(mainParentElem);
 }
-// Helper function to create input boxes
-function createInputBox(labelText, inputId, inputType, required, placeholder = '', multiple = false) {
-    const colElem = document.createElement('div');
-    colElem.classList.add('col-xl-6');
 
-    const inputBoxElem = document.createElement('div');
-    inputBoxElem.classList.add('input-box');
+// Create a select box for dishes
+function createSelectBox1(labelText, selectId, options) {
+  const colElem = document.createElement('div');
+  colElem.classList.add('col-xl-6');
 
-    const labelElem = document.createElement('h6');
-    labelElem.innerText = labelText;
+  const inputBoxElem = document.createElement('div');
+  inputBoxElem.classList.add('input-box');
 
-    const inputElem = document.createElement('input');
-    inputElem.type = inputType;
-    inputElem.id = inputId;
-    inputElem.name = inputId;
-    if (required) inputElem.required = true;
-    if (placeholder) inputElem.placeholder = placeholder;
-    if (multiple) inputElem.multiple = true;
+  const labelElem = document.createElement('h6');
+  labelElem.innerText = labelText;
 
-    inputBoxElem.appendChild(labelElem);
-    inputBoxElem.appendChild(inputElem);
-    colElem.appendChild(inputBoxElem);
+  const selectElem = document.createElement('select');
+  selectElem.id = selectId;
+  selectElem.name = selectId;
+  selectElem.classList.add('form-control');
 
-    return colElem;
+  options.forEach(option => {
+    const optElem = document.createElement('option');
+    optElem.value = option;
+    optElem.innerText = option;
+    selectElem.appendChild(optElem);
+  });
+
+  inputBoxElem.appendChild(labelElem);
+  inputBoxElem.appendChild(selectElem);
+  colElem.appendChild(inputBoxElem);
+
+  return colElem;
 }
 
-// Helper function to create time range input fields
+
+// Save week function
+function saveWeek(weekNumber) {
+  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const hostelName = document.getElementById('hostelname').value;
+  const weekData = {};
+
+  // Fetch global meal timings
+  const mealTimesData = {
+    morning: {
+      start: document.getElementById('morningStart').value,
+      end: document.getElementById('morningEnd').value
+    },
+    afternoon: {
+      start: document.getElementById('afternoonStart').value,
+      end: document.getElementById('afternoonEnd').value
+    },
+    night: {
+      start: document.getElementById('nightStart').value,
+      end: document.getElementById('nightEnd').value
+    }
+  };
+
+  days.forEach(day => {
+    weekData[day] = {};
+    const mealTimes = ['Morning', 'Afternoon', 'Night'];
+    mealTimes.forEach(mealTime => {
+      const dishName = document.getElementById(`mainDish-${weekNumber}-${day}-${mealTime}`).value;
+      const sideDishName = document.getElementById(`sideDish-${weekNumber}-${day}-${mealTime}`).value;
+
+      if (dishName !== 'select main dish' && sideDishName !== 'select side dish') {
+        const timing = mealTimesData[mealTime.toLowerCase()];
+        weekData[day][mealTime.toLowerCase()] = {
+          mainDish: dishName,
+          sideDish: sideDishName,
+          timing: `${convertTo12Hour(timing.start)} - ${convertTo12Hour(timing.end)}`
+        };
+      }
+    });
+  });
+
+  set(ref(db, `Hostel details/${hostelName}/weeks/week${weekNumber}`), weekData)
+    .then(() => alert(`Week ${weekNumber} saved successfully!`))
+    .catch((error) => alert(`Error saving Week ${weekNumber}: ${error.message}`));
+}
+// Helper functions
 function createTimeRangeInput(startId, endId) {
-    const colElem = document.createElement('div');
-    colElem.classList.add('col-xl-6');
+  const colElem = document.createElement('div');
+  colElem.classList.add('col-xl-6');
 
-    const inputBoxElem = document.createElement('div');
-    inputBoxElem.classList.add('input-box');
+  const inputBoxElem = document.createElement('div');
+  inputBoxElem.classList.add('input-box');
 
-    const labelElem = document.createElement('h6');
-    labelElem.innerText = 'Dish Timings';
+  const timeInputContainer = document.createElement('div');
+  timeInputContainer.classList.add('d-flex', 'gap-2');
 
-    // Create a container for the time inputs
-    const timeInputContainer = document.createElement('div');
-    timeInputContainer.classList.add('d-flex', 'gap-2'); // Flexbox for horizontal alignment
+  const startLabelElem = document.createElement('label');
+  startLabelElem.innerText = 'From:';
+  const startInputElem = document.createElement('input');
+  startInputElem.type = 'time';
+  startInputElem.id = startId;
+  startInputElem.name = startId;
 
-    const startInputElem = document.createElement('input');
-    startInputElem.type = 'time';
-    startInputElem.id = startId;
-    startInputElem.name = startId;
-    startInputElem.classList.add('form-control');
+  const endLabelElem = document.createElement('label');
+  endLabelElem.innerText = 'To:';
+  const endInputElem = document.createElement('input');
+  endInputElem.type = 'time';
+  endInputElem.id = endId;
+  endInputElem.name = endId;
 
-    const endInputElem = document.createElement('input');
-    endInputElem.type = 'time';
-    endInputElem.id = endId;
-    endInputElem.name = endId;
-    endInputElem.classList.add('form-control');
+  timeInputContainer.appendChild(startLabelElem);
+  timeInputContainer.appendChild(startInputElem);
+  timeInputContainer.appendChild(endLabelElem);
+  timeInputContainer.appendChild(endInputElem);
 
-    // Append time inputs to the container
-    timeInputContainer.appendChild(startInputElem);
-    timeInputContainer.appendChild(endInputElem);
+  inputBoxElem.appendChild(timeInputContainer);
+  colElem.appendChild(inputBoxElem);
 
-    inputBoxElem.appendChild(labelElem);
-    inputBoxElem.appendChild(timeInputContainer);
-    colElem.appendChild(inputBoxElem);
-
-    return colElem;
+  return colElem;
 }
-
 function convertTo12Hour(time24) {
   const [hours, minutes] = time24.split(':');
   const period = +hours >= 12 ? 'PM' : 'AM';
   const hours12 = +hours % 12 || 12;
   return `${hours12}:${minutes} ${period}`;
 }
+/* End of Storing menu details*/
 
-
-function saveWeek(weekNumber) {
-  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  const hostelName = document.getElementById('hostelname').value;
-  const weekData = {};
-
-  days.forEach(day => {
-      const mealTimes = ['Morning', 'Afternoon', 'Night'];
-      weekData[day] = {};
-
-      mealTimes.forEach(mealTime => {
-          const dishName = document.getElementById(`dishName-${weekNumber}-${day}-${mealTime}`).value;
-          const sideDishName = document.getElementById(`sideDishName-${weekNumber}-${day}-${mealTime}`).value;
-          let dishTimingStart = document.getElementById(`dishTimingStart-${weekNumber}-${day}-${mealTime}`).value;
-          let dishTimingEnd = document.getElementById(`dishTimingEnd-${weekNumber}-${day}-${mealTime}`).value;
-
-          if (dishName && sideDishName && dishTimingStart && dishTimingEnd) {
-              // Convert the timings to 12-hour format with AM/PM
-              dishTimingStart = convertTo12Hour(dishTimingStart);
-              dishTimingEnd = convertTo12Hour(dishTimingEnd);
-
-              weekData[day][mealTime] = {
-                  mainDish: dishName,
-                  sideDish: sideDishName,
-                  timing: `${dishTimingStart} - ${dishTimingEnd}`
-              };
-          } else {
-              alert(`Please fill out all fields for ${day} (${mealTime})`);
-              return;
-          }
-      });
-  });
-
-  if (Object.keys(weekData).length === days.length) {
-      set(ref(db, `Hostel details/${hostelName}/weeks/week${weekNumber}`), weekData)
-          .then(() => {
-              alert(`Week ${weekNumber} saved successfully!`);
-          })
-          .catch((error) => {
-              alert(`Error saving Week ${weekNumber}: ${error.message}`);
-          });
-  }
-}
 /* Start of Multiple image upload for hostel images*/
 
 var files = [];
@@ -338,6 +489,15 @@ const roomContainer = document.getElementById("room-container");
 let roomCount = 0;
 document.addEventListener('DOMContentLoaded', function () {
   addroom.addEventListener('click', () => {
+
+    const floorInput = document.getElementById("hostelfloors");
+    const floors = floorInput.value;
+
+    // Check if the number of floors is entered
+    if (floors <= 0 || isNaN(floors)) {
+      alert("Please enter a valid number of floors before adding a room.");
+      return; // Stop the function if number of floors is not valid
+    }
     roomCount++;
 
     const mainParentElem = document.createElement('div');
@@ -348,8 +508,25 @@ document.addEventListener('DOMContentLoaded', function () {
     cardElem.id = `room-${roomCount}`;
 
     const cardHeaderElem = document.createElement('div');
-    cardHeaderElem.classList.add('card-header');
-    cardHeaderElem.innerHTML = `<h5>Room ${roomCount}</h5>`;
+    cardHeaderElem.classList.add('card-header', 'd-flex', 'justify-content-between', 'align-items-center');
+
+    // Room label
+    const roomLabel = document.createElement('h5');
+    roomLabel.innerText = `Room ${roomCount}`;
+
+    // Delete icon
+    const deleteIcon = document.createElement('a');
+    deleteIcon.className = 'ri-delete-bin-line';
+    deleteIcon.style.fontSize = '24px';
+    deleteIcon.style.cursor = 'pointer';
+    deleteIcon.onclick = () => {
+      cardElem.remove();
+      roomCount--;
+    };
+
+    // Add room label and delete icon to header
+    cardHeaderElem.appendChild(roomLabel);
+    cardHeaderElem.appendChild(deleteIcon);
 
     const cardBodyElem = document.createElement('div');
     cardBodyElem.classList.add('card-body');
@@ -400,15 +577,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Upload Room Images
     rowElem.appendChild(createInputBox('Upload Room Images', `roomImage-${roomCount}`, 'file', false, '', true));
-
-    // Remove Room Button
-    const removeRoomBtn = document.createElement('span');
-    removeRoomBtn.className = 'btn restaurant-button';
-    removeRoomBtn.innerHTML = 'Remove Room';
-    removeRoomBtn.onclick = () => {
-      cardElem.remove();
-    };
-    rowElem.appendChild(removeRoomBtn);
 
     // Append elements
     inputItemsElem.appendChild(rowElem);
@@ -560,7 +728,31 @@ registerHostel.addEventListener('click', async (e) => {
   var hstate = document.getElementById("hostelstate").value;
   var hpin = document.getElementById("hostelpin").value;
 
-  let rooms = [];
+  if (!hname || !htype || !hphone || !hemail || !hadd1 || !hcity || !hstate || !hpin) {
+    alert("Please fill in all required fields.");
+    return;
+  }
+
+  // Validate email
+  const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+  if (!hemail.match(emailPattern)) {
+    alert("Please enter a valid email address.");
+    return;
+  }
+
+  // Validate phone number (should be exactly 10 digits)
+  if (hphone.length !== 10 || isNaN(hphone)) {
+    alert("Phone number should be exactly 10 digits.");
+    return;
+  }
+
+  // Validate if at least one image is uploaded
+  if (files.length === 0) {
+    alert("Please upload at least one image.");
+    return;
+  }
+
+  let rooms = {};
   for (let i = 1; i <= roomCount; i++) {
     const floor = document.getElementById(`floor-${i}`).value;
     const roomType = document.getElementById(`roomType-${i}`).value;
@@ -573,7 +765,7 @@ registerHostel.addEventListener('click', async (e) => {
     const files = imageInput.files;
     let imagelink1 = [];
 
-    //Storing room images data into an array called imagelink1[]
+    // Storing room images data into an array called imagelink1[]
     if (files.length != 0) {
       for (let j = 0; j < files.length; j++) {
         const storageRef = ref2(storage, 'Roomimages/' + hname + '/room-' + i + '/' + files[j].name);
@@ -582,16 +774,22 @@ registerHostel.addEventListener('click', async (e) => {
         imagelink1.push(imageUrl);
       }
     }
-    rooms.push({
-      floor: floor,
-      roomType: roomType,
-      roomCount: roomCountVal,
-      amenities: amenities,
+
+    // Create or get the floor object
+    if (!rooms[`floor${floor}`]) {
+      rooms[`floor${floor}`] = {};
+    }
+
+    // Add room to the corresponding floor
+    rooms[`floor${floor}`][`room${i}`] = {
       ac: ac,
+      roomCount: roomCountVal,
       bathroom: bathroom,
+      roomType: roomType,
       price: price,
-      images: imagelink1
-    });
+      amenities: amenities,
+      imagesLink: imagelink1
+    };
   }
   update(ref(db, "Hostel details/" + hname + '/'), {
     hostelName: hname,
