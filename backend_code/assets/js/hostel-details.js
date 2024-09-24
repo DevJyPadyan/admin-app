@@ -11,17 +11,25 @@ let tbody = document.getElementById("tbody1");
 
 //Remove functionality code 
 const removeHostel = (event, hostelName) => {
-    event.stopPropagation(); // Prevent the row click event (i.e this function will work when delete button is clicked)
+    event.stopPropagation(); // Prevent the row click event
 
-    const rowRef = ref(db, `Hostel details/${hostelName}`);
-    remove(rowRef)
-        .then(() => {
-            alert(`${hostelName} removed successfully!`);
-            SelectAlldataReal();  // Refresh data after removal
-        })
-        .catch((error) => {
-            alert("Error removing record: " + error.message);
-        });
+    // Show confirmation alert box
+    const userConfirmed = window.confirm(`Are you sure you want to delete the hostel: ${hostelName}?`);
+
+    // If the user confirms deletion
+    if (userConfirmed) {
+        const rowRef = ref(db, `Hostel details/${hostelName}`);
+        remove(rowRef)
+            .then(() => {
+                alert(`${hostelName} removed successfully!`);
+                SelectAlldataReal();  // Refresh data after removal
+            })
+            .catch((error) => {
+                alert("Error removing record: " + error.message);
+            });
+    } else {
+        console.log('Deletion cancelled by the user.');
+    }
 };
 
 //Functionality for editing a data//

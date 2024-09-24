@@ -92,6 +92,9 @@ document.getElementById("uploadImage").addEventListener("click", async function 
 });
 
 registerUser.addEventListener('click', async (e) => {
+  e.preventDefault(); // Prevent form submission before validation
+
+  // Get input values
   var userName = document.getElementById("username").value;
   var userFullName = document.getElementById("userfullname").value;
   var userPhone = document.getElementById("userphone").value;
@@ -112,7 +115,7 @@ registerUser.addEventListener('click', async (e) => {
   var guardAddress2 = document.getElementById("guardadd2").value;
   var guardState = document.getElementById("guardstate").value;
   var guardCity = document.getElementById("guardcity").value;
-  var guardPin = document.getElementById("guardpin").value;
+  var guardPin = document.getElementById("guardpin").value; 
   var roomType = document.getElementById("roomtype").value;
   var floor = document.getElementById("floornum").value;
   var ac = document.getElementById("aircond").value;
@@ -120,61 +123,102 @@ registerUser.addEventListener('click', async (e) => {
   var paymentComplete = document.getElementById("paymentComplete").value;
   var hostelName = document.getElementById("hostelName").value;
 
-  const userRef = ref(db, "User details/" + userName + '/');
-  const bookingsRef = ref(db, "User details/" + userName + '/Bookings/' + hostelName + '/RoomDetails/');
+  // Validation for user and guardian details
+  if (!userName || !userFullName || !userPhone || !userGender || !userEmail || !userAddress1 || !userCity || !userState || !userPin || 
+    !password1 || !password2 || !guardName || !guardRelation || !guardEmail || !guardPhone || !guardAddress1 || !guardCity || !guardState 
+    || !guardPin || !roomType || !floor || !ac || !totalAmount || !paymentComplete) 
+    {
+      alert("Please fill all required fields.");
+      return;
+  }
 
+  // Email validation
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(userEmail)) {
+      alert("Please enter a valid email address.");
+      return;
+  }
+
+  // Phone validation
+  if (userPhone.length !== 10) {
+      alert("Phone number should be exactly 10 digits.");
+      return;
+  }
+
+  if (guardPhone.length !== 10) {
+      alert("Guardian's phone number should be exactly 10 digits.");
+      return;
+  }
+
+  // Password match validation
+  if (password1 !== password2) {
+      alert("Passwords do not match.");
+      return;
+  }
+
+  // Proof image validation
+  if (files.length === 0) {
+      alert("Please upload at least one proof image.");
+      return;
+  }
+
+  // Proceed with Firebase saving if validation check passes
   try {
-    const snapshot = await get(userRef);
-    let existingData = snapshot.exists() ? snapshot.val() : {};
+      const userRef = ref(db, "User details/" + userName + '/');
+      const bookingsRef = ref(db, "User details/" + userName + '/Bookings/' + hostelName + '/RoomDetails/');
+      
 
-    // Create room details object
-    const roomDetails = {
-      roomType: roomType,
-      floor: floor,
-      ac: ac,
-      totalAmount: totalAmount,
-      paymentComplete: paymentComplete
-    };
+      const snapshot = await get(userRef);
+      let existingData = snapshot.exists() ? snapshot.val() : {}; // to check if any existing data is present in user details.
 
-    // Construct new user details
-    let newUserDetails = {
-      userName: userName,
-      userFullName: userFullName,
-      userPhone: userPhone,
-      userGender: userGender,
-      userEmail: userEmail,
-      userAddress1: userAddress1,
-      userAddress2: userAddress2,
-      userCity: userCity,
-      userState: userState,
-      userPin: userPin,
-      password1: password1,
-      password2: password2,
-      guardName: guardName,
-      guardRelation: guardRelation,
-      guardEmail: guardEmail,
-      guardPhone: guardPhone,
-      guardAddress1: guardAddress1,
-      guardAddress2: guardAddress2,
-      guardState: guardState,
-      guardCity: guardCity,
-      guardPin: guardPin,
-    };
+      // Create room details object
+      const roomDetails = {
+          roomType: roomType,
+          floor: floor,
+          ac: ac,
+          totalAmount: totalAmount,
+          paymentComplete: paymentComplete
+      };
 
-    // Merge with existing proofData if available
-    if (existingData.proofData) {
-      newUserDetails.proofData = existingData.proofData;
-    }
+      // Construct new user details
+      let newUserDetails = {
+          userName: userName,
+          userFullName: userFullName,
+          userPhone: userPhone,
+          userGender: userGender,
+          userEmail: userEmail,
+          userAddress1: userAddress1,
+          userAddress2: userAddress2,
+          userCity: userCity,
+          userState: userState,
+          userPin: userPin,
+          password1: password1,
+          password2: password2,
+          guardName: guardName,
+          guardRelation: guardRelation,
+          guardEmail: guardEmail,
+          guardPhone: guardPhone,
+          guardAddress1: guardAddress1,
+          guardAddress2: guardAddress2,
+          guardState: guardState,
+          guardCity: guardCity,
+          guardPin: guardPin,
+      };
 
-    // Update the user details
-    await set(userRef, newUserDetails);
+      // Merge with existing proofData if available
+      if (existingData.proofData) {
+          newUserDetails.proofData = existingData.proofData;
+      }
 
-    // Store room details under the hostel's booking
-    await set(bookingsRef, roomDetails);
+      // Update the user details
+      await set(userRef, newUserDetails);
 
-    alert("User details and room booking added successfully");
-    window.location.href = "././users.html";
+      // Store room details under the hostel's booking
+      await set(bookingsRef, roomDetails);
+
+      alert("User details and room booking added successfully");
+      window.location.href = "././users.html";
   } catch (error) {
-    alert("Error fetching or saving user details: " + error.message);
+      alert("Error fetching or saving user details: " + error.message);
   }
 });

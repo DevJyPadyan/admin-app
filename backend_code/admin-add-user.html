@@ -63,10 +63,10 @@
 </head>
 
 <body>
-    <!-- tap on top start -->
+    <!-- tap on top start
     <div class="tap-top">
         <i class="ri-arrow-up-double-fill"></i>
-    </div>
+    </div>-->
     <!-- tap on tap end -->
 
     <!-- loader start -->
@@ -526,16 +526,16 @@
                                                 <div class="row gy-3">
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>User Name</h6>
+                                                            <h6>User Name<span class="required">*</span></h6>
                                                             <input type="text" placeholder="Enter User Name"
-                                                                id="username">
+                                                                id="username" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Full Name</h6>
+                                                            <h6>Full Name<span class="required">*</span></h6>
                                                             <input type="text" placeholder="Enter Full Name"
-                                                                id="userfullname">
+                                                                id="userfullname" required>
                                                         </div>
                                                     </div>
                                                     <!--<div class="col-xl-6">
@@ -557,9 +557,9 @@
                                                     </div>-->
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Gender</h6>
+                                                            <h6>Gender<span class="required">*</span></h6>
                                                             <select class="js-example-basic-single w-100" name="state"
-                                                                id="usergender">
+                                                                id="usergender" required>
                                                                 <option>Men</option>
                                                                 <option>Women</option>
                                                             </select>
@@ -567,63 +567,65 @@
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Phone number </h6>
+                                                            <h6>Phone number<span class="required">*</span></h6>
                                                             <input type="tel" placeholder="Enter Phone number"
-                                                                id="userphone">
+                                                                id="userphone" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Email address</h6>
+                                                            <h6>Email address<span class="required">*</span></h6>
                                                             <input type="email" placeholder="Enter Email address"
-                                                                id="usermail">
+                                                                id="usermail" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Address Line 1</h6>
+                                                            <h6>Address Line 1<span class="required">*</span></h6>
                                                             <input type="text" placeholder="Address line 1"
-                                                                id="useradd1">
+                                                                id="useradd1" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Address Line 2</h6>
+                                                            <h6>Address Line 2<span class="required">*</span></h6>
                                                             <input type="text" placeholder="Address line 2"
-                                                                id="useradd2">
+                                                                id="useradd2" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>City</h6>
-                                                            <input type="text" placeholder="Enter City" id="usercity">
+                                                            <h6>City<span class="required">*</span></h6>
+                                                            <input type="text" placeholder="Enter City" id="usercity"
+                                                                required>
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>State</h6>
-                                                            <input type="text" placeholder="Enter State" id="userstate">
+                                                            <h6>State <span class="required">*</span></h6>
+                                                            <input type="text" placeholder="Enter State" id="userstate"
+                                                                required>
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Pincode</h6>
+                                                            <h6>Pincode<span class="required">*</span></h6>
                                                             <input type="number" placeholder="Enter Pincode"
-                                                                id="userpin">
+                                                                id="userpin" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Password</h6>
-                                                            <input type="password" placeholder="Enter Pasword"
-                                                                id="pwd1">
+                                                            <h6>Password<span class="required">*</span></h6>
+                                                            <input type="password" placeholder="Enter Pasword" id="pwd1"
+                                                                required>
                                                         </div>
                                                     </div>
                                                     <div class="col-xl-6">
                                                         <div class="input-box">
-                                                            <h6>Confirm Password</h6>
+                                                            <h6>Confirm Password<span class="required">*</span></h6>
                                                             <input type="password" placeholder="Re-Enter Password"
-                                                                id="pwd2">
+                                                                id="pwd2" required>
                                                         </div>
                                                     </div>
                                                     <!--<div class="col-xl-6">
@@ -766,57 +768,64 @@
                                         <div class="row gy-3">
                                             <div class="col-xl-6">
                                                 <div class="input-box">
-                                                    <h6>Full Name</h6>
-                                                    <input type="text" placeholder="Enter Full Name" id="guardname">
+                                                    <h6>Full Name<span class="required">*</span></h6>
+                                                    <input type="text" placeholder="Enter Full Name" id="guardname"
+                                                        required>
                                                 </div>
                                             </div>
                                             <div class="col-xl-6">
                                                 <div class="input-box">
-                                                    <h6>Relationship</h6>
-                                                    <input type="text" placeholder="Enter Relationship" id="guardrel">
+                                                    <h6>Relationship<span class="required">*</span></h6>
+                                                    <input type="text" placeholder="Enter Relationship" id="guardrel"
+                                                        required>
                                                 </div>
                                             </div>
                                             <div class="col-xl-6">
                                                 <div class="input-box">
-                                                    <h6>Phone number </h6>
-                                                    <input type="tel" placeholder="Enter Phone number" id="guardphone">
+                                                    <h6>Phone number <span class="required">*</span></h6>
+                                                    <input type="tel" placeholder="Enter Phone number" id="guardphone"
+                                                        required>
                                                 </div>
                                             </div>
                                             <div class="col-xl-6">
                                                 <div class="input-box">
-                                                    <h6>Email address</h6>
-                                                    <input type="email" placeholder="Enter Email address"
-                                                        id="guardmail">
+                                                    <h6>Email address<span class="required">*</span></h6>
+                                                    <input type="email" placeholder="Enter Email address" id="guardmail"
+                                                        required>
                                                 </div>
                                             </div>
                                             <div class="col-xl-6">
                                                 <div class="input-box">
-                                                    <h6>Address Line 1</h6>
-                                                    <input type="text" placeholder="Address line 1" id="guardadd1">
+                                                    <h6>Address Line 1<span class="required">*</span></h6>
+                                                    <input type="text" placeholder="Address line 1" id="guardadd1"
+                                                        required>
                                                 </div>
                                             </div>
                                             <div class="col-xl-6">
                                                 <div class="input-box">
-                                                    <h6>Address Line 2</h6>
-                                                    <input type="text" placeholder="Address line 2" id="guardadd2">
+                                                    <h6>Address Line 2<span class="required">*</span></h6>
+                                                    <input type="text" placeholder="Address line 2" id="guardadd2"
+                                                        required>
                                                 </div>
                                             </div>
                                             <div class="col-xl-6">
                                                 <div class="input-box">
-                                                    <h6>City</h6>
-                                                    <input type="text" placeholder="Enter City" id="guardcity">
+                                                    <h6>City<span class="required">*</span></h6>
+                                                    <input type="text" placeholder="Enter City" id="guardcity" required>
                                                 </div>
                                             </div>
                                             <div class="col-xl-6">
                                                 <div class="input-box">
-                                                    <h6>State</h6>
-                                                    <input type="text" placeholder="Enter State" id="guardstate">
+                                                    <h6>State<span class="required">*</span></h6>
+                                                    <input type="text" placeholder="Enter State" id="guardstate"
+                                                        required>
                                                 </div>
                                             </div>
                                             <div class="col-xl-6">
                                                 <div class="input-box">
-                                                    <h6>Pincode</h6>
-                                                    <input type="number" placeholder="Enter Pincode" id="guardpin">
+                                                    <h6>Pincode<span class="required">*</span></h6>
+                                                    <input type="number" placeholder="Enter Pincode" id="guardpin"
+                                                        required>
                                                 </div>
                                             </div>
                                         </div>
@@ -830,7 +839,7 @@
                                     <h5>Available Rooms</h5>
                                 </div>
                                 <div class="card-body">
-                                    <div id="roomContainer"> 
+                                    <div id="roomContainer">
                                         <table id="roomTable">
                                             <thead>
                                                 <tr>
@@ -852,8 +861,8 @@
                                     <br>
                                 </div>
                             </div>
-                        </div>                        
-                    
+                        </div>
+
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
@@ -864,21 +873,23 @@
                                         <div class="row gy-3">
                                             <div class="col-xl-6">
                                                 <div class="input-box">
-                                                    <h6>Hostel Name</h6>
-                                                    <input type="text" placeholder="Enter Hostel Name" id="hostelName">
+                                                    <h6>Hostel Name<span class="required">*</span></h6>
+                                                    <input type="text" placeholder="Enter Hostel Name" id="hostelName"
+                                                        required>
                                                 </div>
                                             </div>
                                             <div class="col-xl-6">
                                                 <div class="input-box">
-                                                    <h6>Floor</h6>
-                                                    <input type="text" placeholder="Enter Floor number" id="floornum">
+                                                    <h6>Floor<span class="required">*</span></h6>
+                                                    <input type="text" placeholder="Enter Floor number" id="floornum"
+                                                        required>
                                                 </div>
                                             </div>
                                             <div class="col-xl-6">
                                                 <div class="input-box">
-                                                    <h6>Room type</h6>
+                                                    <h6>Room type<span class="required">*</span></h6>
                                                     <select class="js-example-basic-single w-100" name="state"
-                                                        id="roomtype">
+                                                        id="roomtype" required>
                                                         <option>1 sharing</option>
                                                         <option>2 sharing</option>
                                                         <option>3 sharing</option>
@@ -888,9 +899,9 @@
                                             </div>
                                             <div class="col-xl-6">
                                                 <div class="input-box">
-                                                    <h6>Air conditioning</h6>
+                                                    <h6>Air conditioning<span class="required">*</span></h6>
                                                     <select class="js-example-basic-single w-100" name="state"
-                                                        id="aircond">
+                                                        id="aircond" required>
                                                         <option>ac</option>
                                                         <option>non-ac</option>
                                                     </select>
@@ -898,14 +909,16 @@
                                             </div>
                                             <div class="col-xl-6">
                                                 <div class="input-box">
-                                                    <h6>Room price</h6>
-                                                    <input type="number" placeholder="Enter Room price" id="roomprice">
+                                                    <h6>Room price<span class="required">*</span></h6>
+                                                    <input type="number" placeholder="Enter Room price" id="roomprice"
+                                                        required>
                                                 </div>
                                             </div>
                                             <div class="col-xl-6">
                                                 <div class="input-box">
                                                     <h6>Payment Status</h6>
-                                                    <input type="text" placeholder="Booking Status" value="Yes" id="paymentComplete">
+                                                    <input type="text" placeholder="Booking Status" value="Yes"
+                                                        id="paymentComplete">
                                                 </div>
                                             </div>
                                         </div>
@@ -1083,7 +1096,7 @@
                                         </div>
                                     </div>
                                 </div>-->
-                        <div class="col-12">
+                        <div class="col-12 mb-5">
                             <button type="button" id="registerUser" class="btn restaurant-button">Save</button>
                         </div>
                         <!--<div class="col-12">
