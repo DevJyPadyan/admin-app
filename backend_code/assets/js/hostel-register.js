@@ -19,24 +19,30 @@ morningTimeContainer.appendChild(createTimeRangeInput('morningStart', 'morningEn
 afternoonTimeContainer.appendChild(createTimeRangeInput('afternoonStart', 'afternoonEnd'));
 nightTimeContainer.appendChild(createTimeRangeInput('nightStart', 'nightEnd'));
 
+let existingWeeks = [];   // Declare globally to store existing weeks from Firebase
+let existingNumericWeeks = [];  // Store numeric week values for internal comparison
+
 document.addEventListener('DOMContentLoaded', async () => {
   const hostelName = document.getElementById('hostelname').value;
 
-  // Fetch existing weeks from Firebase
-  let existingWeeks = await getExistingWeeks(hostelName);
+  // Fetch existing weeks from Firebase and set the global variables
+  existingWeeks = await getExistingWeeks(hostelName);
 
-  // Initialize the week count
+  // Convert Firebase weeks (like 'week1', 'week2') into numeric values for internal comparison
+  existingNumericWeeks = existingWeeks.map(week => parseInt(week.replace('week', '')));
+
+  // Initialize the week count for display purposes
   let weekCount = 1;
 
-  // Create Week 1 container
+  // Create Week 1 container on load
   createWeekForm(weekCount);
 
   // Add checkboxes for Week 2 to Week 5 after Week 1 container
-  addWeekCheckboxes(weekCount, existingWeeks);
+  addWeekCheckboxes(weekCount, existingNumericWeeks);
 
-  // Add event listener for the Add Week button
-  addWeekButton.addEventListener('click', async () => {
-    const nextWeek = await findNextAvailableWeek(existingWeeks);
+  // Add event listener for the Add Menu button to find and display the next missing week
+  document.getElementById('addWeekButton').addEventListener('click', async () => {
+    const nextWeek = await findNextAvailableWeek(existingNumericWeeks);
     console.log(`Next available week: ${nextWeek !== null ? nextWeek : 'None'}`);
 
     if (!nextWeek) {
@@ -44,22 +50,23 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
+    // Create the next missing week form
     createWeekForm(nextWeek);
-    addWeekCheckboxes(nextWeek, existingWeeks);
+    addWeekCheckboxes(nextWeek, existingNumericWeeks);
 
-    // Update the existing weeks after adding a new week
-    existingWeeks.push(nextWeek);  // Add the newly created week to the existing weeks array
+    // Update the existing numeric weeks after adding a new week
+    existingNumericWeeks.push(nextWeek);
+    existingWeeks.push(`week${nextWeek}`);  // Also update the original array with the 'week' prefix
   });
 });
 
-// Function to get existing weeks from Firebase
 async function getExistingWeeks(hostelName) {
   const snapshot = await get(ref(db, `Hostel details/${hostelName}/weeks`));
-  return snapshot.exists() ? Object.keys(snapshot.val()).map(week => week.replace('week', '')) : [];
+  return snapshot.exists() ? Object.keys(snapshot.val()) : [];
 }
 
-// Function to add checkboxes for copying week data
-async function addWeekCheckboxes(currentWeekNum, existingWeeks) {
+// Function to add checkboxes for copying Week 1 data to Week 2 to Week 5
+async function addWeekCheckboxes(currentWeekNum, existingNumericWeeks) {
   const container = document.createElement('div');
   container.classList.add('mt-3');
 
@@ -89,8 +96,8 @@ async function addWeekCheckboxes(currentWeekNum, existingWeeks) {
     weekLabelElem.innerText = `Week ${week}`;
     weekLabelElem.classList.add('form-check-label');
 
-    // Check if the week already exists in Firebase and disable the checkbox if it does
-    const weekExists = existingWeeks.includes(String(week));
+    // Check if the numeric week is present in existing weeks (strip the 'week' prefix for comparison)
+    const weekExists = existingNumericWeeks.includes(week); // Check using numeric comparison
     inputElem.disabled = weekExists; // Disable checkbox if week exists
     if (weekExists) {
       weekLabelElem.style.color = 'gray'; // Indicate the week is already added
@@ -103,16 +110,16 @@ async function addWeekCheckboxes(currentWeekNum, existingWeeks) {
     // Add event listener to handle the checkbox selection for copying data
     inputElem.addEventListener('change', async (event) => {
       if (event.target.checked) {
-        await copyWeekData(currentWeekNum, week);  // Copy from the newly added week to the selected week
+        await copyWeekData(currentWeekNum, week);  // Copy from Week 1 to the selected week
       }
     });
   });
 
   container.appendChild(checkboxContainer);
-  weekContainer.appendChild(container);
+  document.getElementById('weekContainer').appendChild(container);
 }
 
-// Function to copy Week data to the selected week in Firebase
+// Function to copy Week 1 data to the selected week in Firebase
 async function copyWeekData(sourceWeek, targetWeek) {
   const weekData = {};
 
@@ -142,7 +149,7 @@ async function copyWeekData(sourceWeek, targetWeek) {
       const sideDishName = document.getElementById(`sideDish-${sourceWeek}-${day}-${mealTime}`).value;
 
       if (dishName !== 'select main dish' && sideDishName !== 'select side dish') {
-        const timing = mealTimesData[mealTime.toLowerCase()]; // Get timing for the current meal (morning, afternoon, night)
+        const timing = mealTimesData[mealTime.toLowerCase()]; // Get timing for the current meal
         weekData[day][mealTime.toLowerCase()] = {
           mainDish: dishName,
           sideDish: sideDishName,
@@ -154,21 +161,23 @@ async function copyWeekData(sourceWeek, targetWeek) {
 
   const hostelName = document.getElementById('hostelname').value;
 
-  // Save the copied data for the selected week in Firebase
+  // Save the copied data for the selected week in Firebase (add 'week' prefix when saving)
   await set(ref(db, `Hostel details/${hostelName}/weeks/week${targetWeek}`), weekData)
     .then(() => {
       alert(`Week ${sourceWeek} data copied to Week ${targetWeek}!`);
 
-      // Update existingWeeks to include the newly copied week
-      if (!existingWeeks.includes(String(targetWeek))) {
-        existingWeeks.push(String(targetWeek));
+      // Update existingWeeks and existingNumericWeeks to include the newly copied week
+      if (!existingWeeks.includes(`week${targetWeek}`)) {
+        existingWeeks.push(`week${targetWeek}`);  // Add 'week' prefix for Firebase
+        existingNumericWeeks.push(targetWeek);    // Numeric value for internal comparison
       }
     })
     .catch((error) => alert(`Error copying data: ${error.message}`));
 }
+
 // Helper function to find the next available week number
-async function findNextAvailableWeek(existingWeeks) {
-  const availableWeeks = [2, 3, 4, 5].filter(week => !existingWeeks.includes(String(week)));
+async function findNextAvailableWeek(existingNumericWeeks) {
+  const availableWeeks = [2, 3, 4, 5].filter(week => !existingNumericWeeks.includes(week));
   return availableWeeks.length > 0 ? availableWeeks[0] : null;
 }
 

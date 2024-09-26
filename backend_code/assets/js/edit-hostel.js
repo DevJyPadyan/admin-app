@@ -148,7 +148,8 @@ document.addEventListener('DOMContentLoaded', function () {
         rowElem.classList.add('row', 'gy-3');
 
         // Create and prefill form fields
-        rowElem.appendChild(createSelectBox('Floor', `floor-${roomNumber}`, true, floorOptions.map(floor => `Floor ${floor}`), roomData.floor));
+        const floorSelectOptions = floorOptions.map(floor => `Floor ${floor}`);
+        rowElem.appendChild(createSelectBox('Floor', `floor-${roomNumber}`, true, floorSelectOptions, `Floor ${roomData.floor}`));
         rowElem.appendChild(createSelectBox('Room Type', `roomType-${roomNumber}`, true, ['1 sharing', '2 sharing', '3 sharing', '4 sharing'], roomData.roomType));
         rowElem.appendChild(createInputBox('Room Count', `roomCount-${roomNumber}`, 'number', true, '', false, roomData.roomCount));
         rowElem.appendChild(createInputBox('Amenities', `amenities-${roomNumber}`, 'text', false, 'e.g. WiFi, Laundry', false, roomData.amenities));
@@ -236,10 +237,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         options.forEach(option => {
             const optElem = document.createElement('option');
-            optElem.value = option;
-            optElem.text = option;
+            optElem.value = option.replace('Floor ', ''); // Store only the floor number (1, 2, etc.)
+            optElem.text = option; // Display as "Floor 1", "Floor 2", etc.
 
-            if (optElem.value === selectedValue) {
+            if (optElem.value === selectedValue.replace('Floor ', '')) {
                 optElem.selected = true;
             }
             selectElem.appendChild(optElem);
@@ -571,7 +572,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     Object.keys(floorData).forEach((roomKey) => {
                         const roomData = floorData[roomKey];
-                        const roomNumber = roomKey.replace('room ', ''); // Extract only the room number
+                        const roomNumber = roomKey.replace('room', ''); // Extract only the room number
 
                         // Prefill the form with room and floor data
                         addRoomForm(roomNumber, roomData, floorNumber);
@@ -660,7 +661,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Create and prefill form fields
         rowElem.appendChild(createInputBox('Floor', `floor-${roomNumber}`, 'text', true, '', false, floorNumber));
-        rowElem.appendChild(createSelectBox('Room Type', `roomType-${roomNumber}`, true, ['1 sharing', '2 sharing', '3 sharing', '4 sharing'], roomData.type));
+        rowElem.appendChild(createSelectBox('Room Type', `roomType-${roomNumber}`, true, ['1 sharing', '2 sharing', '3 sharing', '4 sharing'], roomData.roomType));
         rowElem.appendChild(createInputBox('Room Count', `roomCount-${roomNumber}`, 'number', true, '', false, roomData.roomCount));
         rowElem.appendChild(createInputBox('Amenities', `amenities-${roomNumber}`, 'text', false, 'e.g. WiFi, Laundry', false, roomData.amenities));
         rowElem.appendChild(createSelectBox('Air Conditioning', `ac-${roomNumber}`, true, ['ac', 'non-ac'], roomData.ac));
@@ -696,8 +697,8 @@ document.addEventListener('DOMContentLoaded', function () {
             if (confirm('Are you sure you want to delete this room?')) {
                 try {
                     const hostelName = document.getElementById("hostelname").value;
-                    const roomPath = `Hostel details/${hostelName}/rooms/floor ${floorNumber}/room ${roomNumber}`;
-
+                    const roomPath = `Hostel details/${hostelName}/rooms/floor${floorNumber}/room${roomNumber}`;
+    
                     await remove(ref(db, roomPath));
                     document.getElementById(`room-${roomNumber}`).remove();
                     alert('Room deleted successfully.');
@@ -856,17 +857,32 @@ updateHostel.addEventListener('click', async (e) => {
         if (!rooms[floorKey]) {
             rooms[floorKey] = {};
         }
-    
+
         rooms[floorKey][`room${roomKey}`] = {
             ac,
             roomCount: roomCountVal,
             bathroom,
-            type: roomType,
+            roomType: roomType,
             price: price,
             amenities: amenities,
             imagesLink: imagelink1.length > 0 ? imagelink1 : [] // Keep existing if no new images
         };
-    }    
+    }
+
+    // Always update hostel details
+    await update(ref(db, "Hostel details/" + hostelName + '/'), {
+        hostelName: hostelName,
+        hostelType: htype,
+        hostelPhone: hphone,
+        hostelEmail: hemail,
+        hostelAddress1: hadd1,
+        hostelAddress2: hadd2,
+        hostelCity: hcity,
+        hostelState: hstate,
+        hostelPin: hpin,
+        rooms: rooms
+    });
+
     let weeks = {}; // Collect week details
     const weekCount = document.querySelectorAll('.card[id^="week-"]').length;
     const weekDropdown = document.getElementById('weekDropdown'); // Access the dropdown here
@@ -911,36 +927,16 @@ updateHostel.addEventListener('click', async (e) => {
             });
 
             // Update the existing weeks data with the new week data
-            existingWeeks[selectedWeek] = weekData; 
+            existingWeeks[selectedWeek] = weekData;
         });
 
-        // Update Firebase with the merged weeks data and hostel details
-        await Promise.all([
-            update(ref(db, "Hostel details/" + hostelName + '/weeks'), existingWeeks),
-            update(ref(db, "Hostel details/" + hostelName + '/'), {
-                hostelName: hostelName,
-                hostelType: htype,
-                hostelPhone: hphone,
-                hostelEmail: hemail,
-                hostelAddress1: hadd1,
-                hostelAddress2: hadd2,
-                hostelCity: hcity,
-                hostelState: hstate,
-                hostelPin: hpin,
-                rooms: rooms
-            })
-        ])
-        .then(() => {
-            alert("Hostel and selected week details updated successfully");
-            window.location.href = "././products.html";
-        })
-        .catch((error) => {
-            console.error('Error updating details:', error);
-            alert("Failed to update hostel and week details.");
-        });
-    } else {
-        console.warn("No week cards found!"); // Warning if no weeks exist
+        // Update Firebase with the merged weeks data
+        await update(ref(db, "Hostel details/" + hostelName + '/weeks'), existingWeeks);
     }
+
+    alert("Hostel details updated successfully");
+    window.location.href = "././products.html";
+
     // Function to get global meal timings
     function getMealTimings(mealTime) {
         return {
