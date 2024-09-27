@@ -8,7 +8,6 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 const storage = getStorage(app);
 
-
 async function displayHostelImages(hostelName) {
     const imageRef = ref(db, `Hostel details/${hostelName}/ImageData/`);
     try {
@@ -47,14 +46,6 @@ document.getElementById("files").addEventListener("change", function (e) {
 document.getElementById("uploadImage").addEventListener("click", async function () {
 
     var hostelName = document.getElementById("hostelname").value;
-    var htype = document.getElementById("hosteltype").value;
-    var hphone = document.getElementById("hostelphone").value;
-    var hemail = document.getElementById("hostelemail").value;
-    var hadd1 = document.getElementById("hosteladd1").value;
-    var hadd2 = document.getElementById("hosteladd2").value;
-    var hcity = document.getElementById("hostelcity").value;
-    var hstate = document.getElementById("hostelstate").value;
-    var hpin = document.getElementById("hostelpin").value;
 
     //checks if files are selected
     if (files.length != 0) {
@@ -262,8 +253,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const getRoomButton = document.getElementById("getroom");
     const roomContainer = document.getElementById("room-container");
     const getMenuDetailsButton = document.getElementById("getMenuDetails");
+    
+    const morningTimeContainer = document.getElementById("morningTimeContainer");
+    const afternoonTimeContainer = document.getElementById("afternoonTimeContainer");
+    const nightTimeContainer = document.getElementById("nightTimeContainer");
+
+    // Append time range inputs for morning, afternoon, and night
+    morningTimeContainer.appendChild(createTimeRangeInput('morningStart', 'morningEnd'));
+    afternoonTimeContainer.appendChild(createTimeRangeInput('afternoonStart', 'afternoonEnd'));
+    nightTimeContainer.appendChild(createTimeRangeInput('nightStart', 'nightEnd'));
     const weekDropdown = document.createElement('select');
     weekDropdown.id = 'weekDropdown';
+    weekDropdown.style.marginLeft= '10px';
+
     const weekContainer = document.getElementById('weekContainer');
 
     // Add options to the week dropdown
@@ -274,10 +276,16 @@ document.addEventListener('DOMContentLoaded', function () {
         option.innerText = week;
         weekDropdown.appendChild(option);
     });
+    
+    const labelText = document.createElement('span');
+    labelText.innerText = 'Select Week:';
+    labelText.style.marginRight = '10px'; 
 
     // Add dropdown to the UI
     const dropdownContainer = document.createElement('div');
     dropdownContainer.style.marginTop = '20px';
+    dropdownContainer.style.marginLeft = '820px';
+    dropdownContainer.appendChild(labelText);
     dropdownContainer.appendChild(weekDropdown);
     document.getElementById('mealTimeContainer').appendChild(dropdownContainer);
 
@@ -467,14 +475,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 rowElem.classList.add('row', 'gy-3');
 
                 // Create Main Dish Dropdown
-                const mainDishOptions = ['select main dish', 'Idly', 'Dosa', 'Pongal', 'Chapathi', 'Upma', 'Parotta',
-                    'Sambar rice', 'Tomato rice', 'Veg meals', 'Curd rice', 'Lemon rice', 'Veg briyani'];
+                const mainDishOptions = ['select main dish', 'Idly', 'Poori', 'Iddiyappam', 'Dosa', 'Pongal', 'Chapathi', 'Upma', 'Parotta',
+                    'Sambar rice', 'Tomato rice', 'Veg meals', 'Curd rice', 'Lemon rice', 'Veg briyani', 'Paneer fried rice', 'Gobi rice', 'Rasam rice'];
                 rowElem.appendChild(createSelectBox1('Main Dish', `mainDish-${weekNum}-${day}-${mealTime}`, true, mainDishOptions, mainDishValue));
 
 
                 // Create Side Dish Dropdown
-                const sideDishOptions = ['select side dish', 'Chutney', 'Sambar', 'Masala vada', 'Butter masala', 'Betroot poriyal',
-                    'Potato fry', 'Kootu', 'Appalam', 'Paneer butter masala'];
+                const sideDishOptions = ['select side dish', 'Chutney', 'Sambar', 'Masala vada', 'Butter masala', 'Betroot poriyal', 'Potato fry',
+                    'Kootu', 'Appalam', 'Paneer butter masala', 'Gobi 65', 'Channa Masala', 'Daal', 'Cabbage poriyal', 'Raita', 'Kurma'];
                 rowElem.appendChild(createSelectBox1('Side Dish', `sideDish-${weekNum}-${day}-${mealTime}`, true, sideDishOptions, sideDishValue));
 
                 mealCardBodyElem.appendChild(rowElem);
@@ -536,7 +544,41 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return colElem;
     }
-    // Convert 12-hour time format to 24-hour
+    function createTimeRangeInput(startId, endId) {
+        const colElem = document.createElement('div');
+        colElem.classList.add('col-xl-6');
+
+        const inputBoxElem = document.createElement('div');
+        inputBoxElem.classList.add('input-box');
+
+        const timeInputContainer = document.createElement('div');
+        timeInputContainer.classList.add('d-flex', 'gap-2');
+
+        const startLabelElem = document.createElement('label');
+        startLabelElem.innerText = 'From:';
+        const startInputElem = document.createElement('input');
+        startInputElem.type = 'time';
+        startInputElem.id = startId;
+        startInputElem.name = startId;
+
+        const endLabelElem = document.createElement('label');
+        endLabelElem.innerText = 'To:';
+        const endInputElem = document.createElement('input');
+        endInputElem.type = 'time';
+        endInputElem.id = endId;
+        endInputElem.name = endId;
+
+        timeInputContainer.appendChild(startLabelElem);
+        timeInputContainer.appendChild(startInputElem);
+        timeInputContainer.appendChild(endLabelElem);
+        timeInputContainer.appendChild(endInputElem);
+
+        inputBoxElem.appendChild(timeInputContainer);
+        colElem.appendChild(inputBoxElem);
+
+        return colElem;
+    }
+
     function convertTo24Hour(time12h) {
         if (!time12h) return '';
 
@@ -549,7 +591,11 @@ document.addEventListener('DOMContentLoaded', function () {
             hours = (parseInt(hours, 10) + 12).toString(); // Convert PM hours
         }
 
-        return `${hours}:${minutes}`;
+        // Ensure two digits for hours and minutes
+        hours = hours.padStart(2, '0');
+        minutes = minutes.padStart(2, '0');
+
+        return `${hours}:${minutes}`; // Returns in "HH:mm" format
     }
     // Prefill hostel details on page load
     window.addEventListener('load', prefillHostelDetails);
@@ -617,7 +663,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     img.alt = 'Room Image';
                     img.style.width = '100px';
                     img.style.height = '100px';
-                    img.style.margin = '5px';
+                    img.style.margin = '10px';
                     img.classList.add('image-preview');
                     roomCard.querySelector('.image-preview-container').appendChild(img);
                 });
@@ -698,7 +744,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 try {
                     const hostelName = document.getElementById("hostelname").value;
                     const roomPath = `Hostel details/${hostelName}/rooms/floor${floorNumber}/room${roomNumber}`;
-    
+
                     await remove(ref(db, roomPath));
                     document.getElementById(`room-${roomNumber}`).remove();
                     alert('Room deleted successfully.');
@@ -823,6 +869,12 @@ updateHostel.addEventListener('click', async (e) => {
     var hcity = document.getElementById("hostelcity").value;
     var hstate = document.getElementById("hostelstate").value;
     var hpin = document.getElementById("hostelpin").value;
+    
+    // Fetch existing room data first
+    const existingRoomsRef = ref(db, `Hostel details/${hostelName}/rooms`);
+    const existingRoomsSnapshot = await get(existingRoomsRef);
+    const existingRooms = existingRoomsSnapshot.exists() ? existingRoomsSnapshot.val() : {};
+
     const rooms = {};
 
     const roomElements = document.querySelectorAll('.card[id^="room-"]');
@@ -853,7 +905,7 @@ updateHostel.addEventListener('click', async (e) => {
 
         const floorKey = `floor${floor}`;
 
-        // Add room details to the rooms object
+        // Merge new room details with existing room data
         if (!rooms[floorKey]) {
             rooms[floorKey] = {};
         }
@@ -867,6 +919,14 @@ updateHostel.addEventListener('click', async (e) => {
             amenities: amenities,
             imagesLink: imagelink1.length > 0 ? imagelink1 : [] // Keep existing if no new images
         };
+
+        // Ensure that existing rooms are preserved
+        if (existingRooms[floorKey] && existingRooms[floorKey][`room${roomKey}`]) {
+            rooms[floorKey][`room${roomKey}`] = {
+                ...existingRooms[floorKey][`room${roomKey}`], // Keep existing data
+                ...rooms[floorKey][`room${roomKey}`] // Update with new data
+            };
+        }
     }
 
     // Always update hostel details
@@ -880,7 +940,7 @@ updateHostel.addEventListener('click', async (e) => {
         hostelCity: hcity,
         hostelState: hstate,
         hostelPin: hpin,
-        rooms: rooms
+        rooms: rooms // Merge with existing rooms
     });
 
     let weeks = {}; // Collect week details

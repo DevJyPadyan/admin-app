@@ -142,7 +142,7 @@ async function copyWeekData(sourceWeek, targetWeek) {
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   days.forEach(day => {
     weekData[day] = {};
-    const mealTimes = ['Morning', 'Afternoon', 'Night'];
+    const mealTimes = ['morning', 'afternoon', 'night'];
 
     mealTimes.forEach(mealTime => {
       const dishName = document.getElementById(`mainDish-${sourceWeek}-${day}-${mealTime}`).value;
@@ -268,7 +268,7 @@ function createWeekForm(weekNum) {
     tabPane.role = 'tabpanel';
 
     // Create meal cards
-    const mealTimes = ['Morning', 'Afternoon', 'Night'];
+    const mealTimes = ['morning', 'afternoon', 'night'];
 
     mealTimes.forEach(mealTime => {
       const mealCard = document.createElement('div');
@@ -300,11 +300,13 @@ function createWeekForm(weekNum) {
       rowElem.classList.add('row', 'gy-3');
 
       // Main Dish Dropdown
-      const mainDishOptions = ['select main dish', 'Idly', 'Dosa', 'Pongal', 'Chapathi', 'Upma', 'Parotta', 'Sambar rice', 'Tomato rice', 'Veg meals', 'Curd rice', 'Lemon rice', 'Veg briyani'];
+      const mainDishOptions = ['select main dish', 'Idly', 'Poori', 'Iddiyappam', 'Dosa', 'Pongal', 'Chapathi', 'Upma', 'Parotta',
+         'Sambar rice', 'Tomato rice', 'Veg meals', 'Curd rice', 'Lemon rice', 'Veg briyani', 'Paneer fried rice', 'Gobi rice', 'Rasam rice'];
       rowElem.appendChild(createSelectBox1('Main Dish', `mainDish-${weekNum}-${day}-${mealTime}`, mainDishOptions));
 
       // Side Dish Dropdown
-      const sideDishOptions = ['select side dish', 'Chutney', 'Sambar', 'Masala vada', 'Butter masala', 'Betroot poriyal', 'Potato fry', 'Kootu', 'Appalam', 'Paneer butter masala'];
+      const sideDishOptions = ['select side dish', 'Chutney', 'Sambar', 'Masala vada', 'Butter masala', 'Betroot poriyal', 'Potato fry', 
+        'Kootu', 'Appalam', 'Paneer butter masala','Gobi 65', 'Channa Masala', 'Daal','Cabbage poriyal','Raita', 'Kurma'];
       rowElem.appendChild(createSelectBox1('Side Dish', `sideDish-${weekNum}-${day}-${mealTime}`, sideDishOptions));
 
       mealCardBodyElem.appendChild(rowElem);
@@ -382,7 +384,7 @@ function saveWeek(weekNumber) {
 
   days.forEach(day => {
     weekData[day] = {};
-    const mealTimes = ['Morning', 'Afternoon', 'Night'];
+    const mealTimes = ['morning', 'afternoon', 'night'];
     mealTimes.forEach(mealTime => {
       const dishName = document.getElementById(`mainDish-${weekNumber}-${day}-${mealTime}`).value;
       const sideDishName = document.getElementById(`sideDish-${weekNumber}-${day}-${mealTime}`).value;
@@ -440,7 +442,7 @@ function createTimeRangeInput(startId, endId) {
 function convertTo12Hour(time24) {
   const [hours, minutes] = time24.split(':');
   const period = +hours >= 12 ? 'PM' : 'AM';
-  const hours12 = +hours % 12 || 12;
+  const hours12 = (+hours % 12 || 12).toString().padStart(2, '0'); 
   return `${hours12}:${minutes} ${period}`;
 }
 /* End of Storing menu details*/
