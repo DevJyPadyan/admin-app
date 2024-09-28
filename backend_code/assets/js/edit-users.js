@@ -6,11 +6,68 @@ import { firebaseConfig } from "./firebase-config.js";
 const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 const storage = getStorage(app);
+
+let userUid;
 var files = [];
 let imagelink = [];
 document.getElementById("files").addEventListener("change", function (e) {
   files = e.target.files;
 });
+
+async function fetchUserId(username) {
+  const usersRef = ref(db, 'User details'); // Reference to user details in Firebase
+
+  try {
+    const userSnapshot = await get(usersRef);
+    if (userSnapshot.exists()) {
+      const usersData = userSnapshot.val();
+      console.log(usersData);
+
+      // Find user UID based on username
+      for (const [uid, userDetails] of Object.entries(usersData)) {
+        if (userDetails.userName === username) {
+          userUid = uid; // Store the userUid in the global variable
+          break;
+        }
+      }
+
+      // Call the function to update download links after fetching userId
+      await updateDownloadLinks();
+    } else {
+      console.log("No users found.");
+    }
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+  }
+}
+
+async function updateDownloadLinks() {
+  const imageRef = ref(db, `User details/${userUid}/proofData/`); // Use userId for accessing proof data
+  const downloadContainer = document.getElementById("downloadimage");
+
+  try {
+    const snapshot = await get(imageRef);
+    if (snapshot.exists()) {
+      const proofData = snapshot.val();
+      downloadContainer.innerHTML = ""; // Clear any existing content
+
+      // Assuming proofData is an array where indices are numeric
+      Object.entries(proofData).forEach(([fileName, url], index) => {
+        const link = document.createElement('a');
+        link.href = url;
+        link.innerText = `Download ${index + 1}`; // Display +1 for each index
+        link.target = '_blank';
+        downloadContainer.appendChild(link);
+        downloadContainer.appendChild(document.createElement('br')); // Create a <br> element
+      });
+    } else {
+      downloadContainer.innerHTML = "No images available for download.";
+    }
+  } catch (error) {
+    console.error("Error fetching proof data:", error);
+    downloadContainer.innerHTML = "Error loading images.";
+  }
+}
 
 // Upload images
 document.getElementById("uploadImage").addEventListener("click", async function () {
@@ -34,35 +91,34 @@ document.getElementById("uploadImage").addEventListener("click", async function 
   }
 });
 
-// Populate hostel dropdown
+// Populate hostel dropdown and prefill the selected hostel
 async function populateHostelDropdown(prefilledHostel = "") {
   const hostelDropdown = document.getElementById("hostelDropdown");
   const hostelsRef = ref(db, "Hostel details/");
 
   try {
-      const snapshot = await get(hostelsRef);
-      if (snapshot.exists()) {
-          const hostels = snapshot.val();
-          hostelDropdown.innerHTML = '<option value="">Select Hostel</option>';
-          for (let hostelName in hostels) {
-              let option = document.createElement("option");
-              option.value = hostelName;
-              option.text = hostelName;
-              hostelDropdown.appendChild(option);
-          }
-
-          // Prefill the dropdown with the user's hostel if available
-          if (prefilledHostel) {
-              hostelDropdown.value = prefilledHostel;
-          }
-      } else {
-          console.log("No hostels found.");
+    const snapshot = await get(hostelsRef);
+    if (snapshot.exists()) {
+      const hostels = snapshot.val();
+      hostelDropdown.innerHTML = '<option value="">Select Hostel</option>';
+      for (let hostelName in hostels) {
+        let option = document.createElement("option");
+        option.value = hostelName;
+        option.text = hostelName;
+        hostelDropdown.appendChild(option);
       }
+
+      // Prefill the dropdown with the user's hostel if available
+      if (prefilledHostel) {
+        hostelDropdown.value = prefilledHostel;
+      }
+    } else {
+      console.log("No hostels found.");
+    }
   } catch (error) {
-      console.error("Error fetching hostels:", error);
+    console.error("Error fetching hostels:", error);
   }
 }
-
 // Autofill room price
 async function autofillRoomPrice() {
   const hostelName = document.getElementById("hostelDropdown").value;
@@ -101,70 +157,101 @@ async function autofillRoomPrice() {
     }
   }
 }
-
 // Event listeners for dropdown and selections
 document.getElementById("hostelDropdown").addEventListener("change", autofillRoomPrice);
 document.getElementById("floornum").addEventListener("input", autofillRoomPrice);
 document.getElementById("roomtype").addEventListener("change", autofillRoomPrice);
 document.getElementById("aircond").addEventListener("change", autofillRoomPrice);
 
-// Populate the hostel dropdown on page load
 window.addEventListener('DOMContentLoaded', populateHostelDropdown);
 
 async function prefillUserDetails() {
   const storedData = localStorage.getItem('userDetails');
   if (storedData) {
-      const userData = JSON.parse(storedData);
+    const userData = JSON.parse(storedData);
 
-      // Prefill form fields with user data
-      document.getElementById("username").value = userData[0] || "";
-      document.getElementById("userfullname").value = userData[1] || "";
-      document.getElementById("usergender").value = userData[2] || "";
-      document.getElementById("userphone").value = userData[3] || "";
-      document.getElementById("usermail").value = userData[4] || "";
-      document.getElementById("useradd1").value = userData[5] || "";
-      document.getElementById("useradd2").value = userData[6] || "";
-      document.getElementById("usercity").value = userData[7] || "";
-      document.getElementById("userstate").value = userData[8] || "";
-      document.getElementById("userpin").value = userData[9] || "";
-      document.getElementById("guardname").value = userData[10] || "";
-      document.getElementById("guardrel").value = userData[11] || "";
-      document.getElementById("guardphone").value = userData[12] || "";
-      document.getElementById("guardmail").value = userData[13] || "";
-      document.getElementById("guardadd1").value = userData[14] || "";
-      document.getElementById("guardadd2").value = userData[15] || "";
-      document.getElementById("guardcity").value = userData[16] || "";
-      document.getElementById("guardstate").value = userData[17] || "";
-      document.getElementById("guardpin").value = userData[18] || "";
-      document.getElementById("roomtype").value = userData[19] || "";
-      document.getElementById("floornum").value = userData[20] || "";
-      document.getElementById("aircond").value = userData[21] || "";
-      document.getElementById("roomprice").value = userData[22] || "";
-      document.getElementById("paymentComplete").value = userData[23] || ""; 
-      document.getElementById("password1").value = userData[25] || ""; 
+    // Prefill form fields with user data
+    document.getElementById("username").value = userData[0] || "";
+    document.getElementById("userfullname").value = userData[1] || "";
+    document.getElementById("usergender").value = userData[2] || "";
+    document.getElementById("userphone").value = userData[3] || "";
+    document.getElementById("usermail").value = userData[4] || "";
+    document.getElementById("useradd1").value = userData[5] || "";
+    document.getElementById("useradd2").value = userData[6] || "";
+    document.getElementById("usercity").value = userData[7] || "";
+    document.getElementById("userstate").value = userData[8] || "";
+    document.getElementById("userpin").value = userData[9] || "";
+    document.getElementById("guardname").value = userData[10] || "";
+    document.getElementById("guardrel").value = userData[11] || "";
+    document.getElementById("guardphone").value = userData[12] || "";
+    document.getElementById("guardmail").value = userData[13] || "";
+    document.getElementById("guardadd1").value = userData[14] || "";
+    document.getElementById("guardadd2").value = userData[15] || "";
+    document.getElementById("guardcity").value = userData[16] || "";
+    document.getElementById("guardstate").value = userData[17] || "";
+    document.getElementById("guardpin").value = userData[18] || "";
+    document.getElementById("roomtype").value = userData[19] || "";
+    document.getElementById("floornum").value = userData[20] || "";
+    document.getElementById("aircond").value = userData[21] || "";
+    document.getElementById("roomprice").value = userData[22] || "";
+    document.getElementById("paymentComplete").value = userData[23] || "";
+    document.getElementById("password1").value = userData[25] || "";
+    document.getElementById("hostelDropdown").value = userData[24] || "";
 
-      const userName = userData[0];
-      const bookingsRef = ref(db, "User details/" + userName + '/Bookings/');
-      
-      try {
-          const snapshot = await get(bookingsRef);
-          if (snapshot.exists()) {
-              const bookingsData = snapshot.val();
-              const hostelNames = Object.keys(bookingsData);
-              if (hostelNames.length > 0) {
-                  const prefilledHostel = hostelNames[0];
-                  await populateHostelDropdown(prefilledHostel); // Pass the hostel name to prefill it
-              }
-          } else {
-              console.log("No bookings found for this user.");
+    //const userId='afqOCDeMdqXcjsWv0sJ5ebd4xO32';
+    const username = userData[0];
+    fetchUserId(username);
+    const usersRef = ref(db, 'User details'); // Reference to user details in Firebase
+
+    try {
+      const userSnapshot = await get(usersRef);
+      if (userSnapshot.exists()) {
+        const usersData = userSnapshot.val();
+        console.log(usersData);
+        let userUid = null;
+
+        // Find user UID based on username
+        for (const [uid, userDetails] of Object.entries(usersData)) {
+          if (userDetails.userName === username) {
+            userUid = uid;
+            break;
           }
-      } catch (error) {
-          console.error("Error fetching hostel names:", error);
-      }
+        }
 
-      updateDownloadLinks(userData[0]);
+        if (userUid) {
+          // Fetch bookings for the found userId
+          const bookingsRef = ref(db, `User details/${userUid}/Bookings`);
+          const bookingsSnapshot = await get(bookingsRef);
+
+          if (bookingsSnapshot.exists()) {
+            const bookingsData = bookingsSnapshot.val();
+            const hostelNames = Object.keys(bookingsData);
+            if (hostelNames.length > 0) {
+              const prefilledHostel = hostelNames[0];  // This is the prefilled hostel name
+              // Call populateHostelDropdown AFTER fetching the hostel
+              await populateHostelDropdown(prefilledHostel); // Pass the prefilled hostel name
+            }
+          } else {
+            console.log("No bookings found for this user.");
+            await populateHostelDropdown(); // Still populate the dropdown in case there are no bookings
+          }
+        } else {
+          console.log("User not found for the given username.");
+          await populateHostelDropdown(); // Populate dropdown if user is not found
+        }
+      } else {
+        console.log("No user data found.");
+        await populateHostelDropdown(); // If no user data, still populate dropdown
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+
+    // Call to update download links
+    updateDownloadLinks(userData[0]);
   } else {
-      console.log("No User data found in localStorage.");
+    console.log("No User data found in localStorage.");
+    await populateHostelDropdown(); // If no user data, still populate dropdown
   }
 }
 // Ensure the form is prefilled when the page loads
@@ -173,7 +260,16 @@ window.addEventListener('DOMContentLoaded', prefillUserDetails);
 updateUser.addEventListener('click', async (e) => {
   e.preventDefault();
 
-  var userName = document.getElementById("username").value;
+  const userName = document.getElementById("username").value;
+
+  // Fetch user ID before proceeding with the update
+  await fetchUserId(userName);
+
+  if (!userUid) {
+    alert("User not found");
+    return;
+  }
+
   var userFullName = document.getElementById("userfullname").value;
   var userPhone = document.getElementById("userphone").value;
   var userGender = document.getElementById("usergender").value;
@@ -200,51 +296,50 @@ updateUser.addEventListener('click', async (e) => {
   var paymentComplete = document.getElementById("paymentComplete").value;
   var hostelName = document.getElementById("hostelDropdown").value;
 
-  const userRef = ref(db, "User details/" + userName + '/');
-  const bookingsRef = ref(db, "User details/" + userName + '/Bookings/' + hostelName + '/RoomDetails/');
+  const userDetailRef = ref(db, `User details/${userUid}/`); // Reference to the specific user details
+  const bookingsRef = ref(db, `User details/${userUid}/Bookings/${hostelName}/RoomDetails/`);
 
   try {
-    const snapshot = await get(userRef);
-    let existingData = snapshot.exists() ? snapshot.val() : {};
+    const userSnapshot = await get(userDetailRef);
+    let existingUserData = userSnapshot.exists() ? userSnapshot.val() : {};
+    // Update user details
+    await set(userDetailRef, {
+      userFullName,
+      userName,
+      userPhone,
+      userGender,
+      userEmail,
+      userAddress1,
+      userAddress2,
+      userCity,
+      userState,
+      userPin,
+      password1, // Ensure this is stored securely if needed
+      guardName,
+      guardRelation,
+      guardEmail,
+      guardPhone,
+      guardAddress1,
+      guardAddress2,
+      guardState,
+      guardCity,
+      guardPin,
+      userUid,
+    });
 
-    const roomDetails = {
-      roomType: roomType,
-      floor: floor,
-      ac: ac,
-      totalAmount: totalAmount,
-      paymentComplete: paymentComplete || existingData.paymentComplete
-    };
+    // Update booking details
+    await set(bookingsRef, {
+      roomType,
+      floor,
+      ac,
+      totalAmount,
+      paymentComplete: paymentComplete || existingData.paymentComplete // Preserve existing paymentComplete if not updated
+    });
 
-    let newUserDetails = {
-      userName: userName,
-      userFullName: userFullName,
-      userPhone: userPhone,
-      userGender: userGender,
-      userEmail: userEmail,
-      userAddress1: userAddress1,
-      userAddress2: userAddress2,
-      userCity: userCity,
-      userState: userState,
-      userPin: userPin,
-      password1,
-      guardName: guardName,
-      guardRelation: guardRelation,
-      guardEmail: guardEmail,
-      guardPhone: guardPhone,
-      guardAddress1: guardAddress1,
-      guardAddress2: guardAddress2,
-      guardState: guardState,
-      guardCity: guardCity,
-      guardPin: guardPin,
-    };
-
-    if (existingData.proofData) {
-      newUserDetails.proofData = existingData.proofData;
+    // Preserve existing proof data if available
+    if (existingUserData.proofData) {
+      await set(ref(db, `User details/${userId}/proofData/`), existingUserData.proofData);
     }
-
-    await set(userRef, newUserDetails);
-
-    await set(bookingsRef, roomDetails);
 
     alert("User details and room booking updated successfully");
     window.location.href = "././users.html";

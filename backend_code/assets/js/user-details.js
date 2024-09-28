@@ -10,7 +10,7 @@ let flag = 0;
 let tbody = document.getElementById("tbody1");
 
 /// Remove functionality code
-const removeUser = (event, userName) => {
+const removeUser = async (event, userName) => {
     event.stopPropagation(); // Prevent the row click event from triggering
 
     // Show confirmation alert box
@@ -18,16 +18,44 @@ const removeUser = (event, userName) => {
 
     // If the user confirms deletion
     if (userConfirmed) {
-        const rowRef = ref(db, `User details/${userName}`); // Firebase reference to the user
+        try {
+            // Reference to the 'User details' node in Firebase
+            const usersRef = ref(db, 'User details');
 
-        remove(rowRef)
-            .then(() => {
-                alert(`${userName} removed successfully!`);
-                SelectAlldataReal();  // Refresh data after removal
-            })
-            .catch((error) => {
-                alert("Error removing user: " + error.message);
-            });
+            // Fetch all user data
+            const userSnapshot = await get(usersRef);
+
+            if (userSnapshot.exists()) {
+                const usersData = userSnapshot.val();
+
+                // Find the user UID based on userName
+                let userUid = null;
+                for (const [uid, userDetails] of Object.entries(usersData)) {
+                    if (userDetails.userName === userName) {
+                        userUid = uid;
+                        break;
+                    }
+                }
+
+                // If userUid is found, proceed with removal
+                if (userUid) {
+                    const userRef = ref(db, `User details/${userUid}`); // Reference to the user details
+
+                    // Remove the user data
+                    await remove(userRef);
+                    alert(`${userName} removed successfully!`);
+
+                    // Refresh the data after removal
+                    SelectAlldataReal();
+                } else {
+                    alert(`User: ${userName} not found.`);
+                }
+            } else {
+                alert("No users found in the database.");
+            }
+        } catch (error) {
+            alert("Error removing user: " + error.message);
+        }
     } else {
         console.log('Deletion cancelled by the user.');
     }
@@ -122,6 +150,7 @@ function view() {
             data.push(paymentComplete);
 
             localStorage.setItem('userDetails', JSON.stringify(data));
+            console.log(data);
             // Redirect to edit-users.html
             window.location.href = "././edit-users.html";
 
