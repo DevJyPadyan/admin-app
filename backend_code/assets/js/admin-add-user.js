@@ -64,7 +64,6 @@ const fetchRoomDetails = async () => {
           : '';
 
         roomRow.innerHTML = `
-                  <td>${key}</td>
                   <td>${roomData.roomType}</td>
                   <td>${roomData.floor}</td>
                   <td>${roomData.ac}</td>
@@ -75,8 +74,12 @@ const fetchRoomDetails = async () => {
               `;
         roomTableBody.appendChild(roomRow); // Append the row to the tbody
       });
+
+      // Show the roomContainer since rooms are found
+      roomContainer.style.display = 'block'; // Make roomContainer visible
     } else {
       alert('No rooms found for this hostel.');
+      roomContainer.style.display = 'none'; // Hide the container if no rooms found
     }
   } catch (error) {
     console.error('Error fetching rooms:', error);
