@@ -301,12 +301,12 @@ function createWeekForm(weekNum) {
 
       // Main Dish Dropdown
       const mainDishOptions = ['select main dish', 'Idly', 'Poori', 'Iddiyappam', 'Dosa', 'Pongal', 'Chapathi', 'Upma', 'Parotta',
-         'Sambar rice', 'Tomato rice', 'Veg meals', 'Curd rice', 'Lemon rice', 'Veg briyani', 'Paneer fried rice', 'Gobi rice', 'Rasam rice'];
+        'Sambar rice', 'Tomato rice', 'Veg meals', 'Curd rice', 'Lemon rice', 'Veg briyani', 'Paneer fried rice', 'Gobi rice', 'Rasam rice'];
       rowElem.appendChild(createSelectBox1('Main Dish', `mainDish-${weekNum}-${day}-${mealTime}`, mainDishOptions));
 
       // Side Dish Dropdown
-      const sideDishOptions = ['select side dish', 'Chutney', 'Sambar', 'Masala vada', 'Butter masala', 'Betroot poriyal', 'Potato fry', 
-        'Kootu', 'Appalam', 'Paneer butter masala','Gobi 65', 'Channa Masala', 'Daal','Cabbage poriyal','Raita', 'Kurma'];
+      const sideDishOptions = ['select side dish', 'Chutney', 'Sambar', 'Masala vada', 'Butter masala', 'Betroot poriyal', 'Potato fry',
+        'Kootu', 'Appalam', 'Paneer butter masala', 'Gobi 65', 'Channa Masala', 'Daal', 'Cabbage poriyal', 'Raita', 'Kurma'];
       rowElem.appendChild(createSelectBox1('Side Dish', `sideDish-${weekNum}-${day}-${mealTime}`, sideDishOptions));
 
       mealCardBodyElem.appendChild(rowElem);
@@ -442,7 +442,7 @@ function createTimeRangeInput(startId, endId) {
 function convertTo12Hour(time24) {
   const [hours, minutes] = time24.split(':');
   const period = +hours >= 12 ? 'PM' : 'AM';
-  const hours12 = (+hours % 12 || 12).toString().padStart(2, '0'); 
+  const hours12 = (+hours % 12 || 12).toString().padStart(2, '0');
   return `${hours12}:${minutes} ${period}`;
 }
 /* End of Storing menu details*/
@@ -793,6 +793,8 @@ registerHostel.addEventListener('click', async (e) => {
 
     // Add room to the corresponding floor
     rooms[`floor${floor}`][`room${i}`] = {
+      roomNumber: i, // Store the room number
+      floor: floor,   // Store the floor number
       ac: ac,
       roomCount: roomCountVal,
       bathroom: bathroom,
