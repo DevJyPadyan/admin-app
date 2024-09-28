@@ -108,13 +108,13 @@ document.getElementById("uploadImage").addEventListener("click", async function 
   // Checks if files are selected
   if (files.length != 0) {
     for (let i = 0; i < files.length; i++) {
-      const storageRef = ref2(storage, 'userProof/' + uniqueID + '/govtProof/' + files[i].name); // Use uniqueID
+      const storageRef = ref2(storage, 'userProof/' + userUid + '/govtProof/' + files[i].name); // Use uniqueID
       const upload = await uploadBytes(storageRef, files[i]);
       const imageUrl = await getDownloadURL(storageRef);
       imagelink.push(imageUrl);
     }
 
-    const imageRef = ref(db, 'User details/' + uniqueID + '/proofData/');
+    const imageRef = ref(db, 'User details/' + userUid + '/proofData/');
     await set(imageRef, imagelink)
       .then(() => {
         alert("Image is uploading.. please click OK");
