@@ -121,22 +121,10 @@ function view() {
             data.push(hostelName);
             data.push(paymentComplete);
 
-            const dbRef = ref(db, `User details/${userName}/password1`);
-            get(dbRef).then((snapshot) => {
-                if (snapshot.exists()) {
-                    const password1 = snapshot.val();  // Password fetched from Firebase
+            localStorage.setItem('userDetails', JSON.stringify(data));
+            // Redirect to edit-users.html
+            window.location.href = "././edit-users.html";
 
-                    // Add the password to localStorage
-                    data.push(password1);
-                    localStorage.setItem('userDetails', JSON.stringify(data));
-                    window.location.href = "././edit-users.html";
-                    console.log("User details with password:", data);
-                } else {
-                    console.log("No password found for user: " + userName);
-                }
-            }).catch((error) => {
-                console.error("Error fetching password: ", error);
-            });
         }
     }
 }
@@ -151,9 +139,16 @@ const SelectAlldataReal = () => {
         AddAllRecords();
     });
 }
-
 function loadOrderDetails(user) {
-    const dbref = ref(db, `User details/${user.userName}/Bookings/`);
+    const userUid = user.userUid; // Access the userUid ID of the user
+
+    if (!userUid) {
+        console.warn("Unique ID is not defined for the user object:", user);
+        return;
+    }
+
+    // Fetch bookings under 'User details/{userUid}/Bookings/'
+    const dbref = ref(db, `User details/${userUid}/Bookings/`);
     onValue(dbref, (snapshot) => {
         let ordersList = [];
         snapshot.forEach(h => {
