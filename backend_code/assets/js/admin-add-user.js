@@ -258,6 +258,8 @@ registerUser.addEventListener('click', async (e) => {
       password1: password1,
       password2: password2,
       guardName: guardName,
+      guardianDetails:"yes",
+      proofSubmission:"yes",
       guardRelation: guardRelation,
       guardEmail: guardEmail,
       guardPhone: guardPhone,
