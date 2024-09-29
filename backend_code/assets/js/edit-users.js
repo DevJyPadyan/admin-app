@@ -209,7 +209,6 @@ async function prefillUserDetails() {
     document.getElementById("aircond").value = userData[21] || "";
     document.getElementById("roomprice").value = userData[22] || "";
     document.getElementById("paymentComplete").value = userData[23] || "";
-    document.getElementById("password1").value = userData[25] || "";
     document.getElementById("hostelDropdown").value = userData[24] || "";
 
     //const userId='afqOCDeMdqXcjsWv0sJ5ebd4xO32';
@@ -302,7 +301,6 @@ updateUser.addEventListener('click', async (e) => {
   var guardState = document.getElementById("guardstate").value;
   var guardCity = document.getElementById("guardcity").value;
   var guardPin = document.getElementById("guardpin").value;
-  var password1 = document.getElementById("password1").value;
   var roomType = document.getElementById("roomtype").value;
   var floor = document.getElementById("floornum").value;
   var ac = document.getElementById("aircond").value;
@@ -316,8 +314,9 @@ updateUser.addEventListener('click', async (e) => {
   try {
     const userSnapshot = await get(userDetailRef);
     let existingUserData = userSnapshot.exists() ? userSnapshot.val() : {};
-    // Update user details
-    await set(userDetailRef, {
+
+    // Prepare updated user data excluding password1
+    const updatedUserData = {
       userFullName,
       userName,
       userPhone,
@@ -328,7 +327,8 @@ updateUser.addEventListener('click', async (e) => {
       userCity,
       userState,
       userPin,
-      password1, // Ensure this is stored securely if needed
+      guardianDetails: "yes",
+      proofSubmission: "yes",
       guardName,
       guardRelation,
       guardEmail,
@@ -339,6 +339,13 @@ updateUser.addEventListener('click', async (e) => {
       guardCity,
       guardPin,
       userUid,
+    };
+
+    // Update user details while preserving the existing password1
+    await set(userDetailRef, {
+      ...existingUserData, // Include existing data to avoid overriding
+      ...updatedUserData,  // Add the new data
+      password1: existingUserData.password1 // Ensure password1 remains unchanged
     });
 
     // Update booking details
@@ -347,7 +354,7 @@ updateUser.addEventListener('click', async (e) => {
       floor,
       ac,
       totalAmount,
-      paymentComplete: paymentComplete || existingData.paymentComplete // Preserve existing paymentComplete if not updated
+      paymentComplete: paymentComplete || existingUserData.paymentComplete // Preserve existing paymentComplete if not updated
     });
 
     // Preserve existing proof data if available
