@@ -839,12 +839,25 @@
                                     <h5>Available Rooms</h5>
                                 </div>
                                 <div class="card-body">
-                                    <div id="roomContainer">
-                                        <table id="roomTable">
+
+                                    <div class="row gy-3">
+                                        <div class="col-xl-6">
+                                            <div class="input-box">
+                                                <h6>Hostel Name</h6>
+                                                <select id="hostelDropdown1" style="margin-bottom:30px;">
+                                                    <option value="">Select Hostel</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="table-responsive theme-scrollbar" id="roomContainer">
+                                        <table class="table category-table dataTable no-footer" id="roomTable">
                                             <thead>
                                                 <tr>
-                                                    <th>Room Type</th>
                                                     <th>Floor</th>
+                                                    <th>Room</th>
+                                                    <th>Room Type</th>
                                                     <th>AC</th>
                                                     <th>Amenities</th>
                                                     <th>Bathroom</th>

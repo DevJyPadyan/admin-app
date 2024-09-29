@@ -7,7 +7,97 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 const storage = getStorage(app);
 
-//Populate hostel dropdown
+//Populate hostelDropdown1 for available rooms
+
+
+// Fetch room details for the selected hostel
+async function populateHostelDropdown1() {
+  const hostelDropdown1 = document.getElementById("hostelDropdown1");
+  const hostelsRef = ref(db, "Hostel details/");
+
+  try {
+    console.log("Fetching hostels from Firebase...");
+    const snapshot = await get(hostelsRef);
+    console.log("Snapshot received:", snapshot.exists(), snapshot.val());
+
+    if (snapshot.exists()) {
+      const hostels = snapshot.val();
+      console.log("Hostels data:", hostels);
+
+      hostelDropdown1.innerHTML = '<option value="">Select Hostel</option>';
+      for (let hostelName in hostels) {
+        let option = document.createElement("option");
+        option.value = hostelName;
+        option.text = hostelName;
+        hostelDropdown1.appendChild(option);
+      }
+
+      // Log the dropdown element to ensure it's correctly referenced
+      console.log("Dropdown populated:", hostelDropdown1.innerHTML);
+
+      // Attach the event listener here
+      hostelDropdown1.addEventListener("change", async function () {
+        console.log("Dropdown change event triggered"); // Check if this log shows up
+        const hostelName = this.value; // Get the selected hostel name
+        console.log("Selected Hostel:", hostelName); // Log the selected hostel name
+
+        if (hostelName) {
+          await fetchRoomDetails(hostelName); // Ensure this function is correctly defined and returns a promise
+        } else {
+          alert("Please select a valid hostel.");
+        }
+      });
+    } else {
+      console.log("No hostels found.");
+    }
+  } catch (error) {
+    console.error("Error fetching hostels for hostelDropdown1:", error);
+  }
+}
+
+// Fetch room details based on selected hostel
+async function fetchRoomDetails(hostelName) {
+  console.log("Fetching room details for:", hostelName); // Log to see if this function is called
+  const roomsRef = ref(db, `Hostel details/${hostelName}/rooms/`);
+
+  try {
+    const snapshot = await get(roomsRef);
+    console.log("Room details snapshot received:", snapshot.exists(), snapshot.val());
+
+    const roomTableBody = document.querySelector("#roomTable tbody");
+    roomTableBody.innerHTML = ""; // Clear previous data
+
+    if (snapshot.exists()) {
+      const rooms = snapshot.val();
+      for (let floor in rooms) {
+        for (let room in rooms[floor]) {
+          const roomData = rooms[floor][room];
+          const row = roomTableBody.insertRow();
+          row.innerHTML = `
+                      <td>${roomData.floor}</td>
+                      <td>${roomData.roomNumber}</td>
+                      <td>${roomData.roomType}</td>
+                      <td>${roomData.ac}</td>
+                      <td>${roomData.amenities}</td>
+                      <td>${roomData.bathroom}</td>
+                      <td>${roomData.roomCount}</td>
+                      <td>${roomData.price}</td>
+                  `;
+        }
+      }
+    } else {
+      console.log("No rooms found for this hostel.");
+      roomTableBody.innerHTML = "<tr><td colspan='7'>No rooms available.</td></tr>";
+    }
+  } catch (error) {
+    console.error("Error fetching room details:", error);
+  }
+}
+
+// Call populateHostelDropdown1 on DOM content load
+window.addEventListener('DOMContentLoaded', populateHostelDropdown1);
+
+//Populate hostel dropdown for room booking
 async function populateHostelDropdown(prefilledHostel = "") {
   const hostelDropdown = document.getElementById("hostelDropdown");
   const hostelsRef = ref(db, "Hostel details/");
@@ -36,58 +126,6 @@ async function populateHostelDropdown(prefilledHostel = "") {
   }
 }
 window.addEventListener('DOMContentLoaded', populateHostelDropdown);
-const roomContainer = document.getElementById("roomContainer"); // Ensure you have a container for room details
-
-const fetchRoomDetails = async () => {
-  const hostelName = 'Perikitis'; // Assuming hostel name is prefilled
-  const roomsRef = ref(db, `Hostel details/${hostelName}/rooms`);
-
-  try {
-    const snapshot = await get(roomsRef);
-    const roomTableBody = document.querySelector("#roomTable tbody"); // Select the tbody element
-
-    if (snapshot.exists()) {
-      const roomsData = snapshot.val();
-      roomTableBody.innerHTML = ''; // Clear existing room details
-
-      Object.keys(roomsData).forEach((key) => {
-        const roomData = roomsData[key];
-        console.log('Room Data:', roomData);
-
-
-        // Create a table row for each room
-        const roomRow = document.createElement("tr");
-
-        // Check if amenities is an array, otherwise set it to an empty string
-        const amenities = typeof roomData.amenities === 'string'
-          ? roomData.amenities.split(',').map(item => item.trim()).join(", ")
-          : '';
-
-        roomRow.innerHTML = `
-                  <td>${roomData.roomType}</td>
-                  <td>${roomData.floor}</td>
-                  <td>${roomData.ac}</td>
-                  <td>${amenities}</td>
-                  <td>${roomData.bathroom}</td>
-                  <td>${roomData.roomCount}</td>
-                  <td>${roomData.price}</td>
-              `;
-        roomTableBody.appendChild(roomRow); // Append the row to the tbody
-      });
-
-      // Show the roomContainer since rooms are found
-      roomContainer.style.display = 'block'; // Make roomContainer visible
-    } else {
-      alert('No rooms found for this hostel.');
-      roomContainer.style.display = 'none'; // Hide the container if no rooms found
-    }
-  } catch (error) {
-    console.error('Error fetching rooms:', error);
-  }
-};
-
-// Call fetchRoomDetails immediately when the JS file loads
-fetchRoomDetails();
 
 /*Hostel Multiple images upload*/
 var files = [];

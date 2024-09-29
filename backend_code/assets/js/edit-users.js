@@ -14,6 +14,42 @@ document.getElementById("files").addEventListener("change", function (e) {
   files = e.target.files;
 });
 
+// Upload images
+document.getElementById("uploadImage").addEventListener("click", async function () {
+  var userName = document.getElementById("username").value;
+
+  // Fetch userUid based on userName before proceeding with the upload
+  await fetchUserId(userName);
+
+  if (!userUid) {
+    alert("User not found");
+    return;
+  }
+
+  if (files.length != 0) {
+    // Use userUid instead of userName for both Storage and Database paths
+    const imageRef = ref(db, 'User details/' + userUid + '/proofData/');
+    const snapshot = await get(imageRef);
+    let existingProofData = snapshot.exists() ? snapshot.val() : [];
+
+    for (let i = 0; i < files.length; i++) {
+      // Update the storage path to include userUid
+      const storageRef = ref2(storage, 'userProof/' + userUid + '/govtProof/' + files[i].name);
+      await uploadBytes(storageRef, files[i]);
+      const imageUrl = await getDownloadURL(storageRef);
+      imagelink.push(imageUrl);
+    }
+
+    const updatedProofData = [...existingProofData, ...imagelink];
+    await set(imageRef, updatedProofData);
+    alert("Image is uploading.. please click OK");
+    alert("Image is uploaded. Please click OK");
+    alert("Image(s) uploaded successfully!");
+  } else {
+    alert("No file chosen");
+  }
+});
+
 async function fetchUserId(username) {
   const usersRef = ref(db, 'User details'); // Reference to user details in Firebase
 
@@ -68,28 +104,6 @@ async function updateDownloadLinks() {
     downloadContainer.innerHTML = "Error loading images.";
   }
 }
-
-// Upload images
-document.getElementById("uploadImage").addEventListener("click", async function () {
-  var userName = document.getElementById("username").value;
-  if (files.length != 0) {
-    const imageRef = ref(db, 'User details/' + userName + '/proofData/');
-    const snapshot = await get(imageRef);
-    let existingProofData = snapshot.exists() ? snapshot.val() : [];
-
-    for (let i = 0; i < files.length; i++) {
-      const storageRef = ref2(storage, 'userProof/' + userName + '/govtProof/' + files[i].name);
-      await uploadBytes(storageRef, files[i]);
-      const imageUrl = await getDownloadURL(storageRef);
-      imagelink.push(imageUrl);
-    }
-    const updatedProofData = [...existingProofData, ...imagelink];
-    await set(imageRef, updatedProofData);
-    alert("Image(s) uploaded successfully!");
-  } else {
-    alert("No file chosen");
-  }
-});
 
 // Populate hostel dropdown and prefill the selected hostel
 async function populateHostelDropdown(prefilledHostel = "") {
@@ -338,7 +352,7 @@ updateUser.addEventListener('click', async (e) => {
 
     // Preserve existing proof data if available
     if (existingUserData.proofData) {
-      await set(ref(db, `User details/${userId}/proofData/`), existingUserData.proofData);
+      await set(ref(db, `User details/${userUid}/proofData/`), existingUserData.proofData);
     }
 
     alert("User details and room booking updated successfully");
