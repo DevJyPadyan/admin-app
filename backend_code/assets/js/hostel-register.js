@@ -7,6 +7,57 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 const storage = getStorage(app);
 
+const extrasContainer = document.getElementById('extras-container');
+const addItemButton = document.getElementById('addItemButton');
+const removeItemButton = document.getElementById('removeItemButton');
+
+// Track the number of extra items added
+let extraItemCount = 0;
+
+// Event listener to add new food input fields dynamically
+addItemButton.addEventListener('click', () => {
+  extraItemCount++;
+
+  const newRow = document.createElement('div');
+  newRow.classList.add('extra-row', 'mt-2');
+
+  newRow.innerHTML = `
+                                        <div class="input-items">
+                                            <div class="row gy-3">
+                                                <div class="col-xl-6">
+                                                    <div class="input-box">
+                                                        <h6>Food Name</h6>
+                                                        <input type="text" class="food-name"
+                                                            placeholder="Enter Food Name">
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-6">
+                                                    <div class="input-box">
+                                                        <h6>Food Price</h6>
+                                                        <input type="text" class="food-price"
+                                                            placeholder="Enter Food Price (in Rs)">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+  `;
+
+  extrasContainer.appendChild(newRow);
+});
+
+// Event listener to remove the last added food input fields
+removeItemButton.addEventListener('click', () => {
+  const rows = extrasContainer.querySelectorAll('.extra-row'); // Select all rows with 'extra-row' class
+
+  if (rows.length > 0) {
+    const lastRow = rows[rows.length - 1]; // Get the last row
+    extrasContainer.removeChild(lastRow); // Remove the last row
+    extraItemCount--;
+  } else {
+    alert('No more items to remove!'); // Alert if no rows are left
+  }
+});
+
 const addWeekButton = document.getElementById("addWeekButton");
 const weekContainer = document.getElementById("weekContainer");
 
@@ -738,6 +789,20 @@ registerHostel.addEventListener('click', async (e) => {
   var hcity = document.getElementById("hostelcity").value;
   var hstate = document.getElementById("hostelstate").value;
   var hpin = document.getElementById("hostelpin").value;
+  var hfloors = document.getElementById("hostelfloors").value;
+
+  const extras = [];
+  const foodNameInputs = document.querySelectorAll('.food-name');
+  const foodPriceInputs = document.querySelectorAll('.food-price');
+
+  foodNameInputs.forEach((input, index) => {
+    const foodName = input.value.trim();
+    const foodPrice = foodPriceInputs[index].value.trim();
+
+    if (foodName && foodPrice) {
+      extras.push({ foodName: foodName, foodPrice: foodPrice });
+    }
+  });
 
   if (!hname || !htype || !hphone || !hemail || !hadd1 || !hcity || !hstate || !hpin) {
     alert("Please fill in all required fields.");
@@ -814,6 +879,8 @@ registerHostel.addEventListener('click', async (e) => {
     hostelCity: hcity,
     hostelState: hstate,
     hostelPin: hpin,
+    hostelFloors: hfloors,
+    extras: extras,
     rooms: rooms
   })
     .then(() => {
