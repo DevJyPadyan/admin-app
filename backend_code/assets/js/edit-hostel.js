@@ -845,7 +845,8 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById("hostelstate").value = hostelData[5] || "";
             document.getElementById("hostelphone").value = hostelData[6] || "";
             document.getElementById("hostelemail").value = hostelData[7] || "";
-            document.getElementById("hostelpin").value = hostelData[8] || "";
+            document.getElementById("hostelpin").value = hostelData[8] || ""; 
+            document.getElementById("hostelfloorsDB").value = hostelData[9] || "";            
 
             displayHostelImages(hostelData[0]);
 
@@ -869,6 +870,15 @@ updateHostel.addEventListener('click', async (e) => {
     var hcity = document.getElementById("hostelcity").value;
     var hstate = document.getElementById("hostelstate").value;
     var hpin = document.getElementById("hostelpin").value;
+    var hfloorsDB = document.getElementById("hostelfloorsDB").value;
+
+    const existingHostelRef = ref(db, `Hostel details/${hostelName}`); // Use the old name here
+    const existingHostelSnapshot = await get(existingHostelRef);
+    const existingHostelDetails = existingHostelSnapshot.exists() ? existingHostelSnapshot.val() : {};
+
+    // Keep extras from existing hostel details
+    const extras = existingHostelDetails.extras || {}; // Assuming extras are stored under 'extras'
+
     
     // Fetch existing room data first
     const existingRoomsRef = ref(db, `Hostel details/${hostelName}/rooms`);
@@ -940,6 +950,8 @@ updateHostel.addEventListener('click', async (e) => {
         hostelCity: hcity,
         hostelState: hstate,
         hostelPin: hpin,
+        hostelFloors:hfloorsDB,
+        extras: extras,
         rooms: rooms // Merge with existing rooms
     });
 
