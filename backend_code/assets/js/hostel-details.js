@@ -62,6 +62,7 @@ function view() {
             var hosphone = rowSelected.cells[7].innerHTML;
             var hosemail = rowSelected.cells[8].innerHTML;
             var hospin = rowSelected.cells[9].innerHTML;
+            var hosfloors = rowSelected.cells[10].innerHTML;
             var data = [];
             data.push(hosname);
             data.push(hostype);
@@ -72,6 +73,7 @@ function view() {
             data.push(hosphone);
             data.push(hosemail);
             data.push(hospin);
+            data.push(hosfloors);
             localStorage.setItem('hosteldetails', JSON.stringify(data));
             console.log(data);
             window.location.href = 'edit-hostel.html';
@@ -97,7 +99,7 @@ const SelectAlldataReal = () => {
 
 
 //Function which is used to append the data from firebase database to table
-const AddsingleRecord = (hostelName, hostelType, hostelAddress1, hostelAddress2, hostelCity, hostelState, hostelPhone, hostelEmail, hostelPin) => {
+const AddsingleRecord = (hostelName, hostelType, hostelAddress1, hostelAddress2, hostelCity, hostelState, hostelPhone, hostelEmail, hostelPin, hostelFloors) => {
     var trow = document.createElement('tr');
     var td1 = document.createElement('td');
     var td2 = document.createElement('td');
@@ -109,6 +111,7 @@ const AddsingleRecord = (hostelName, hostelType, hostelAddress1, hostelAddress2,
     var td8 = document.createElement('td');
     var td9 = document.createElement('td');
     var td10 = document.createElement('td');
+    var td11 = document.createElement('td');
 
     // Update flag
     flag = flag + 1;
@@ -122,10 +125,11 @@ const AddsingleRecord = (hostelName, hostelType, hostelAddress1, hostelAddress2,
     td8.innerHTML = hostelPhone;
     td9.innerHTML = hostelEmail;
     td10.innerHTML = hostelPin;
+    td11.innerHTML = hostelFloors;
 
-    var removeButton = document.createElement('button');
+    var removeButton = document.createElement('a');
     removeButton.type = 'button';
-    removeButton.innerHTML = '<i class="fas fa-trash"></i>';
+    removeButton.innerHTML = '<i class="ri-delete-bin-line"></i>';
     removeButton.onclick = function (event) {
         event.stopPropagation(); // Prevent row click event
         removeHostel(event, hostelName);
@@ -133,10 +137,10 @@ const AddsingleRecord = (hostelName, hostelType, hostelAddress1, hostelAddress2,
 
     // Remove reference to the removed columns
     // Example: Append the remove button to the correct column
-    var td11 = document.createElement('td');
-    td11.appendChild(removeButton);
+    var td12 = document.createElement('td');
+    td12.appendChild(removeButton);
 
-    trow.append(td1, td2, td3, td4, td5, td6, td7, td8, td9, td10, td11);
+    trow.append(td1, td2, td3, td4, td5, td6, td7, td8, td9, td10, td11,td12);
     tbody.append(trow);
 }
 
@@ -144,7 +148,7 @@ const AddAllRecords = () => {
     flag = 0;
     tbody.innerHTML = "";
     hostelist.forEach(h => {
-        AddsingleRecord(h.hostelName, h.hostelType, h.hostelAddress1, h.hostelAddress2, h.hostelCity, h.hostelState, h.hostelPhone, h.hostelEmail, h.hostelPin)
+        AddsingleRecord(h.hostelName, h.hostelType, h.hostelAddress1, h.hostelAddress2, h.hostelCity, h.hostelState, h.hostelPhone, h.hostelEmail, h.hostelPin,h.hostelFloors)
     })
     view();
 }
