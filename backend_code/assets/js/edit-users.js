@@ -133,7 +133,10 @@ async function populateHostelDropdown(prefilledHostel = "") {
     console.error("Error fetching hostels:", error);
   }
 }
-// Autofill room price
+
+//Auto fill room price
+let debounceTimer;
+
 async function autofillRoomPrice() {
   const hostelName = document.getElementById("hostelDropdown").value;
   const floor = document.getElementById("floornum").value;
@@ -141,41 +144,54 @@ async function autofillRoomPrice() {
   const ac = document.getElementById("aircond").value;
   const roomPriceInput = document.getElementById("roomprice");
 
-  if (hostelName && floor && roomType && ac) {
-    // Construct the Firebase path based on the selected floor
-    const floorPath = `Hostel details/${hostelName}/rooms/floor${floor}`;
-    const roomRef = ref(db, floorPath);
+  // Clear price if any field is missing
+  if (!hostelName || !floor || !roomType || !ac) {
+    roomPriceInput.value = "";
+    return;
+  }
 
-    try {
-      const snapshot = await get(roomRef);
-      if (snapshot.exists()) {
-        const rooms = snapshot.val();
-        // Loop through each room under the selected floor
-        for (let roomKey in rooms) {
-          const room = rooms[roomKey];
-          // Match the roomType and ac
-          if (room.roomType === roomType && room.ac === ac) {
-            roomPriceInput.value = room.price;
-            return; // Once a match is found, stop further iterations
-          }
+  // Construct the Firebase path based on the selected floor
+  const floorPath = `Hostel details/${hostelName}/rooms/floor${floor}`;
+  const roomRef = ref(db, floorPath);
+
+  try {
+    const snapshot = await get(roomRef);
+    if (snapshot.exists()) {
+      const rooms = snapshot.val();
+
+      // Find a matching room based on roomType and ac
+      for (const roomKey in rooms) {
+        const room = rooms[roomKey];
+        if (room.roomType === roomType && room.ac === ac) {
+          roomPriceInput.value = room.price;
+          return; // Stop further processing once a match is found
         }
-        roomPriceInput.value = ""; // No match found, clear the input
-        alert("No room found with the selected criteria.");
-      } else {
-        console.log("No rooms found for the selected floor.");
-        roomPriceInput.value = ""; // Clear input if no data found
       }
-    } catch (error) {
-      console.error("Error fetching room data:", error);
-      roomPriceInput.value = ""; // Clear input in case of error
+
+      // If no matches are found
+      roomPriceInput.value = "";
+      alert("No room found matching the selected criteria.");
+    } else {
+      roomPriceInput.value = "";
+      console.log("No rooms found for the selected floor.");
     }
+  } catch (error) {
+    console.error("Error fetching room data:", error);
+    roomPriceInput.value = ""; // Clear input in case of error
   }
 }
-// Event listeners for dropdown and selections
-document.getElementById("hostelDropdown").addEventListener("change", autofillRoomPrice);
-document.getElementById("floornum").addEventListener("input", autofillRoomPrice);
-document.getElementById("roomtype").addEventListener("change", autofillRoomPrice);
-document.getElementById("aircond").addEventListener("change", autofillRoomPrice);
+
+// Debounced input change handling
+function debounceAutofill() {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(autofillRoomPrice, 300); // Adjust debounce delay as needed
+}
+
+// Event listeners for dropdowns and inputs
+document.getElementById("hostelDropdown").addEventListener("change", debounceAutofill);
+document.getElementById("floornum").addEventListener("input", debounceAutofill);
+document.getElementById("roomtype").addEventListener("change", debounceAutofill);
+document.getElementById("aircond").addEventListener("change", debounceAutofill);
 
 window.addEventListener('DOMContentLoaded', populateHostelDropdown);
 
@@ -270,7 +286,7 @@ async function prefillUserDetails() {
 // Ensure the form is prefilled when the page loads
 window.addEventListener('DOMContentLoaded', prefillUserDetails);
 
-updateUser.addEventListener('click', async (e) => {
+updateUser.addEventListener("click", async (e) => {
   e.preventDefault();
 
   const userName = document.getElementById("username").value;
@@ -283,40 +299,53 @@ updateUser.addEventListener('click', async (e) => {
     return;
   }
 
-  var userFullName = document.getElementById("userfullname").value;
-  var userPhone = document.getElementById("userphone").value;
-  var userGender = document.getElementById("usergender").value;
-  var userEmail = document.getElementById("usermail").value;
-  var userAddress1 = document.getElementById("useradd1").value;
-  var userAddress2 = document.getElementById("useradd2").value;
-  var userCity = document.getElementById("usercity").value;
-  var userState = document.getElementById("userstate").value;
-  var userPin = document.getElementById("userpin").value;
-  var guardName = document.getElementById("guardname").value;
-  var guardRelation = document.getElementById("guardrel").value;
-  var guardEmail = document.getElementById("guardmail").value;
-  var guardPhone = document.getElementById("guardphone").value;
-  var guardAddress1 = document.getElementById("guardadd1").value;
-  var guardAddress2 = document.getElementById("guardadd2").value;
-  var guardState = document.getElementById("guardstate").value;
-  var guardCity = document.getElementById("guardcity").value;
-  var guardPin = document.getElementById("guardpin").value;
-  var roomType = document.getElementById("roomtype").value;
-  var floor = document.getElementById("floornum").value;
-  var ac = document.getElementById("aircond").value;
-  var totalAmount = document.getElementById("roomprice").value;
-  var paymentComplete = document.getElementById("paymentComplete").value;
-  var hostelName = document.getElementById("hostelDropdown").value;
+  const userFullName = document.getElementById("userfullname").value;
+  const userPhone = document.getElementById("userphone").value;
+  const userGender = document.getElementById("usergender").value;
+  const userEmail = document.getElementById("usermail").value;
+  const userAddress1 = document.getElementById("useradd1").value;
+  const userAddress2 = document.getElementById("useradd2").value;
+  const userCity = document.getElementById("usercity").value;
+  const userState = document.getElementById("userstate").value;
+  const userPin = document.getElementById("userpin").value;
+  const guardName = document.getElementById("guardname").value;
+  const guardRelation = document.getElementById("guardrel").value;
+  const guardEmail = document.getElementById("guardmail").value;
+  const guardPhone = document.getElementById("guardphone").value;
+  const guardAddress1 = document.getElementById("guardadd1").value;
+  const guardAddress2 = document.getElementById("guardadd2").value;
+  const guardState = document.getElementById("guardstate").value;
+  const guardCity = document.getElementById("guardcity").value;
+  const guardPin = document.getElementById("guardpin").value;
+  const roomType = document.getElementById("roomtype").value;
+  const floor = document.getElementById("floornum").value;
+  const ac = document.getElementById("aircond").value;
+  const totalAmount = document.getElementById("roomprice").value;
+  const paymentComplete = document.getElementById("paymentComplete").value;
+  const newHostelName = document.getElementById("hostelDropdown").value;
 
-  const userDetailRef = ref(db, `User details/${userUid}/`); // Reference to the specific user details
-  const bookingsRef = ref(db, `User details/${userUid}/Bookings/${hostelName}/RoomDetails/`);
+  const userDetailRef = ref(db, `User details/${userUid}/`);
+  const bookingsRef = ref(db, `User details/${userUid}/Bookings`);
 
   try {
+    // Fetch existing user data
     const userSnapshot = await get(userDetailRef);
-    let existingUserData = userSnapshot.exists() ? userSnapshot.val() : {};
+    const existingUserData = userSnapshot.exists() ? userSnapshot.val() : {};
 
-    // Prepare updated user data excluding password1
+    // Remove old hostel booking if necessary
+    if (existingUserData.Bookings) {
+      const oldHostelName = Object.keys(existingUserData.Bookings).find(
+        (hostel) => hostel !== newHostelName
+      );
+      if (oldHostelName) {
+        const oldBookingRef = ref(db, `User details/${userUid}/Bookings/${oldHostelName}`);
+        await set(oldBookingRef, null); // Clear old booking data
+      }
+    }
+
+    // Update user details
     const updatedUserData = {
+      ...existingUserData, // Preserve existing data
       userFullName,
       userName,
       userPhone,
@@ -327,8 +356,6 @@ updateUser.addEventListener('click', async (e) => {
       userCity,
       userState,
       userPin,
-      guardianDetails: "yes",
-      proofSubmission: "yes",
       guardName,
       guardRelation,
       guardEmail,
@@ -338,33 +365,27 @@ updateUser.addEventListener('click', async (e) => {
       guardState,
       guardCity,
       guardPin,
-      userUid,
+      proofData: existingUserData.proofData, // Preserve proof data
     };
 
-    // Update user details while preserving the existing password1
-    await set(userDetailRef, {
-      ...existingUserData, // Include existing data to avoid overriding
-      ...updatedUserData,  // Add the new data
-      password1: existingUserData.password1 // Ensure password1 remains unchanged
-    });
+    await set(userDetailRef, updatedUserData);
 
-    // Update booking details
-    await set(bookingsRef, {
+    // Update booking details for the selected hostel
+    const updatedBookingData = {
       roomType,
       floor,
       ac,
       totalAmount,
-      paymentComplete: paymentComplete || existingUserData.paymentComplete // Preserve existing paymentComplete if not updated
-    });
+      paymentComplete: paymentComplete || existingUserData.paymentComplete, // Preserve payment status if not updated
+    };
 
-    // Preserve existing proof data if available
-    if (existingUserData.proofData) {
-      await set(ref(db, `User details/${userUid}/proofData/`), existingUserData.proofData);
-    }
+    const newBookingRef = ref(db, `User details/${userUid}/Bookings/${newHostelName}/RoomDetails`);
+    await set(newBookingRef, updatedBookingData);
 
     alert("User details and room booking updated successfully");
     window.location.href = "././users.html";
   } catch (error) {
-    alert("Error fetching or saving user details: " + error.message);
+    console.error("Error updating user details or bookings:", error);
+    alert("Error updating user details. Please try again.");
   }
 });
