@@ -951,7 +951,7 @@ updateHostel.addEventListener('click', async (e) => {
         hostelCity: hcity,
         hostelState: hstate,
         hostelPin: hpin,
-        hostelFloors:hfloorsDB,
+        hostelFloor:hfloorsDB,
         extras: extras,
         rooms: rooms // Merge with existing rooms
     });
