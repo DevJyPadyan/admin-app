@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <!-- meta data -->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Zomo admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
+    <meta name="keywords"
+        content="admin template,Zomo admin template, dashboard template, flat admin template, responsive admin template, web app">
+    <meta name="author" content="pixelstrap">
+    <link rel="icon" href="assets/images/favicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="assets/images/favicon.png" type="image/x-icon">
+    <title>Perikitis - Hostel Expense</title>
+
+    <!-- Google font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome (for down arrow icon) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.min.js"></script>
+
+
+
+    <!-- Linear Icon css -->
+    <link rel="stylesheet" href="assets/css/linearicon.css">
+
+    <!-- Fontawesome css -->
+    <link rel="stylesheet" type="text/css" href="assets/css/vendors/font-awesome.css">
+
+    <!-- Themify icon css -->
+    <link rel="stylesheet" type="text/css" href="assets/css/vendors/themify.css">
+
+    <!--Dropzon css -->
+    <link rel="stylesheet" type="text/css" href="assets/css/vendors/dropzone.css">
+
+    <!-- Feather icon css-->
+    <link rel="stylesheet" type="text/css" href="assets/css/vendors/feather-icon.css">
+
+    <!-- remixicon css -->
+    <link rel="stylesheet" type="text/css" href="assets/css/remixicon.css">
+
+
+    <link rel="stylesheet" type="text/css" href="assets/css/dropzone.css">
+
+    <!-- Select2 css -->
+    <link rel="stylesheet" type="text/css" href="assets/css/select2.min.css">
+
+    <!-- Plugins css -->
+    <link rel="stylesheet" type="text/css" href="assets/css/vendors/scrollbar.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/vendors/animate.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/vendors/chartist.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/vendors/date-picker.css">
+
+    <!-- Bootstrap css -->
+    <link rel="stylesheet" type="text/css" href="assets/css/vendors/bootstrap.css">
+
+    <!-- Bootstrap-tag input css -->
+    <link rel="stylesheet" type="text/css" href="assets/css/vendors/bootstrap-tagsinput.css">
+
+    <!-- App css -->
+    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+</head>
+
+<body>
+    <!-- tap on top start -->
+    <div class="tap-top">
+        <i class="ri-arrow-up-double-fill"></i>
+    </div>
+    <!-- tap on tap end -->
+
+    <!-- loader start -->
+    <div class="loader-wrapper">
+        <img src="./assets/images/loader.gif" alt="">
+    </div>
+    <!-- loader end -->
+
+    <!-- page-wrapper start -->
+    <div class="page-wrapper compact-wrapper" id="pageWrapper">
+        <!-- Page Header Start-->
+        <div class="page-header">
+            <div class="header-wrapper m-0">
+                <div class="header-logo-wrapper p-0">
+                    <div class="logo-wrapper">
+                        <a href="index.html">
+                            <img class="img-fluid main-logo" src="assets/images/logo/1.png" alt="logo">
+                            <img class="img-fluid white-logo" src="assets/images/logo/1-white.png" alt="logo">
+                        </a>
+                    </div>
+                    <div class="toggle-sidebar">
+                        <i class="status_toggle middle sidebar-toggle" data-feather="align-center"></i>
+                        <a href="index.html">
+                            <img class="img-fluid for-light" src="assets/images/logo/1.png" alt="logo">
+                            <img class="img-fluid for-dark" src="assets/images/logo/1-white.png" alt="logo">
+                        </a>
+                    </div>
+                </div>
+                <div class="welcome-title">
+                    <h5>
+                        Track your expenses to know more about your inventory
+                        <img src="./assets/images/header.gif" alt="">
+                    </h5>
+                    <span>
+                        Please enter the details below
+                    </span>
+                </div>
+                <div class="nav-right col-xl-6 col-5 pull-right right-header p-0">
+                    <ul class="nav-menus">
+                        <!--<li class="search-icon">
+                            <span class="header-search">
+                                <i class="ri-search-line"></i>
+                            </span>
+                        </li>
+                        <li class="onhover-dropdown">
+                            <div class="notification-box">
+                                <i class="ri-notification-line"></i>
+                                <span class="badge rounded-pill badge-theme">4</span>
+                            </div>
+                            <ul class="notification-dropdown onhover-show-div">
+                                <li>
+                                    <i class="ri-notification-line"></i>
+                                    <h4 class="mb-0">Notitications</h4>
+                                </li>
+                                <li>
+                                    <p>
+                                        <i class="fa fa-circle me-2 font-primary"></i>Delivery processing <span
+                                            class="pull-right">10 min.</span>
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>
+                                        <i class="fa fa-circle me-2 font-success"></i>Order Complete<span
+                                            class="pull-right">1 hr</span>
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>
+                                        <i class="fa fa-circle me-2 font-info"></i>Tickets Generated<span
+                                            class="pull-right">3 hr</span>
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>
+                                        <i class="fa fa-circle me-2 font-danger"></i>Delivery Complete<span
+                                            class="pull-right">6 hr</span>
+                                    </p>
+                                </li>
+                                <li>
+                                    <a class="btn btn-primary" href="javascript:void(0)">Check all notification</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="onhover-dropdown">
+                            <div class="messages-box">
+                                <i class="ri-message-3-line"></i>
+                            </div>
+                            <ul class="messages-dropdown onhover-show-div">
+                                <li>
+                                    <i class="ri-message-3-line"></i>
+                                    <h4 class="mb-0">Messages</h4>
+                                </li>
+                                <li>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="./assets/images/user/1.jpg" alt="">
+                                        <div>
+                                            <h5>
+                                                Nullam tempor
+                                            </h5>
+                                            <p>Curabitur facilisis erat viverra.</p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="./assets/images/user/2.jpg" alt="">
+                                        <div>
+                                            <h5>
+                                                Nullam tempor
+                                            </h5>
+                                            <p>Curabitur facilisis erat viverra.</p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="./assets/images/user/3.jpg" alt="">
+                                        <div>
+                                            <h5>
+                                                Nullam tempor
+                                            </h5>
+                                            <p>Curabitur facilisis erat viverra.</p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="./assets/images/user/4.jpg" alt="">
+                                        <div>
+                                            <h5>
+                                                Nullam tempor
+                                            </h5>
+                                            <p>Curabitur facilisis erat viverra.</p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <a class="btn btn-primary" href="javascript:void(0)">Go to Inbox</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <div class="mode">
+                                <i class="ri-moon-line"></i>
+                            </div>
+                        </li>
+                        <li class="profile-nav onhover-dropdown pe-0 me-0">
+                            <div class="media profile-media">
+                                <img class="user-profile rounded-circle" src="assets/images/users/4.jpg" alt="">
+                                <div class="user-name-hide media-body">
+                                    <span>Emay Walter</span>
+                                    <p class="mb-0 font-roboto">Admin<i class="middle ri-arrow-down-s-line"></i></p>
+                                </div>
+                            </div>
+                            <ul class="profile-dropdown onhover-show-div">
+                                <li>
+                                    <a href="all-users.html">
+                                        <i data-feather="users"></i>
+                                        <span>Users</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="order-list.html">
+                                        <i data-feather="archive"></i>
+                                        <span>Orders</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="support-ticket.html">
+                                        <i data-feather="phone"></i>
+                                        <span>Spports Tickets</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="profile-setting.html">
+                                        <i data-feather="settings"></i>
+                                        <span>Settings</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                                        href="javascript:void(0)">
+                                        <i data-feather="log-out"></i>
+                                        <span>Log out</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>-->
+                    </ul>
+                </div>
+                <div class="input-box">
+                    <i class="ri-search-line"></i>
+                    <input class="search-box" type="search" placeholder="What are you looking for?">
+                    <i class="close-icon" data-feather="x"></i>
+                </div>
+            </div>
+        </div>
+        <!-- Page Header Ends-->
+
+        <!-- Page Body start -->
+        <div class="page-body-wrapper">
+            <!-- Page Sidebar Start-->
+            <div class="sidebar-wrapper">
+                <div>
+                    <div class="logo-wrapper logo-wrapper-center">
+                        <a href="index.html" data-bs-original-title="" title="">
+                            <img class="img-fluid for-white" src="assets/images/logo/full-white.svg" alt="logo">
+                        </a>
+                        <div class="back-btn">
+                            <i class="fa fa-angle-left"></i>
+                        </div>
+                        <div class="toggle-sidebar">
+                            <i class="ri-apps-2-line status_toggle middle sidebar-toggle"></i>
+                        </div>
+                    </div>
+                    <div class="logo-icon-wrapper">
+                        <a href="index.html">
+                            <img class="img-fluid main-logo" src="assets/images/logo/logo.png" alt="logo">
+                        </a>
+                    </div>
+                    <nav class="sidebar-main">
+                        <div class="left-arrow" id="left-arrow">
+                            <i data-feather="arrow-left"></i>
+                        </div>
+
+                        <div id="sidebar-menu">
+                            <ul class="sidebar-links" id="simple-bar">
+                                <li class="back-btn"></li>
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title link-nav" href="index.html">
+                                        <i class="ri-home-line"></i>
+                                        <span>Dashboard</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-list">
+                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
+                                        <i class="ri-store-3-line"></i>
+                                        <span>Hostels</span>
+                                    </a>
+                                    <ul class="sidebar-submenu">
+                                        <li>
+                                            <a href="products.html">Hostel List</a>
+                                        </li>
+
+                                        <li>
+                                            <a href="add-new-product.html">Register Hostel</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="sidebar-list">
+                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
+                                        <i class="ri-user-3-line"></i>
+                                        <span>Users</span>
+                                    </a>
+                                    <ul class="sidebar-submenu">
+                                        <li>
+                                            <a href="users.html">User List</a>
+                                        </li>
+
+                                        <li>
+                                            <a href="admin-add-user.html">Register User</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <!--<li class="sidebar-list">
+                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
+                                        <i class="ri-list-settings-line"></i>
+                                        <span>Attributes</span>
+                                    </a>
+                                    <ul class="sidebar-submenu">
+                                        <li>
+                                            <a href="attributes.html">Attributes</a>
+                                        </li>
+
+                                        <li>
+                                            <a href="add-new-attribute.html">Add Attributes</a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title link-nav" href="restaurants.html">
+                                        <i class="ri-shopping-bag-2-line"></i>
+                                        <span>Restaurants</span>
+                                    </a>
+                                </li>
+
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title link-nav" href="drivers.html">
+                                        <i class="ri-car-line"></i>
+                                        <span>Drivers</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-list">
+                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
+                                        <i class="ri-bowl-line"></i>
+                                        <span>Foods</span>
+                                    </a>
+                                    <ul class="sidebar-submenu">
+                                        <li>
+                                            <a href="foods.html">Food List</a>
+                                        </li>
+
+                                        <li>
+                                            <a href="add-new-food.html">Create Food</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title" href="javascript:void(0)">
+                                        <i class="ri-user-3-line"></i>
+                                        <span>Users</span>
+                                    </a>
+                                    <ul class="sidebar-submenu">
+                                        <li>
+                                            <a href="all-users.html">All users</a>
+                                        </li>
+                                        <li>
+                                            <a href="add-new-user.html">Add new user</a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title" href="javascript:void(0)">
+                                        <i class="ri-user-3-line"></i>
+                                        <span>Roles</span>
+                                    </a>
+                                    <ul class="sidebar-submenu">
+                                        <li>
+                                            <a href="role.html">All roles</a>
+                                        </li>
+                                        <li>
+                                            <a href="create-roles.html">Create Role</a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title link-nav" href="media.html">
+                                        <i class="ri-price-tag-3-line"></i>
+                                        <span>Media</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title link-nav" href="live-traking.html">
+                                        <i class="ri-road-map-line"></i>
+                                        <span>Live Traking</span>
+                                    </a>
+                                </li>-->
+
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title" href="javascript:void(0)">
+                                        <i class="ri-archive-line"></i>
+                                        <span>Inventory</span>
+                                    </a>
+                                    <ul class="sidebar-submenu">
+                                        <li>
+                                            <a href="add-new-expense.html">Hostel Expenses</a>
+                                        </li>
+                                        <li>
+                                            <a href="electricity-expenses.html">Electricity Expenses</a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <!--<li class="sidebar-list">
+                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
+                                        <i class="ri-focus-3-line"></i>
+                                        <span>Localization</span>
+                                    </a>
+                                    <ul class="sidebar-submenu">
+                                        <li>
+                                            <a href="translation.html">Translation</a>
+                                        </li>
+
+                                        <li>
+                                            <a href="currency-rates.html">Currency Rates</a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <li class="sidebar-list">
+                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
+                                        <i class="ri-price-tag-3-line"></i>
+                                        <span>Coupons</span>
+                                    </a>
+                                    <ul class="sidebar-submenu">
+                                        <li>
+                                            <a href="coupon-list.html">Coupon List</a>
+                                        </li>
+
+                                        <li>
+                                            <a href="create-coupon.html">Create Coupon</a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title link-nav" href="taxes.html">
+                                        <i class="ri-price-tag-3-line"></i>
+                                        <span>Tax</span>
+                                    </a>
+                                </li>
+
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title link-nav" href="product-review.html">
+                                        <i class="ri-star-line"></i>
+                                        <span>Product Review</span>
+                                    </a>
+                                </li>
+
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title link-nav" href="support-ticket.html">
+                                        <i class="ri-phone-line"></i>
+                                        <span>Support Ticket</span>
+                                    </a>
+                                </li>
+
+                                <li class="sidebar-list">
+                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
+                                        <i class="ri-settings-line"></i>
+                                        <span>Settings</span>
+                                    </a>
+                                    <ul class="sidebar-submenu">
+                                        <li>
+                                            <a href="profile-setting.html">Profile Setting</a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title link-nav" href="reports.html">
+                                        <i class="ri-file-chart-line"></i>
+                                        <span>Reports</span>
+                                    </a>
+                                </li>
+
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title link-nav" href="list-page.html">
+                                        <i class="ri-list-check"></i>
+                                        <span>List Page</span>
+                                    </a>
+                                </li>-->
+                            </ul>
+                        </div>
+
+                        <div class="right-arrow" id="right-arrow">
+                            <i data-feather="arrow-right"></i>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+            <!-- Page Sidebar Ends-->
+
+            <div class="page-body">
+
+                <!-- New Product Add Start -->
+                <div class="container-fluid" id="hostelDetailsForm">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Hostel Expense Management</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="input-items">
+                                                <div class="row gy-3">
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Hostel Name<span class="required">*</span></h6>
+                                                            <input type="text" placeholder="Hostel Name" id="hostelname"
+                                                                required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Hostel Location<span class="required">*</span></h6>
+                                                            <select class="js-example-basic-single w-100" name="state"
+                                                                id="hostellocation" required>
+                                                                <option>Chennai</option>
+                                                                <option>Hyderbad</option>
+                                                                <option>Banglore</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="input-box">
+                                                            <h6>Period<span class="required">*</span></h6>
+                                                            <select class="js-example-basic-single w-100" name="state"
+                                                                id="period" required>
+                                                                <option>Daily</option>
+                                                                <option>Montly</option>
+                                                                <option>Weekly</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>From Date</h6>
+                                                            <input type="date" name="date" id="fromdate">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>To Date</h6>
+                                                            <input type="date" name="date" id="todate">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Category<span class="required">*</span></h6>
+                                                            <div>
+                                                                <form class="radio-section">
+                                                                    <label>
+                                                                        <input type="radio" id="cat-1" name="category"
+                                                                            value="Utilities" />
+                                                                        <i></i>
+                                                                        <span>Utilities</span>
+                                                                    </label>
+                                                                    <br>
+                                                                    <label>
+                                                                        <input type="radio" id="cat-2" name="category"
+                                                                            value="Food" />
+                                                                        <i></i>
+                                                                        <span>Food</span>
+                                                                    </label>
+                                                                    <br>
+                                                                    <label>
+                                                                        <input type="radio" id="cat-3" name="category"
+                                                                            value="Maintenance" />
+                                                                        <i></i>
+                                                                        <span>Maintenance</span>
+                                                                    </label>
+                                                                    <br>
+                                                                    <label>
+                                                                        <input type="radio" id="cat-4" name="category"
+                                                                            value="Salary" />
+                                                                        <i></i>
+                                                                        <span>Salary</span>
+                                                                    </label>
+                                                                    <br>
+                                                                    <label>
+                                                                        <input type="radio" id="cat-5" name="category"
+                                                                            value="Rent" />
+                                                                        <i></i>
+                                                                        <span>Rent</span>
+                                                                    </label>
+                                                                    <br>
+                                                                    <label>
+                                                                        <input type="radio" id="cat-6" name="category"
+                                                                            value="Furniture/Appliances" />
+                                                                        <i></i>
+                                                                        <span>Furniture/Appliances</span>
+                                                                    </label>
+                                                                    <br>
+                                                                    <label>
+                                                                        <input type="radio" id="cat-7" name="category"
+                                                                            value="Miscellaneous" />
+                                                                        <i></i>
+                                                                        <span>Miscellaneous</span>
+                                                                    </label>
+                                                                    <br>
+                                                                    <label>
+                                                                        <input type="radio" id="cat-8" name="category"
+                                                                            value="Others" />
+                                                                        <i></i>
+                                                                        <span>Others</span>
+                                                                    </label>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Sub Category<span class="required">*</span></h6>
+                                                            <div class="row gy-3">
+                                                                <div class="input-box d-flex align-items-center gap-2">
+                                                                    <input class="custom-checkbox" type="checkbox"
+                                                                        id="subcat-1" value="Electricity" />
+                                                                    <label for="subcat-1"
+                                                                        class="mb-0">Electricity</label>
+                                                                </div>
+                                                                <div class="input-box d-flex align-items-center gap-2">
+                                                                    <input class="custom-checkbox" type="checkbox"
+                                                                        id="subcat-2" value="Water" />
+                                                                    <label for="subcat-2" class="mb-0">Water</label>
+                                                                </div>
+                                                                <div class="input-box d-flex align-items-center gap-2">
+                                                                    <input class="custom-checkbox" type="checkbox"
+                                                                        id="subcat-3" value="Gas" />
+                                                                    <label for="subcat-3" class="mb-0">Gas</label>
+                                                                </div>
+                                                                <div class="input-box d-flex align-items-center gap-2">
+                                                                    <input class="custom-checkbox" type="checkbox"
+                                                                        id="subcat-4" value="Internet" />
+                                                                    <label for="subcat-4" class="mb-0">Internet</label>
+                                                                </div>
+                                                                <div class="input-box d-flex align-items-center gap-2">
+                                                                    <input class="custom-checkbox" type="checkbox"
+                                                                        id="subcat-5" value="Water Supplies" />
+                                                                    <label for="subcat-5" class="mb-0">Water
+                                                                        Supplies</label>
+                                                                </div>
+                                                                <div class="input-box d-flex align-items-center gap-2">
+                                                                    <input class="custom-checkbox" type="checkbox"
+                                                                        id="subcat-6" value="Groceries" />
+                                                                    <label for="subcat-6" class="mb-0">Groceries</label>
+                                                                </div>
+                                                                <div class="input-box d-flex align-items-center gap-2">
+                                                                    <input class="custom-checkbox" type="checkbox"
+                                                                        id="subcat-7"
+                                                                        value="Cooking Supplies - Raw Materials" />
+                                                                    <label for="subcat-7" class="mb-0">Cooking Supplies
+                                                                        - Raw Materials</label>
+                                                                </div>
+                                                                <div class="input-box d-flex align-items-center gap-2">
+                                                                    <input class="custom-checkbox" type="checkbox"
+                                                                        id="subcat-8"
+                                                                        value="Cooking Supplies - Veg/Fruits" />
+                                                                    <label for="subcat-8" class="mb-0">Cooking Supplies
+                                                                        - Veg/Fruits</label>
+                                                                </div>
+                                                                <div class="input-box d-flex align-items-center gap-2">
+                                                                    <input class="custom-checkbox" type="checkbox"
+                                                                        id="subcat-9" value="Repairs" />
+                                                                    <label for="subcat-9" class="mb-0">Repairs</label>
+                                                                </div>
+                                                                <div class="input-box d-flex align-items-center gap-2">
+                                                                    <input class="custom-checkbox" type="checkbox"
+                                                                        id="subcat-10" value="Cleaning" />
+                                                                    <label for="subcat-10" class="mb-0">Cleaning</label>
+                                                                </div>
+                                                                <div class="input-box d-flex align-items-center gap-2">
+                                                                    <input class="custom-checkbox" type="checkbox"
+                                                                        id="subcat-11" value="Purchase/Repair" />
+                                                                    <label for="subcat-11"
+                                                                        class="mb-0">Purchase/Repair</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="input-box">
+                                                            <h6>Description</h6>
+                                                            <textarea name="text" rows="4"
+                                                                placeholder="Enter Description...."
+                                                                id="descript"></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12">
+                                                        <div class="input-box">
+                                                            <h6>Remarks</h6>
+                                                            <textarea name="text" rows="4" placeholder="Enter Remarks"
+                                                                id="remarks"></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Bill Amount<span class="required">*</span></h6>
+                                                            <input type="number" placeholder="Pincode" id="billAmount"
+                                                                required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Bill Upload</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="input-items">
+                                            <div class="row gy-3">
+                                                <div class="col-xl-6">
+                                                    <div class="input-box">
+                                                        <h6>Images</h6>
+                                                        <input type="file" id="files" multiple>
+                                                    </div>
+                                                    <br>
+                                                    <div class="col-12">
+                                                        <button id="uploadImage" class="btn restaurant-button">Upload
+                                                            Image</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-5">
+                                <button type="button" id="saveDetails" class="btn restaurant-button">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- New Product Add End -->
+
+            <!-- footer Start -->
+            <div class="container-fluid">
+                <footer class="footer">
+                    <div class="row">
+                        <div class="col-md-12 footer-copyright text-center">
+                            <p class="mb-0">Copyright 2024 ©Perikitis</p>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+            <!-- footer En -->
+        </div>
+        <!-- Container-fluid End -->
+    </div>
+    <!-- Page Body End -->
+    </div>
+    <!-- page-wrapper End -->
+
+    <!--Add room Modal start-->
+    <div class="modal fade location-modal" id="room" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">
+                        <h5 class="fw-semibold">Add room details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <label>
+                        Room type:
+                    </label>
+                    <input type="text" name="roomtype" id="rtype" placeholder="Room type"><br>
+                    <label>
+                        No. of rooms:
+                    </label>
+                    <input type="text" name="roomtype" id="rnumber" placeholder="Room count"><br>
+                    <label>
+                        Room price:
+                    </label>
+                    <input type="text" name="roomtype" id="rprice" placeholder="Room price"><br>
+                    <label>
+                        Room facility:
+                    </label>
+                    <input type="text" name="roomtype" id="rfac" placeholder="Room facility"><br>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn gray-btn" data-bs-dismiss="modal">Close</button>
+                    <!--<button type="button" class="btn theme-btn mt-0" data-bs-dismiss="modal" id="addroom">Save</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Add room Modal End-->
+
+
+    <!-- Modal Start -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog  modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <h5 class="modal-title" id="staticBackdropLabel">Logging Out</h5>
+                    <p>Are you sure you want to log out?</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                    <div class="button-box">
+                        <button type="button" class="btn btn--no" data-bs-dismiss="modal">No</button>
+                        <button type="button" class="btn  btn--yes btn-primary">Yes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal End -->
+
+
+    <!-- latest js -->
+    <script src="assets/js/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap js -->
+    <script src="assets/js/bootstrap/bootstrap.bundle.min.js"></script>
+
+    <!-- feather icon js -->
+    <script src="assets/js/icons/feather-icon/feather.min.js"></script>
+    <script src="assets/js/icons/feather-icon/feather-icon.js"></script>
+
+    <!-- scrollbar simplebar js -->
+    <script src="assets/js/scrollbar/simplebar.js"></script>
+    <script src="assets/js/scrollbar/custom.js"></script>
+
+    <!-- Sidebar js -->
+    <script src="assets/js/config.js"></script>
+
+    <!-- New hostel register js -->
+    <script src="assets/js/add-expense.js" type="module" defer></script>
+
+    <!-- Firebase config js -->
+    <script src="assets/js/firebase-config.js" type="module" defer></script>
+
+    <!-- bootstrap tag-input js -->
+    <script src="assets/js/bootstrap-tagsinput.min.js"></script>
+    <script src="assets/js/sidebar-menu.js"></script>
+
+    <!-- customizer js
+    <script src="assets/js/customizer.js"></script>-->
+
+    <!--Dropzon js -->
+    <script src="assets/js/dropzone/dropzone.js"></script>
+    <script src="assets/js/dropzone/dropzone-script.js"></script>
+
+    <!-- ck editor js -->
+    <script src="assets/js/ckeditor.js"></script>
+    <script src="assets/js/ckeditor-custom.js"></script>
+
+    <!-- select2 js -->
+    <script src="assets/js/select2.min.js"></script>
+    <script src="assets/js/select2-custom.js"></script>
+
+    <!-- Theme js -->
+    <script src="assets/js/script.js"></script>
+</body>
+
+</html>
