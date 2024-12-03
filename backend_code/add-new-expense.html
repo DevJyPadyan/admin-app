@@ -114,7 +114,7 @@
                 </div>
                 <div class="welcome-title">
                     <h5>
-                        Track your expenses to know more about your inventory
+                        Track your expenses for inventory.
                         <img src="./assets/images/header.gif" alt="">
                     </h5>
                     <span>
@@ -444,9 +444,6 @@
                                         <li>
                                             <a href="add-new-expense.html">Hostel Expenses</a>
                                         </li>
-                                        <li>
-                                            <a href="electricity-expenses.html">Electricity Expenses</a>
-                                        </li>
                                     </ul>
                                 </li>
 
@@ -540,272 +537,86 @@
             <!-- Page Sidebar Ends-->
 
             <div class="page-body">
-
                 <!-- New Product Add Start -->
                 <div class="container-fluid" id="hostelDetailsForm">
                     <div class="row">
                         <div class="col-12">
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Hostel Expense Management</h5>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Hostel Expense Management</h5>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Hostel Details -->
+                                    <div class="row gy-3">
+                                        <div class="col-xl-6">
+                                            <div class="input-box">
+                                                <h6>Hostel Name</h6>
+                                                <select id="hostelDropdown" class="js-example-basic-single w-100">
+                                                    <option value="">Select Hostel</option>
+                                                </select>
+                                            </div>
                                         </div>
-                                        <div class="card-body">
-                                            <div class="input-items">
-                                                <div class="row gy-3">
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Hostel Name<span class="required">*</span></h6>
-                                                            <input type="text" placeholder="Hostel Name" id="hostelname"
-                                                                required>
-                                                        </div>
+                                        <div class="col-xl-6">
+                                            <div class="input-box">
+                                                <h6>Frequency<span class="required">*</span></h6>
+                                                <select id="frequency" class="js-example-basic-single w-100" required>
+                                                    <option value="">Select Frequency</option>
+                                                    <option value="daily">Daily</option>
+                                                    <option value="weekly">Weekly</option>
+                                                    <option value="monthly">Monthly</option>
+                                                    <option value="yearly">Yearly</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-6">
+                                            <div class="input-box">
+                                                <div id="frequency-fields">
+                                                    <div id="daily-date" style="display: none;">
+                                                        <h6>Select Date</h6>
+                                                        <input type="date" id="date">
                                                     </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Hostel Location<span class="required">*</span></h6>
-                                                            <select class="js-example-basic-single w-100" name="state"
-                                                                id="hostellocation" required>
-                                                                <option>Chennai</option>
-                                                                <option>Hyderbad</option>
-                                                                <option>Banglore</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <div class="input-box">
-                                                            <h6>Period<span class="required">*</span></h6>
-                                                            <select class="js-example-basic-single w-100" name="state"
-                                                                id="period" required>
-                                                                <option>Daily</option>
-                                                                <option>Montly</option>
-                                                                <option>Weekly</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>From Date</h6>
-                                                            <input type="date" name="date" id="fromdate">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>To Date</h6>
-                                                            <input type="date" name="date" id="todate">
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Category<span class="required">*</span></h6>
-                                                            <div>
-                                                                <form class="radio-section">
-                                                                    <label>
-                                                                        <input type="radio" id="cat-1" name="category"
-                                                                            value="Utilities" />
-                                                                        <i></i>
-                                                                        <span>Utilities</span>
-                                                                    </label>
-                                                                    <br>
-                                                                    <label>
-                                                                        <input type="radio" id="cat-2" name="category"
-                                                                            value="Food" />
-                                                                        <i></i>
-                                                                        <span>Food</span>
-                                                                    </label>
-                                                                    <br>
-                                                                    <label>
-                                                                        <input type="radio" id="cat-3" name="category"
-                                                                            value="Maintenance" />
-                                                                        <i></i>
-                                                                        <span>Maintenance</span>
-                                                                    </label>
-                                                                    <br>
-                                                                    <label>
-                                                                        <input type="radio" id="cat-4" name="category"
-                                                                            value="Salary" />
-                                                                        <i></i>
-                                                                        <span>Salary</span>
-                                                                    </label>
-                                                                    <br>
-                                                                    <label>
-                                                                        <input type="radio" id="cat-5" name="category"
-                                                                            value="Rent" />
-                                                                        <i></i>
-                                                                        <span>Rent</span>
-                                                                    </label>
-                                                                    <br>
-                                                                    <label>
-                                                                        <input type="radio" id="cat-6" name="category"
-                                                                            value="Furniture/Appliances" />
-                                                                        <i></i>
-                                                                        <span>Furniture/Appliances</span>
-                                                                    </label>
-                                                                    <br>
-                                                                    <label>
-                                                                        <input type="radio" id="cat-7" name="category"
-                                                                            value="Miscellaneous" />
-                                                                        <i></i>
-                                                                        <span>Miscellaneous</span>
-                                                                    </label>
-                                                                    <br>
-                                                                    <label>
-                                                                        <input type="radio" id="cat-8" name="category"
-                                                                            value="Others" />
-                                                                        <i></i>
-                                                                        <span>Others</span>
-                                                                    </label>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Sub Category<span class="required">*</span></h6>
-                                                            <div class="row gy-3">
-                                                                <div class="input-box d-flex align-items-center gap-2">
-                                                                    <input class="custom-checkbox" type="checkbox"
-                                                                        id="subcat-1" value="Electricity" />
-                                                                    <label for="subcat-1"
-                                                                        class="mb-0">Electricity</label>
-                                                                </div>
-                                                                <div class="input-box d-flex align-items-center gap-2">
-                                                                    <input class="custom-checkbox" type="checkbox"
-                                                                        id="subcat-2" value="Water" />
-                                                                    <label for="subcat-2" class="mb-0">Water</label>
-                                                                </div>
-                                                                <div class="input-box d-flex align-items-center gap-2">
-                                                                    <input class="custom-checkbox" type="checkbox"
-                                                                        id="subcat-3" value="Gas" />
-                                                                    <label for="subcat-3" class="mb-0">Gas</label>
-                                                                </div>
-                                                                <div class="input-box d-flex align-items-center gap-2">
-                                                                    <input class="custom-checkbox" type="checkbox"
-                                                                        id="subcat-4" value="Internet" />
-                                                                    <label for="subcat-4" class="mb-0">Internet</label>
-                                                                </div>
-                                                                <div class="input-box d-flex align-items-center gap-2">
-                                                                    <input class="custom-checkbox" type="checkbox"
-                                                                        id="subcat-5" value="Water Supplies" />
-                                                                    <label for="subcat-5" class="mb-0">Water
-                                                                        Supplies</label>
-                                                                </div>
-                                                                <div class="input-box d-flex align-items-center gap-2">
-                                                                    <input class="custom-checkbox" type="checkbox"
-                                                                        id="subcat-6" value="Groceries" />
-                                                                    <label for="subcat-6" class="mb-0">Groceries</label>
-                                                                </div>
-                                                                <div class="input-box d-flex align-items-center gap-2">
-                                                                    <input class="custom-checkbox" type="checkbox"
-                                                                        id="subcat-7"
-                                                                        value="Cooking Supplies - Raw Materials" />
-                                                                    <label for="subcat-7" class="mb-0">Cooking Supplies
-                                                                        - Raw Materials</label>
-                                                                </div>
-                                                                <div class="input-box d-flex align-items-center gap-2">
-                                                                    <input class="custom-checkbox" type="checkbox"
-                                                                        id="subcat-8"
-                                                                        value="Cooking Supplies - Veg/Fruits" />
-                                                                    <label for="subcat-8" class="mb-0">Cooking Supplies
-                                                                        - Veg/Fruits</label>
-                                                                </div>
-                                                                <div class="input-box d-flex align-items-center gap-2">
-                                                                    <input class="custom-checkbox" type="checkbox"
-                                                                        id="subcat-9" value="Repairs" />
-                                                                    <label for="subcat-9" class="mb-0">Repairs</label>
-                                                                </div>
-                                                                <div class="input-box d-flex align-items-center gap-2">
-                                                                    <input class="custom-checkbox" type="checkbox"
-                                                                        id="subcat-10" value="Cleaning" />
-                                                                    <label for="subcat-10" class="mb-0">Cleaning</label>
-                                                                </div>
-                                                                <div class="input-box d-flex align-items-center gap-2">
-                                                                    <input class="custom-checkbox" type="checkbox"
-                                                                        id="subcat-11" value="Purchase/Repair" />
-                                                                    <label for="subcat-11"
-                                                                        class="mb-0">Purchase/Repair</label>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <div class="input-box">
-                                                            <h6>Description</h6>
-                                                            <textarea name="text" rows="4"
-                                                                placeholder="Enter Description...."
-                                                                id="descript"></textarea>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <div class="input-box">
-                                                            <h6>Remarks</h6>
-                                                            <textarea name="text" rows="4" placeholder="Enter Remarks"
-                                                                id="remarks"></textarea>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Bill Amount<span class="required">*</span></h6>
-                                                            <input type="number" placeholder="Pincode" id="billAmount"
-                                                                required>
-                                                        </div>
+                                                    <div id="date-range" style="display: none;">
+                                                        <h6>From Date</h6>
+                                                        <input type="date" id="fromdate">
+                                                        <h6>To Date</h6>
+                                                        <input type="date" id="todate">
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    <!-- Add Expense Section -->
+                                    <div id="dynamic-expense-container" class="mt-4"></div>
+
+                                    <button id="addExpenseButton" class="btn restaurant-button">Add
+                                        Category</button>
+
                                 </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5>Bill Upload</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="input-items">
-                                            <div class="row gy-3">
-                                                <div class="col-xl-6">
-                                                    <div class="input-box">
-                                                        <h6>Images</h6>
-                                                        <input type="file" id="files" multiple>
-                                                    </div>
-                                                    <br>
-                                                    <div class="col-12">
-                                                        <button id="uploadImage" class="btn restaurant-button">Upload
-                                                            Image</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 mb-5">
-                                <button type="button" id="saveDetails" class="btn restaurant-button">Save</button>
                             </div>
                         </div>
+                    </div>
+                    <div class="col-12 mb-5">
+                        <!-- Save Button -->
+                        <button id="saveButton" class="btn restaurant-button mt-3">Save</button>
                     </div>
                 </div>
-            </div>
-            <!-- New Product Add End -->
+                <!-- New Product Add End -->
 
-            <!-- footer Start -->
-            <div class="container-fluid">
-                <footer class="footer">
-                    <div class="row">
-                        <div class="col-md-12 footer-copyright text-center">
-                            <p class="mb-0">Copyright 2024 ©Perikitis</p>
+                <!-- footer Start -->
+                <div class="container-fluid">
+                    <footer class="footer">
+                        <div class="row">
+                            <div class="col-md-12 footer-copyright text-center">
+                                <p class="mb-0">Copyright 2024 ©Perikitis</p>
+                            </div>
                         </div>
-                    </div>
-                </footer>
+                    </footer>
+                </div>
+                <!-- footer En -->
             </div>
-            <!-- footer En -->
+            <!-- Container-fluid End -->
         </div>
-        <!-- Container-fluid End -->
-    </div>
-    <!-- Page Body End -->
+        <!-- Page Body End -->
     </div>
     <!-- page-wrapper End -->
 

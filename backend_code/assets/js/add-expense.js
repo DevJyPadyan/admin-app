@@ -1,118 +1,316 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, set, get, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { getStorage, ref as ref2, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 import { firebaseConfig } from "./firebase-config.js";
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 const storage = getStorage(app);
 
-// Bill Multiple Images Upload
-let files = [];
-let imagelink = []; // Stores uploaded image URLs
+//Populate hostel dropdown for room booking
+async function populateHostelDropdown(prefilledHostel = "") {
+    const hostelDropdown = document.getElementById("hostelDropdown");
+    const hostelsRef = ref(db, "Hostel details/");
+    console.log(hostelsRef);
 
-document.getElementById("files").addEventListener("change", function (e) {
-    files = e.target.files;
-});
+    try {
+        const snapshot = await get(hostelsRef);
+        if (snapshot.exists()) {
+            const hostels = snapshot.val();
+            hostelDropdown.innerHTML = '<option value="">Select Hostel</option>';
+            for (let hostelName in hostels) {
+                let option = document.createElement("option");
+                option.value = hostelName;
+                option.text = hostelName;
+                hostelDropdown.appendChild(option);
+            }
 
-// Save Bill Images to Firebase Storage and get URLs
-async function uploadBillImages(hostelLocation, hostelName, period) {
-    imagelink = []; // Reset imagelink array for every upload
-    if (files.length === 0) {
-        alert("No files selected.");
-        return;
+            // Prefill the dropdown with the user's hostel if available
+            if (prefilledHostel) {
+                hostelDropdown.value = prefilledHostel;
+            }
+        } else {
+            console.log("No hostels found.");
+        }
+    } catch (error) {
+        console.error("Error fetching hostels:", error);
     }
-    for (let i = 0; i < files.length; i++) {
-        const fileName = `${new Date().getTime()}_${files[i].name}`; // Unique file name
-        const storageRef = ref2(storage, `Inventory/HostelExpenses/${hostelLocation}/${hostelName}/${period}/${fileName}`);
-        
-        // Upload file to Firebase Storage
-        const uploadResult = await uploadBytes(storageRef, files[i]);
-        
-        // Get the file's public URL
-        const imageUrl = await getDownloadURL(uploadResult.ref); 
-        imagelink.push(imageUrl); // Store the image URL
-    }
-    console.log("Uploaded Image URLs:", imagelink);
+}
+window.addEventListener('DOMContentLoaded', populateHostelDropdown);
+
+let categoryCounter = 0;
+
+// Subcategory mapping
+const subCategoryMap = {
+    utilities: ["Water", "Electricity", "Gas", "Internet", "Water Supplies"],
+    food: ["Groceries", "Cooking Supplies - Raw Materials", "Cooking Supplies - Vegetables or Fruits"],
+    maintenance: ["Repairs", "Cleaning"],
+    furniture: ["Purchase/Repair"],
+    rent: [],
+    salary: [],
+    miscellaneous: []
+};
+
+// Function to toggle date fields based on frequency
+function toggleFrequencyFields() {
+    const frequency = document.getElementById("frequency").value;
+    document.getElementById("daily-date").style.display = frequency === "daily" ? "block" : "none";
+    document.getElementById("date-range").style.display = frequency !== "daily" && frequency !== "" ? "block" : "none";
 }
 
-// Handle Form Submission
-document.getElementById("saveDetails").addEventListener("click", async function () {
-    // Retrieve basic form inputs
-    const hostelName = document.getElementById("hostelname").value;
-    const hostelLocation = document.getElementById("hostellocation").value;
-    const period = document.getElementById("period").value;
-    const fromDate = document.getElementById("fromdate").value;
-    const toDate = document.getElementById("todate").value;
-    const description = document.getElementById("descript").value;
-    const remarks = document.getElementById("remarks").value;
-    const billAmount = document.getElementById("billAmount").value;
-
-    // Retrieve selected Category
-    const selectedCategoryElement = document.querySelector('input[name="category"]:checked');
-    const category = selectedCategoryElement ? {
-        id: selectedCategoryElement.id, // Unique ID of the category
-        value: selectedCategoryElement.value // Display value of the category
-    } : null;
-
-    // Retrieve selected Subcategories
-    const selectedSubcategories = Array.from(document.querySelectorAll('.custom-checkbox:checked')).map(subcat => ({
-        id: subcat.id, // Unique ID of the subcategory
-        value: subcat.value // Display value of the subcategory
-    }));
-
-    // Validate required fields
-    if (!hostelName || !hostelLocation || !period || !category || !billAmount) {
-        alert("Please fill in all required fields.");
-        return;
-    }
-
-    // Upload Images
-    await uploadBillImages(hostelLocation, hostelName, period);
-
-    // Structure the data
-    const data = {
-        hostelName,
-        hostelLocation,
-        period,
-        fromDate,
-        toDate,
-        category, // { id: "cat-1", value: "Utilities" }
-        subcategories: selectedSubcategories, // Array of selected subcategories
-        description,
-        remarks,
-        billAmount,
-        billImages: imagelink // Add uploaded image URLs to data
-    };
-
-    // Save data to Firebase Database with image URLs
-    const dbPath = `Inventory/HostelExpenses/${hostelLocation}/${hostelName}/${period}/${fromDate}-${toDate}`;
-    const dbRef = ref(db, dbPath);
-
-    set(dbRef, data)
-        .then(() => {
-            alert('Data saved successfully with images!');
-        })
-        .catch((error) => {
-            console.error('Error saving data:', error);
-            alert('Failed to save data. Please try again.');
-        });
+// Initialize Select2 and event listeners on page load
+$(document).ready(function () {
+    $('.js-example-basic-single').select2();
+    $('#frequency').on('change', toggleFrequencyFields);
+    toggleFrequencyFields();
 });
+function updateSubCategoryFields(formId, subCategoryId) {
+    const category = document.getElementById(`category-${formId}`).value;
+    const subCategory = document.getElementById(`subcategory-${subCategoryId}`)?.value;
 
-// Separate Upload Button for Testing Images
-document.getElementById("uploadImage").addEventListener("click", async function () {
-    const hostelName = document.getElementById("hostelname").value;
-    const hostelLocation = document.getElementById("hostellocation").value;
-    const period = document.getElementById("period").value;
+    const roomFieldContainer = document.getElementById(`room-floor-${subCategoryId}`);
+    const unitFieldContainer = document.getElementById(`units-${subCategoryId}`);
+    const measurementFieldContainer = document.getElementById(`unit-${subCategoryId}`);
 
-    // Ensure required fields for upload
-    if (!hostelName || !hostelLocation || !period) {
-        alert("Please provide hostel name, location, and period before uploading images.");
+    // Reset visibility
+    roomFieldContainer.style.display = "none";
+    unitFieldContainer.style.display = "none";
+    measurementFieldContainer.style.display = "none";
+
+    // Conditional visibility for "Electricity"
+    if (category === "utilities" && subCategory === "Electricity") {
+        roomFieldContainer.style.display = "block";
+        unitFieldContainer.style.display = "block";
+        measurementFieldContainer.style.display = "block";
+    } else if (category === "utilities") {
+        unitFieldContainer.style.display = "block";
+    }
+}
+
+// Function to upload files to Firebase Storage
+async function uploadFiles(files) {
+    const uploadedURLs = [];
+    for (const file of files) {
+        // Use ref2 instead of storageRef
+        const fileRef = ref2(storage, `bills/${Date.now()}-${file.name}`);
+        await uploadBytes(fileRef, file);
+        const downloadURL = await getDownloadURL(fileRef);
+        uploadedURLs.push(downloadURL);
+    }
+    return uploadedURLs;
+}
+
+// Function to add a new expense form
+function addExpenseForm() {
+    const container = document.getElementById("dynamic-expense-container");
+    const formId = `expense-form-${Date.now()}`;
+    categoryCounter++;
+
+    const form = document.createElement("div");
+    form.setAttribute("id", formId);
+    form.classList.add("card-body", "expense-form", "mb-3");
+
+    form.innerHTML = `
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6>Category #${categoryCounter}</h6>
+            <button id="remove-expense-form-${formId}" class="ri-delete-bin-line btn restaurant-button"></button> 
+        </div>
+        <div class="card-body">
+            <div class="row gy-3">
+                <div class="col-12">
+                    <label>Category:</label>
+                    <select id="category-${formId}" name="category" class="form-select" required>
+                        ${Object.keys(subCategoryMap)
+            .map(category => `<option value="${category}">${category.charAt(0).toUpperCase() + category.slice(1)}</option>`)
+            .join("")}
+                    </select>
+                </div>
+                <div class="col-12">
+                    <button id="add-sub-category-${formId}" class="btn restaurant-button">Add Sub-Category</button>
+                </div>
+                <div class="col-12" id="sub-categories-${formId}"></div>
+            </div>
+        </div>
+    `;
+    container.appendChild(form);
+
+    document.getElementById(`category-${formId}`).addEventListener("change", () => updateSubCategoryFields(formId));
+    document.getElementById(`add-sub-category-${formId}`).addEventListener("click", () => addSubCategory(formId));
+    document.getElementById(`remove-expense-form-${formId}`).addEventListener("click", () => removeExpenseForm(formId));
+}
+
+// Function to add a subcategory container
+function addSubCategory(formId) {
+    const container = document.getElementById(`sub-categories-${formId}`);
+    const subCategoryId = `sub-category-${Date.now()}`;
+
+    const category = document.getElementById(`category-${formId}`).value;
+    if (!category) return alert("Please select a category first!");
+
+    const card = document.createElement("div");
+    card.setAttribute("id", subCategoryId);
+    card.classList.add("card", "mb-2");
+
+    card.innerHTML = `
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <button id="remove-sub-category-${subCategoryId}" class="ri-delete-bin-line btn restaurant-button"></button>
+        </div>
+        <div class="card-body">
+            <div class="row gy-3">
+                <div class="col-xl-6">
+                    <label>Sub-Category:</label>
+                    <select id="subcategory-${subCategoryId}" class="form-select" required>
+                        ${subCategoryMap[category]
+            .map(sub => `<option value="${sub}">${sub}</option>`)
+            .join("")}
+                    </select>
+                </div>
+                <div class="col-xl-6">
+                    <label>Cost:</label>
+                    <input type="number" id="cost-${subCategoryId}" class="form-control" placeholder="Enter cost" required>
+                </div>
+                <div class="col-xl-6">
+                    <label>Description:</label>
+                    <textarea id="description-${subCategoryId}" class="form-control" placeholder="Enter description"></textarea>
+                </div>
+                <div class="col-xl-6">
+                    <label>Remarks:</label>
+                    <input type="text" id="remarks-${subCategoryId}" class="form-control" placeholder="Enter remarks">
+                </div>
+                <div class="col-xl-6">
+                    <label>Bill Upload (Multiple Files):</label>
+                    <input type="file" id="bill-upload-${subCategoryId}" class="form-control" multiple>
+                </div>
+                 <div class="col-xl-6" id="units-${subCategoryId}">
+                    <label>Units Consumed:</label>
+                    <input type="number" id="units-${subCategoryId}" class="form-control" placeholder="Enter units">
+                </div>
+                <div class="col-xl-6" id="unit-${subCategoryId}">
+                    <label>Measurement Unit:</label>
+                    <input type="text" id="unit-${subCategoryId}" class="form-control" placeholder="Enter unit (e.g., kWh, liters)">
+                </div>
+                <div class="col-xl-6" id="room-floor-${subCategoryId}" style="display: none;">
+                    <label>Room Number:</label>
+                    <input type="text" id="room-number-${subCategoryId}" class="form-control" placeholder="Enter room number">
+                    <label>Floor Number:</label>
+                    <input type="text" id="floor-number-${subCategoryId}" class="form-control" placeholder="Enter floor number">
+                </div>
+            </div>
+        </div>
+    `;
+    container.appendChild(card);
+
+    document.getElementById(`subcategory-${subCategoryId}`).addEventListener("change", () => updateSubCategoryFields(formId, subCategoryId));
+    document.getElementById(`remove-sub-category-${subCategoryId}`).addEventListener("click", () => removeSubCategory(subCategoryId));
+}
+
+// Function to remove a subcategory
+function removeSubCategory(subCategoryId) {
+    document.getElementById(subCategoryId).remove();
+}
+
+// Function to remove an expense form
+function removeExpenseForm(formId) {
+    document.getElementById(formId).remove();
+}
+
+// Attach event listener for adding new expense forms
+document.getElementById("addExpenseButton").addEventListener("click", addExpenseForm);
+
+// Save data to Firebase
+document.getElementById("saveButton").addEventListener("click", async () => {
+    const hostelName = document.getElementById("hostelDropdown").value;
+    if (!hostelName) {
+        alert("Please select a hostel!");
         return;
     }
+    const frequency = document.getElementById("frequency").value;
 
-    // Upload Images
-    await uploadBillImages(hostelLocation, hostelName, period);
-    alert("Images uploaded successfully!");
+    let dateValue;
+    let dateKey;
+    if (frequency === "daily") {
+        dateValue = document.getElementById("date").value;
+        if (!dateValue) {
+            alert("Please select a date for daily frequency!");
+            return;
+        }
+        dateKey = dateValue;  // Use the actual date as the key for daily
+    } else {
+        const fromDate = document.getElementById("fromdate")?.value;
+        const toDate = document.getElementById("todate")?.value;
+        if (!fromDate || !toDate) {
+            alert("Please fill out both From and To dates!");
+            return;
+        }
+        dateValue = { from: fromDate, to: toDate };
+        dateKey = `${fromDate}-${toDate}`;  // Create a string key for the date range
+    }
+
+    const expensesData = {};  // Object to hold all the expense data for the hostel  
+
+    const forms = document.querySelectorAll(".card-body.expense-form");
+
+    for (const form of forms) {
+        const categoryElement = form.querySelector(`[name="category"]`);
+        const category = categoryElement?.value;
+        if (!category) continue;  // Skip if category is not selected
+
+        const subCategoryContainer = form.querySelectorAll(".card");
+
+        for (const subCategory of subCategoryContainer) {
+            const subCategoryName = subCategory.querySelector("select")?.value;
+            const cost = subCategory.querySelector("input[type='number']")?.value;
+            const description = subCategory.querySelector("textarea")?.value;
+            const remarks = subCategory.querySelector("input[type='text']")?.value;
+
+            const roomNumber = subCategory.querySelector("input[id^='room-number']")?.value;
+            const floorNumber = subCategory.querySelector("input[id^='floor-number']")?.value;
+            const units = subCategory.querySelector("input[id^='units']")?.value;
+            const measurementUnit = subCategory.querySelector(`input[id^='unit']`)?.value;
+
+            const billFiles = subCategory.querySelector("input[type='file']")?.files;
+            const billImages = billFiles ? await uploadFiles(billFiles) : [];
+
+            // Create an object for the subcategory data
+            const subCategoryData = {
+                category,  // Store the selected category as part of the subcategory data
+                subCategory: subCategoryName,
+                units,
+                measurementUnit,
+                cost,
+                description,
+                remarks,
+                billImages,
+                ...(subCategoryName === "Electricity" && { roomNumber, floorNumber }),  // Only store room and floor number if subCategory is "Electricity"
+            };
+
+            // Using category as the key and subcategory as the child key
+            if (!expensesData[category]) {
+                expensesData[category] = {};  // Initialize category if not already present
+            }
+            expensesData[category][subCategoryName] = subCategoryData;  // Set subcategory data under category
+        }
+    }
+
+    // Prepare the full data object to save
+    const data = {
+        frequency,
+        date: dateValue,  // Directly store date as value
+        expenses: expensesData  // All categories and their subcategories
+    };
+    // Ensure data is not undefined
+    if (!data.date) {
+        alert("Date is required!");
+        return;
+    }
+    try {
+        const expensesRef = ref(db, `Hostel expenses/${hostelName}/${frequency}/${dateKey}`);  // Use dateKey as the path
+        await set(expensesRef, data);  // Using set instead of push
+        alert("Expenses saved successfully!");
+
+        location.reload();  // This will reload the page
+    } catch (error) {
+        console.error("Error saving data to Firebase:", error);
+        alert("An error occurred while saving the data.");
+    }
 });
