@@ -64,6 +64,7 @@ $(document).ready(function () {
     $('#frequency').on('change', toggleFrequencyFields);
     toggleFrequencyFields();
 });
+
 function updateSubCategoryFields(formId, subCategoryId) {
     const category = document.getElementById(`category-${formId}`).value;
     const subCategory = document.getElementById(`subcategory-${subCategoryId}`)?.value;
@@ -91,7 +92,6 @@ function updateSubCategoryFields(formId, subCategoryId) {
 async function uploadFiles(files) {
     const uploadedURLs = [];
     for (const file of files) {
-        // Use ref2 instead of storageRef
         const fileRef = ref2(storage, `bills/${Date.now()}-${file.name}`);
         await uploadBytes(fileRef, file);
         const downloadURL = await getDownloadURL(fileRef);
@@ -108,30 +108,37 @@ function addExpenseForm() {
 
     const form = document.createElement("div");
     form.setAttribute("id", formId);
-    form.classList.add("card-body", "expense-form", "mb-3");
+    form.classList.add("card-body", "expense-form", "mb-2");
+
+    // Add padding to the card body for spacing between form elements and card borders
+    form.style.padding = "20px"; // Adjust this value as needed
+    form.style.border = "1px solid #ddd"; // Added border for visibility
 
     form.innerHTML = `
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h6>Category #${categoryCounter}</h6>
-            <button id="remove-expense-form-${formId}" class="ri-delete-bin-line btn restaurant-button"></button> 
-        </div>
-        <div class="card-body">
-            <div class="row gy-3">
-                <div class="col-12">
-                    <label>Category:</label>
-                    <select id="category-${formId}" name="category" class="form-select" required>
-                        ${Object.keys(subCategoryMap)
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h6>Category #${categoryCounter}</h6>
+        <button id="remove-expense-form-${formId}" class="ri-delete-bin-line restaurant-button" 
+        style="font-size: 12px; cursor: pointer; top: 10px; right: 10px;"></button>
+    </div>
+    <div class="card-body">
+        <div class="row gy-3">
+            <div class="col-12">
+                <h6><label>Category:</label></h6>
+                <select id="category-${formId}" name="category" class="form-select" required>
+                    ${Object.keys(subCategoryMap)
             .map(category => `<option value="${category}">${category.charAt(0).toUpperCase() + category.slice(1)}</option>`)
             .join("")}
-                    </select>
-                </div>
-                <div class="col-12">
-                    <button id="add-sub-category-${formId}" class="btn restaurant-button">Add Sub-Category</button>
-                </div>
-                <div class="col-12" id="sub-categories-${formId}"></div>
+                </select>
             </div>
+            <div class="col-12">
+                <button id="add-sub-category-${formId}" class="ri-add-line btn restaurant-button"
+                style="width: 100%; display: block; text-align: center;">Add Sub-Category</button>
+            </div>
+            <div class="col-12" id="sub-categories-${formId}"></div>
         </div>
-    `;
+    </div>
+`;
+
     container.appendChild(form);
 
     document.getElementById(`category-${formId}`).addEventListener("change", () => updateSubCategoryFields(formId));
@@ -150,10 +157,15 @@ function addSubCategory(formId) {
     const card = document.createElement("div");
     card.setAttribute("id", subCategoryId);
     card.classList.add("card", "mb-2");
+    card.style.border = "1px solid #ddd"; // Added border for the card to be visible
+    card.style.margin = "15px";
 
     card.innerHTML = `
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <button id="remove-sub-category-${subCategoryId}" class="ri-delete-bin-line btn restaurant-button"></button>
+        <div class="card-header" d-flex justify-content-between align-items-center">
+           <button id="remove-sub-category-${subCategoryId}" 
+            class="ri-delete-bin-line restaurant-button mt-3" 
+        style="font-size: 12px; cursor: pointer; top: 10px; right: 10px;">
+        </button>
         </div>
         <div class="card-body">
             <div class="row gy-3">
@@ -166,34 +178,48 @@ function addSubCategory(formId) {
                     </select>
                 </div>
                 <div class="col-xl-6">
-                    <label>Cost:</label>
-                    <input type="number" id="cost-${subCategoryId}" class="form-control" placeholder="Enter cost" required>
+                    <div class="input-box">
+                       <h6><label>Cost:</label></h6>
+                       <input type="number" id="cost-${subCategoryId}" class="form-control" placeholder="Enter cost" required>
+                    </div>
                 </div>
                 <div class="col-xl-6">
-                    <label>Description:</label>
-                    <textarea id="description-${subCategoryId}" class="form-control" placeholder="Enter description"></textarea>
+                    <div class="input-box">
+                       <h6><label>Description:</label></h6>
+                       <textarea id="description-${subCategoryId}" class="form-control" placeholder="Enter description"></textarea>
+                    </div>
                 </div>
                 <div class="col-xl-6">
-                    <label>Remarks:</label>
-                    <input type="text" id="remarks-${subCategoryId}" class="form-control" placeholder="Enter remarks">
+                    <div class="input-box">
+                       <h6><label>Remarks:</label></h6>
+                       <input type="text" id="remarks-${subCategoryId}" class="form-control" placeholder="Enter remarks">
+                    </div>
                 </div>
                 <div class="col-xl-6">
-                    <label>Bill Upload (Multiple Files):</label>
-                    <input type="file" id="bill-upload-${subCategoryId}" class="form-control" multiple>
+                    <div class="input-box">
+                       <h6><label>Bill Upload</label></h6>
+                       <input type="file" id="bill-upload-${subCategoryId}" class="form-control" multiple>
+                    </div>
                 </div>
-                 <div class="col-xl-6" id="units-${subCategoryId}">
-                    <label>Units Consumed:</label>
-                    <input type="number" id="units-${subCategoryId}" class="form-control" placeholder="Enter units">
+                <div class="col-xl-6" id="units-${subCategoryId}">
+                    <div class="input-box">
+                       <h6><label>Units Consumed:</label></h6>
+                       <input type="number" id="units-${subCategoryId}" class="form-control" placeholder="Enter units">
+                    </div>
                 </div>
                 <div class="col-xl-6" id="unit-${subCategoryId}">
-                    <label>Measurement Unit:</label>
-                    <input type="text" id="unit-${subCategoryId}" class="form-control" placeholder="Enter unit (e.g., kWh, liters)">
+                    <div class="input-box">
+                       <h6><label>Measurement Unit:</label></h6>
+                       <input type="text" id="unit-${subCategoryId}" class="form-control" placeholder="Enter unit (e.g., kWh, liters)">
+                    </div>
                 </div>
                 <div class="col-xl-6" id="room-floor-${subCategoryId}" style="display: none;">
-                    <label>Room Number:</label>
+                <div class="input-box">
+                     <h6><label>Room Number:</label></h6>
                     <input type="text" id="room-number-${subCategoryId}" class="form-control" placeholder="Enter room number">
-                    <label>Floor Number:</label>
+                    <h6><label>Floor Number:</label></h6>
                     <input type="text" id="floor-number-${subCategoryId}" class="form-control" placeholder="Enter floor number">
+                </div>
                 </div>
             </div>
         </div>
@@ -314,3 +340,57 @@ document.getElementById("saveButton").addEventListener("click", async () => {
         alert("An error occurred while saving the data.");
     }
 });
+document.getElementById("getButton").addEventListener("click", async () => {
+    // Call the retrieve function here
+    await fetchExpensesByFrequency();
+});
+async function fetchExpensesByFrequency() {
+    try {
+        const hostelExpensesRef = ref(db, 'Hostel expenses');
+        const snapshot = await get(hostelExpensesRef);
+        if (snapshot.exists()) {
+            console.log("Data retrieved:", snapshot.val());
+        } else {
+            console.log("No data exists at the specified path.");
+        }
+
+        if (snapshot.exists()) {
+            const data = snapshot.val(); // Full data from Firebase
+            const result = {
+                daily: [],
+                weekly: [],
+                monthly: [],
+                yearly: []
+            };
+            for (const hostelName in data) {
+                const frequencies = data[hostelName];
+
+                for (const frequency in frequencies) {
+                    const dates = frequencies[frequency];
+
+                    for (const dateRange in dates) {
+                        const expenseNode = dates[dateRange];
+                        const expenses = Array.isArray(expenseNode.expenses)
+                            ? expenseNode.expenses
+                            : Object.values(expenseNode.expenses || {});
+
+                        result[frequency.toLowerCase()].push({
+                            hostelName,
+                            frequency,
+                            dateRange,
+                            expenses
+                        });
+                    }
+                }
+            }
+            console.log("Firebase data:", result);
+            return result;
+        } else {
+            console.log("No data found in Firebase.");
+            return { daily: [], weekly: [], monthly: [], yearly: [] };
+        }
+    } catch (error) {
+        console.error("Error fetching data from Firebase:", error);
+        return { daily: [], weekly: [], monthly: [], yearly: [] };
+    }
+}

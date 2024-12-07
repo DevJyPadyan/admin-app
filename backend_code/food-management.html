@@ -12,12 +12,14 @@
     <meta name="author" content="pixelstrap">
     <link rel="icon" href="assets/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="assets/images/favicon.png" type="image/x-icon">
-    <title>Zomo - Dashboard</title>
+    <title>Perikitis - Food Management</title>
 
     <!-- Google font-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
     <!-- Linear Icon css -->
     <link rel="stylesheet" href="assets/css/linearicon.css">
 
@@ -60,8 +62,8 @@
     </div>
     <!-- tap on tap end -->
 
-     <!-- loader start -->
-     <div class="loader-wrapper"> 
+    <!-- loader start -->
+    <div class="loader-wrapper">
         <img src="./assets/images/loader.gif" alt="">
     </div>
     <!-- loader end -->
@@ -78,7 +80,7 @@
                             <img class="img-fluid white-logo" src="assets/images/logo/1-white.png" alt="logo">
                         </a>
                     </div>
-                     <div class="toggle-sidebar">
+                    <div class="toggle-sidebar">
                         <i class="status_toggle middle sidebar-toggle" data-feather="align-center"></i>
                         <a href="index.html">
                             <img class="img-fluid for-light" src="assets/images/logo/1.png" alt="logo">
@@ -97,7 +99,7 @@
                 </div>
                 <div class="nav-right col-xl-6 col-5 pull-right right-header p-0">
                     <ul class="nav-menus">
-                        <li class="search-icon">
+                        <!--<li class="search-icon">
                             <span class="header-search">
                                 <i class="ri-search-line"></i>
                             </span>
@@ -245,7 +247,7 @@
                                     </a>
                                 </li>
                             </ul>
-                        </li>
+                        </li>-->
                     </ul>
                 </div>
                 <div class="input-box">
@@ -254,7 +256,7 @@
                     <i class="close-icon" data-feather="x"></i>
                 </div>
             </div>
-        </div> 
+        </div>
         <!-- Page Header Ends-->
 
         <!-- Page Body Start-->
@@ -286,45 +288,43 @@
                         <div id="sidebar-menu">
                             <ul class="sidebar-links" id="simple-bar">
                                 <li class="back-btn"></li>
-
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title link-nav" href="index.html">
                                         <i class="ri-home-line"></i>
                                         <span>Dashboard</span>
                                     </a>
                                 </li>
-
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-store-3-line"></i>
-                                        <span>Product</span>
+                                        <span>Hostels</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="products.html">Prodcts</a>
+                                            <a href="products.html">Hostel List</a>
                                         </li>
 
                                         <li>
-                                            <a href="add-new-product.html">Add New Products</a>
+                                            <a href="add-new-product.html">Register Hostel</a>
                                         </li>
                                     </ul>
                                 </li>
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-bowl-line"></i>
-                                        <span>Category</span>
+                                        <i class="ri-user-3-line"></i>
+                                        <span>Users</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="category.html">Category List</a>
+                                            <a href="users.html">User List</a>
                                         </li>
 
                                         <li>
-                                            <a href="add-new-categorys.html">Create Category</a>
+                                            <a href="admin-add-user.html">Register User</a>
                                         </li>
                                     </ul>
                                 </li>
-                                <li class="sidebar-list">
+                                <!--<li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-list-settings-line"></i>
                                         <span>Attributes</span>
@@ -506,7 +506,7 @@
                                         <i class="ri-list-check"></i>
                                         <span>List Page</span>
                                     </a>
-                                </li>
+                                </li>-->
                             </ul>
                         </div>
 
@@ -523,138 +523,284 @@
                 <div class="container-fluid">
                     <div class="card">
                         <div class="card-header">
-                            <h5>Create Coupon</h5>
+                            <h5>Food Management</h5>
                         </div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-12">
-                                    <ul class="nav setting-main-box driver-main-box sticky theme-scrollbar" id="v-pills-tab" role="tablist"
-                                        aria-orientation="vertical">
+                                    <ul class="nav setting-main-box driver-main-box sticky theme-scrollbar"
+                                        id="v-pills-tab" role="tablist" aria-orientation="vertical">
                                         <li>
-                                            <button class="nav-link active" id="Settings-tab"
-                                                data-bs-toggle="pill" data-bs-target="#Settings" role="tab"
-                                                aria-controls="Settings" aria-selected="true">
-                                                <i class="ri-settings-line"></i>General</button>
+                                            <button class="nav-link active" id="daily-tab" data-bs-toggle="pill"
+                                                data-bs-target="#daily" role="tab" aria-controls="daily"
+                                                aria-selected="true">
+                                                Daily
+                                            </button>
                                         </li>
                                         <li>
-                                            <button class="nav-link" id="Info-tab" data-bs-toggle="pill"
-                                                data-bs-target="#Info" role="tab"
-                                                aria-controls="Info" aria-selected="false">
-                                                <i class="ri-information-2-line"></i>Restriction</button>
-                                        </li>
-                                        <li>
-                                            <button class="nav-link" id="Image-tab" data-bs-toggle="pill"
-                                                data-bs-target="#Image" role="tab" aria-controls="Image"
+                                            <button class="nav-link" id="monthly-tab" data-bs-toggle="pill"
+                                                data-bs-target="#monthly" role="tab" aria-controls="monthly"
                                                 aria-selected="false">
-                                                <i class="ri-timer-2-line"></i>Usage Limits</button>
+                                                Monthly
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button class="nav-link" id="yearly-tab" data-bs-toggle="pill"
+                                                data-bs-target="#yearly" role="tab" aria-controls="yearly"
+                                                aria-selected="false">
+                                                Yearly
+                                            </button>
                                         </li>
                                     </ul>
                                 </div>
                                 <div class="col-12">
                                     <div class="restaurant-tab">
                                         <div class="tab-content" id="v-pills-tabContent">
-                                            <div class="tab-pane fade show active" id="Settings" role="tabpanel"
-                                                aria-labelledby="Settings-tab">
-                                                <div class="input-items">
-                                                    <div class="row gy-3">
-                                                        <div class="col-xl-6">
-                                                            <div class="input-box">
-                                                                <h6>Coupon Title</h6>
-                                                                <input type="text" name="text" placeholder="Enter Your Coupon Title">
+                                            <!-- Daily Tab -->
+                                            <div class="tab-pane fade show active" id="daily" role="tabpanel"
+                                                aria-labelledby="daily-tab">
+                                                <div id="daily-container">
+                                                    <div class="input-items">
+                                                        <div class="row gy-3">
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>Hostel Name</h6>
+                                                                    <input type="text" name="text"
+                                                                        placeholder="Enter Hostel Name" id="hostelName">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>Date</h6>
+                                                                    <input type="date" name="date" id="date">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>Food Item</h6>
+                                                                    <input type="text" name="text"
+                                                                        placeholder="Enter Food Item" id="FoodItem">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <div class="input-box d-flex align-items-center gap-2">
+                                                                    <input class="custom-checkbox" type="checkbox"
+                                                                        id="c-1">
+                                                                    <label for="c-1" class="mb-0">Non-Veg</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <div class="input-box d-flex align-items-center gap-2">
+                                                                    <input class="custom-checkbox" type="checkbox"
+                                                                        id="c-2">
+                                                                    <label for="c-2" class="mb-0">Veg</label>
+                                                                </div>
+                                                            </div>
+
+
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>Units Prepared</h6>
+                                                                    <input type="number" name="number" id="unitsPrep">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>Units Consumed</h6>
+                                                                    <input type="number" name="number" id="unitsCons">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>Units Leftout</h6>
+                                                                    <input type="number" name="number" id="unitsLeft">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>People consuming</h6>
+                                                                    <input type="number" name="number" id="PeopleCons">
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                        <div class="col-xl-6">
-                                                            <div class="input-box">
-                                                                <h6>Coupon Code</h6>
-                                                                <input type="number" name="number" placeholder="Enter Your Coupon Code">
+                                                    </div>
+                                                </div>
+                                                <button id="add-daily" class="btn btn-primary mt-2">Add Food
+                                                    Item</button>
+                                                <button id="save-daily" class="btn btn-success mt-2">Save Daily</button>
+                                            </div>
+                                            <div class="tab-pane fade" id="monthly" role="tabpanel"
+                                                aria-labelledby="monthly-tab">
+                                                <div id="monthly-container">
+                                                    <div class="input-items">
+                                                        <div class="row gy-3">
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>Hostel Name</h6>
+                                                                    <input type="text" name="text"
+                                                                        placeholder="Enter Hostel Name" id="hostelName">
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-xl-6">
-                                                            <div class="input-box">
-                                                                <h6>Start Date</h6>
-                                                                <input type="date" name="date">
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>Year<span class="required">*</span></h6>
+                                                                    <select class="js-example-basic-single w-100"
+                                                                        name="state" id="year" required>
+                                                                    </select>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-xl-6">
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>Month<span class="required">*</span></h6>
+                                                                    <select class="js-example-basic-single w-100"
+                                                                        name="state" id="month" required>
+                                                                        <option>January</option>
+                                                                        <option>February</option>
+                                                                        <option>March</option>
+                                                                        <option>April</option>
+                                                                        <option>May</option>
+                                                                        <option>June</option>
+                                                                        <option>July</option>
+                                                                        <option>August</option>
+                                                                        <option>September</option>
+                                                                        <option>October</option>
+                                                                        <option>November</option>
+                                                                        <option>December</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>Food Item</h6>
+                                                                    <input type="text" name="text"
+                                                                        placeholder="Enter Food Item" id="FoodItem">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <div class="input-box d-flex align-items-center gap-2">
+                                                                    <input class="custom-checkbox" type="checkbox"
+                                                                        id="c-1">
+                                                                    <label for="c-1" class="mb-0">Non-Veg</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <div class="input-box d-flex align-items-center gap-2">
+                                                                    <input class="custom-checkbox" type="checkbox"
+                                                                        id="c-2">
+                                                                    <label for="c-2" class="mb-0">Veg</label>
+                                                                </div>
+                                                            </div>
+
+                                                            <!--<div class="col-xl-6">
                                                             <div class="input-box">
                                                                 <h6>End Date</h6>
                                                                 <input type="date" name="date">
                                                             </div>
-                                                        </div>
-                                                        <div class="col-xl-6">
-                                                            <div class="input-box">
-                                                                <h6>Quantity</h6>
-                                                                <input type="number" name="number">
+                                                        </div>-->
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>Units Prepared</h6>
+                                                                    <input type="number" name="number" id="unitsPrep">
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-xl-6">
-                                                            <div class="input-box">
-                                                                <h6>Discount Type</h6>
-                                                                <select class="form-select" name="carlist">
-                                                                    <option selected>--Select--</option>
-                                                                    <option value="">Percent</option>
-                                                                    <option value="">Fixed</option>
-                                                                </select>
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>Units Consumed</h6>
+                                                                    <input type="number" name="number" id="unitsCons">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>Units Leftout</h6>
+                                                                    <input type="number" name="number" id="unitsLeft">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>People consuming</h6>
+                                                                    <input type="number" name="number" id="PeopleCons">
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <button id="add-monthly" class="btn btn-primary mt-2">Add Food
+                                                    Item</button>
+                                                <button id="save-monthly" class="btn btn-success mt-2">Save
+                                                    Monthly</button>
                                             </div>
-                                            <div class="tab-pane fade" id="Info" role="tabpanel"
-                                                aria-labelledby="Info-tab">
-                                                <div class="input-items">
-                                                    <div class="row gy-3">
-                                                        <div class="col-xl-6">
-                                                            <div class="input-box">
-                                                                <h6>Products</h6>
-                                                                <input type="text" name="text" placeholder="Enter Products">
+                                            <div class="tab-pane fade" id="yearly" role="tabpanel"
+                                                aria-labelledby="yearly-tab">
+                                                <div id="yearly-container">
+                                                    <div class="input-items">
+                                                        <div class="row gy-3">
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>Hostel Name</h6>
+                                                                    <input type="text" name="text"
+                                                                        placeholder="Enter Hostel Name" id="hostelName">
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-xl-6">
-                                                            <div class="input-box">
-                                                                <h6>Category</h6>
-                                                                <select class="form-select" name="carlist">
-                                                                    <option selected>--Select--</option>
-                                                                    <option value="">Electronics</option>
-                                                                    <option value="">Clothes</option>
-                                                                    <option value="">Shoes</option>
-                                                                    <option value="">Digital</option>
-                                                                </select>
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>Year<span class="required">*</span></h6>
+                                                                    <select class="js-example-basic-single w-100"
+                                                                        name="state" id="year" required>
+                                                                    </select>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-xl-6">
-                                                            <div class="input-box">
-                                                                <h6>Minimum Spend</h6>
-                                                                <input type="number" name="number">
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>Food Item</h6>
+                                                                    <input type="text" name="text"
+                                                                        placeholder="Enter Food Item" id="FoodItem">
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="col-xl-6">
-                                                            <div class="input-box">
-                                                                <h6>Maximum Spend</h6>
-                                                                <input type="number" name="number">
+                                                            <div class="col-12">
+                                                                <div class="input-box d-flex align-items-center gap-2">
+                                                                    <input class="custom-checkbox" type="checkbox"
+                                                                        id="c-1">
+                                                                    <label for="c-1" class="mb-0">Non-Veg</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <div class="input-box d-flex align-items-center gap-2">
+                                                                    <input class="custom-checkbox" type="checkbox"
+                                                                        id="c-2">
+                                                                    <label for="c-2" class="mb-0">Veg</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>Units Prepared</h6>
+                                                                    <input type="number" name="number" id="unitsPrep">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>Units Consumed</h6>
+                                                                    <input type="number" name="number" id="unitsCons">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>Units Leftout</h6>
+                                                                    <input type="number" name="number" id="unitsLeft">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-xl-6">
+                                                                <div class="input-box">
+                                                                    <h6>People consuming</h6>
+                                                                    <input type="number" name="number" id="PeopleCons">
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="tab-pane fade" id="Image" role="tabpanel"
-                                                aria-labelledby="Image-tab">
-                                                <div class="input-items">
-                                                    <div class="row gy-3">
-                                                        <div class="col-xl-6">
-                                                            <div class="input-box">
-                                                                <h6>Per Limited</h6>
-                                                                <input type="text" name="text">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-xl-6">
-                                                            <div class="input-box">
-                                                                <h6>Per Customer</h6>
-                                                                <input type="text" name="text">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                <button id="add-yearly" class="btn btn-primary mt-2">Add Food
+                                                    Item</button>
+                                                <button id="save-yearly" class="btn btn-success mt-2">Save
+                                                    Yearly</button>
                                             </div>
                                         </div>
                                     </div>
@@ -697,8 +843,7 @@
                 <div class="modal-body pt-0">
                     <div class="variant-box">
                         <div class="variant-images">
-                            <input class="btn-check" id="option5" type="radio" name="options-base"
-                                checked="">
+                            <input class="btn-check" id="option5" type="radio" name="options-base" checked="">
                             <label class="btn" for="option5"><img class="img-fluid" src="./assets/images/modal/logo.png"
                                     alt=""></label>
                         </div>
@@ -795,8 +940,10 @@
                 <div class="modal-body">
                     <div class="row gy-3">
                         <div class="col-12">
-                            <p class="mb-0">* Do not Know your cordinates ? use 
-                                <a href="https://www.latlong.net/" target="_blank" class="font-danger">Latitude and Longitude Finder</a>
+                            <p class="mb-0">* Do not Know your cordinates ? use
+                                <a href="https://www.latlong.net/" target="_blank" class="font-danger">Latitude
+                                    and
+                                    Longitude Finder</a>
                             </p>
                         </div>
                         <div class="col-6">
@@ -812,7 +959,8 @@
                 <div class="modal-footer">
                     <button class="btn btn-cancel" type="button" data-bs-dismiss="modal"
                         aria-label="Close">Cancel</button>
-                    <button class="btn btn-submit" type="submit" data-bs-dismiss="modal" aria-label="Close">Save</button>
+                    <button class="btn btn-submit" type="submit" data-bs-dismiss="modal"
+                        aria-label="Close">Save</button>
                 </div>
             </div>
         </div>
@@ -830,15 +978,25 @@
                     <p class="mb-0">Are you sure you want to log out?</p>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-cancel" type="button" data-bs-dismiss="modal"
-                    aria-label="Close">No</button>
-                    <button class="btn btn-submit" type="submit" data-bs-dismiss="modal" aria-label="Close"><a href="login.html">Yes</a></button>
+                    <button class="btn btn-cancel" type="button" data-bs-dismiss="modal" aria-label="Close">No</button>
+                    <button class="btn btn-submit" type="submit" data-bs-dismiss="modal" aria-label="Close"><a
+                            href="login.html">Yes</a></button>
                 </div>
             </div>
         </div>
     </div>
     <!-- Modal End -->
+    <script>
+        const currentYear = new Date().getFullYear();
+        const yearSelect = document.getElementById("year");
 
+        for (let year = currentYear; year <= currentYear + 10; year++) {
+            const option = document.createElement("option");
+            option.value = year;
+            option.textContent = year;
+            yearSelect.appendChild(option);
+        }
+    </script>
     <!-- latest js -->
     <script src="assets/js/jquery-3.6.0.min.js"></script>
 
@@ -856,15 +1014,15 @@
     <!-- Sidebar jquery -->
     <script src="assets/js/config.js"></script>
 
-     <!-- Plugins JS -->
+    <!-- Plugins JS -->
     <script src="assets/js/sidebar-menu.js"></script>
 
     <!-- slick slider js -->
     <script src="assets/js/slick.min.js"></script>
     <script src="assets/js/custom-slick.js"></script>
 
-    <!-- customizer js -->
-    <script src="assets/js/customizer.js"></script>
+    <!-- customizer js
+    <script src="assets/js/customizer.js"></script>-->
 
     <!-- ratio js -->
     <script src="assets/js/ratio.js"></script>
