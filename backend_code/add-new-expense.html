@@ -348,6 +348,21 @@
                                         </li>
                                     </ul>
                                 </li>
+                                <li class="sidebar-list">
+                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
+                                        <i class="ri-bowl-line"></i>
+                                        <span>Food Management</span>
+                                    </a>
+                                    <ul class="sidebar-submenu">
+                                        <li>
+                                            <a href="food-details.html">Food data</a>
+                                        </li>
+
+                                        <li>
+                                            <a href="food-management.html">Manage foo data</a>
+                                        </li>
+                                    </ul>
+                                </li>
                                 <!--<li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-list-settings-line"></i>
@@ -575,11 +590,18 @@
                                                         <h6>Select Date</h6>
                                                         <input type="date" id="date">
                                                     </div>
-                                                    <div id="date-range" style="display: none;">
-                                                        <h6>From Date</h6>
-                                                        <input type="date" id="fromdate">
-                                                        <h6>To Date</h6>
-                                                        <input type="date" id="todate">
+                                                    <div id="date-range"
+                                                        style="display: flex; justify-content: space-between; align-items: center;">
+                                                        <div class="row gy-3">
+                                                            <div class="col-xl-6">
+                                                                <h6>From:</h6>
+                                                                <input type="date" id="fromdate" style="width: 100%;">
+                                                            </div>
+                                                            <div class="col-xl-6">
+                                                                <h6>To:</h6>
+                                                                <input type="date" id="todate" style="width: 100%;">
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
