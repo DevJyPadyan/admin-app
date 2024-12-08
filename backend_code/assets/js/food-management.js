@@ -1,143 +1,198 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, get, set, onValue, child, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"
+import { getDatabase, ref, get, push,set, onValue, child, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"
 import { getStorage, ref as ref2, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js"
 import { firebaseConfig } from "./firebase-config.js";
 //import { firebaseConfig } from "./hostel-register.js";
 
 const app = initializeApp(firebaseConfig);
-const db = getDatabase();
-const storage = getStorage(app);
+const db = getDatabase(app);
 
 document.addEventListener("DOMContentLoaded", () => {
-    const tabs = ["daily", "monthly", "yearly"];
+    console.log("DOM fully loaded and parsed.");
 
-    tabs.forEach(tab => {
-        const container = document.querySelector(`#${tab}-container`);
-        const addButton = document.querySelector(`#add-${tab}`);
+    // Initialize Select2 for session dropdown
+    $('#sessiontype').select2();
 
-        // Event listener for adding food items
-        addButton.addEventListener("click", () => {
-            const uniqueId = `${tab}-${Date.now()}`; // Unique ID for each food item
+    // Add event listener for session dropdown change event
+    const sessionDropdown = $("#sessiontype");
 
-            // Create a new container for the food item
-            const foodItemContainer = document.createElement("div");
-            foodItemContainer.className = "food-item-container mb-3";
-            foodItemContainer.innerHTML = `
-                <div class="row">
-                    <div class="col-12 col-md-6 mb-2">
-                        <label for="foodItem-${uniqueId}">Food Item</label>
-                        <input type="text" id="foodItem-${uniqueId}" class="form-control" placeholder="Enter Food Item">
-                    </div>
-                    <div class="col-12 col-md-6 mb-2">
-                        <label>Category</label>
-                        <div>
-                            <input type="checkbox" id="veg-${uniqueId}" class="form-check-input">
-                            <label for="veg-${uniqueId}" class="form-check-label">Veg</label>
-                            <input type="checkbox" id="nonVeg-${uniqueId}" class="form-check-input ms-3">
-                            <label for="nonVeg-${uniqueId}" class="form-check-label">Non-Veg</label>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4 mb-2">
-                        <label for="unitsPrepared-${uniqueId}">Units Prepared</label>
-                        <input type="number" id="unitsPrepared-${uniqueId}" class="form-control">
-                    </div>
-                    <div class="col-12 col-md-4 mb-2">
-                        <label for="unitsConsumed-${uniqueId}">Units Consumed</label>
-                        <input type="number" id="unitsConsumed-${uniqueId}" class="form-control">
-                    </div>
-                    <div class="col-12 col-md-4 mb-2">
-                        <label for="unitsLeft-${uniqueId}">Units Left Out</label>
-                        <input type="number" id="unitsLeft-${uniqueId}" class="form-control">
-                    </div>
-                    <div class="col-12 col-md-6 mb-2">
-                        <label for="peopleConsuming-${uniqueId}">People Consuming</label>
-                        <input type="number" id="peopleConsuming-${uniqueId}" class="form-control">
-                    </div>
-                    ${tab === "daily"
-                    ? `<div class="col-12 col-md-6 mb-2">
-                                <label for="date-${uniqueId}">Date</label>
-                                <input type="date" id="date-${uniqueId}" class="form-control">
-                            </div>`
-                    : ""
-                }
-                    ${tab === "monthly"
-                    ? `<div class="col-12 col-md-6 mb-2">
-                                <label for="month-${uniqueId}">Month</label>
-                                <select id="month-${uniqueId}" class="form-control">
-                                    <option>January</option><option>February</option><option>March</option>
-                                    <option>April</option><option>May</option><option>June</option>
-                                    <option>July</option><option>August</option><option>September</option>
-                                    <option>October</option><option>November</option><option>December</option>
-                                </select>
-                                <label for="year-${uniqueId}">Year</label>
-                                <input type="number" id="year-${uniqueId}" class="form-control">
-                            </div>`
-                    : ""
-                }
-                    ${tab === "yearly"
-                    ? `<div class="col-12 col-md-6 mb-2">
-                                <label for="year-${uniqueId}">Year</label>
-                                <input type="number" id="year-${uniqueId}" class="form-control">
-                            </div>`
-                    : ""
-                }
-                </div>
-            `;
-
-            // Append the new food item container to the appropriate tab's container
-            container.appendChild(foodItemContainer);
-        });
-
-        saveButton.addEventListener("click", () => {
-            const hostelName = document.querySelector(`#hostelName-${tab}`).value;
-            const foodItems = Array.from(container.querySelectorAll(".food-item-container"));
-            const data = foodItems.map(item => {
-                const id = item.querySelector("input").id.split("-").pop();
-                return {
-                    foodItem: document.querySelector(`#foodItem-${tab}-${id}`).value,
-                    category: document.querySelector(`#veg-${tab}-${id}`).checked ? "Veg" : "Non-Veg",
-                    unitsPrepared: Number(document.querySelector(`#unitsPrepared-${tab}-${id}`).value),
-                    unitsConsumed: Number(document.querySelector(`#unitsConsumed-${tab}-${id}`).value),
-                    unitsLeftOut: Number(document.querySelector(`#unitsLeft-${tab}-${id}`).value),
-                    peopleConsuming: Number(document.querySelector(`#peopleConsuming-${tab}-${id}`).value),
-                    ...(tab === "daily" && {
-                        date: document.querySelector(`#date-${tab}-${id}`).value,
-                    }),
-                    ...(tab === "monthly" && {
-                        month: document.querySelector(`#month-${tab}-${id}`).value,
-                        year: document.querySelector(`#year-${tab}-${id}`).value,
-                    }),
-                    ...(tab === "yearly" && {
-                        year: document.querySelector(`#year-${tab}-${id}`).value,
-                    }),
-                };
-            });
-
-            // Save data to Firebase
-            saveToFirebase(tab, hostelName, data);
-        });
-    });
-
-    function saveToFirebase(tab, hostelName, data) {
-        const dbPath = `Inventory/Food Management/${hostelName}`;
-        const updates = {};
-
-        data.forEach(item => {
-            if (tab === "daily") {
-                const { date, ...details } = item;
-                updates[`${dbPath}/${date}/${item.foodItem}`] = details;
-            } else if (tab === "monthly") {
-                const { month, year, ...details } = item;
-                updates[`${dbPath}/${year}/${month}/${item.foodItem}`] = details;
-            } else if (tab === "yearly") {
-                const { year, ...details } = item;
-                updates[`${dbPath}/${year}/${item.foodItem}`] = details;
-            }
-        });
-
-        // Assuming `firebase.database()` is initialized
-        firebase.database().ref().update(updates)
-            .then(() => alert(`${tab.charAt(0).toUpperCase() + tab.slice(1)} data saved successfully!`))
-            .catch(error => alert(`Error saving data: ${error.message}`));
+    if (!sessionDropdown.length) {
+        console.error("Session dropdown not found! Check the HTML.");
+        return;
     }
+
+    console.log("Session dropdown initialized with Select2.");
+
+    // Attach Select2's change event
+    sessionDropdown.on("change", async function () {
+        const sessionType = $(this).val(); // Get the selected value via jQuery
+
+        if (!sessionType || sessionType === "Select session") {
+            console.log("No session selected."); // Log if no session is selected
+            return;
+        }
+
+        console.log("Selected Session:", sessionType); // Log the selected session
+
+        try {
+            // Path in Firebase where food names for sessions are stored
+            const path = `Food info/${sessionType}`;
+            console.log(`Fetching data from path: ${path}`); // Log path
+
+            const foodRef = ref(db, path);
+            const snapshot = await get(foodRef);
+
+            if (snapshot.exists()) {
+                const foodItems = snapshot.val(); // This is an object with food items as children
+                console.log(`Fetched Food Items for ${sessionType}:`, foodItems); // Log fetched data
+
+                // Initialize an array to hold the combined food items (mainDish + sideDish)
+                const foodList = [];
+
+                // Iterate through each food item
+                if (typeof foodItems === "object" && !Array.isArray(foodItems)) {
+                    for (const [key, food] of Object.entries(foodItems)) {
+                        console.log("Processing food item for key:", key); // Log the key (e.g., "Chapathi, Egg masala")
+                        console.log("Food item data:", food); // Log the actual food data
+
+                        // Ensure that the food data is an object with 'mainDish' and 'sideDish' properties
+                        if (food && food.mainDish && food.sideDish) {
+                            // Combine mainDish and sideDish into a single string
+                            const combinedFood = `${food.mainDish.trim()}, ${food.sideDish.trim()}`;
+                            foodList.push(combinedFood); // Push the combined food name
+                        } else {
+                            console.warn(`Unexpected food item format for ${key}:`, food);
+                        }
+                    }
+                } else {
+                    console.error("Food items are not in the expected format.");
+                    return;
+                }
+
+                // Populate the food dropdowns
+                const dropdowns = [
+                    document.getElementById("FoodDropdown1"),
+                    document.getElementById("FoodDropdown2")
+                ];
+
+                dropdowns.forEach((dropdown) => {
+                    if (!dropdown) {
+                        console.log(`Dropdown not found! Check ID.`);
+                        return;
+                    }
+                    console.log(`Updating dropdown: ${dropdown.id}`);
+
+                    dropdown.innerHTML = ""; // Clear existing options
+                    dropdown.innerHTML += `<option value="">Select Food</option>`;
+                    foodList.forEach((food) => {
+                        dropdown.innerHTML += `<option value="${food}">${food}</option>`;
+                    });
+
+                    console.log(`Dropdown ${dropdown.id} updated successfully.`);
+                });
+            } else {
+                console.log(`No food items found for session: ${sessionType}`);
+                const dropdowns = [
+                    document.getElementById("FoodDropdown1"),
+                    document.getElementById("FoodDropdown2"),
+                ];
+                dropdowns.forEach((dropdown) => {
+                    dropdown.innerHTML = `<option value="">No Food Available</option>`;
+                });
+            }
+        } catch (error) {
+            console.error("Error retrieving food items:", error);
+        }
+    });
+});
+
+document.getElementById("saveFoodData").addEventListener("click", (event) => {
+    event.preventDefault();
+
+    // Collect data from Sub Form 1
+    const food1 = document.getElementById("FoodDropdown1").value;
+    const category1 = document.getElementById("category1").value; // Veg or Non-Veg for subform1
+    const unitsPrepared1 = parseInt(document.getElementById("unitsPrep1").value, 10);
+    const unitsConsumed1 = parseInt(document.getElementById("unitsCons1").value, 10);
+    const peopleConsumed1 = document.getElementById("peopleCons1").value;
+    const leftover1 = unitsPrepared1 - unitsConsumed1;
+
+    // Collect data from Sub Form 2
+    const food2 = document.getElementById("FoodDropdown2").value;
+    const category2 = document.getElementById("category2").value; // Veg or Non-Veg for subform2
+    const unitsPrepared2 = parseInt(document.getElementById("unitsPrep2").value, 10);
+    const unitsConsumed2 = parseInt(document.getElementById("unitsCons2").value, 10);
+    const peopleConsumed2 = document.getElementById("peopleCons2").value;
+    const leftover2 = unitsPrepared2 - unitsConsumed2;
+
+    // Collect "entered by" information
+    const enteredBy = document.getElementById("enteredBy").value;
+
+    // Ensure "enteredBy" is provided
+    if (!enteredBy) {
+        alert("Please enter your name.");
+        return;
+    }
+
+    // Show leftover values in modal
+    const modalBody = document.querySelector(".modal-body");
+    modalBody.innerHTML = `
+        <p><strong>Food 1: ${food1} (${category1}):</strong> ${leftover1} units left</p>
+        <p><strong>Food 2: ${food2} (${category2}):</strong> ${leftover2} units left</p>
+    `;
+
+    // Display modal
+    const modal = new bootstrap.Modal(document.getElementById('room'));
+    modal.show();
+
+    // Save the data when Save button in modal is clicked
+    document.getElementById("submit").addEventListener("click", async () => {
+        const sessionType = document.getElementById("sessiontype").value; // Get session type (Breakfast, Lunch, etc.)
+        const date = document.getElementById("date").value; // Get the date selected by the user
+    
+        if (!sessionType || !date) {
+            alert("Please ensure session type and date are selected.");
+            return;
+        }
+    
+        const path = `Perikitis/${sessionType}/${date}`;
+        console.log("Firebase path:", path);
+    
+        const dbRef = ref(db, path);
+    
+        const subForm1Data = {
+            foodName: food1,
+            category: category1,
+            unitsPrepared: unitsPrepared1,
+            unitsConsumed: unitsConsumed1,
+            peopleConsumed: peopleConsumed1,
+            leftover: leftover1,
+            enteredBy: enteredBy
+        };
+    
+        const subForm2Data = {
+            foodName: food2,
+            category: category2,
+            unitsPrepared: unitsPrepared2,
+            unitsConsumed: unitsConsumed2,
+            peopleConsumed: peopleConsumed2,
+            leftover: leftover2,
+            enteredBy: enteredBy
+        };
+    
+        try {
+            const category1Ref = child(dbRef, category1);
+            const category2Ref = child(dbRef, category2);
+    
+            await push(category1Ref, subForm1Data);
+            await push(category2Ref, subForm2Data);
+    
+            console.log(`Data saved successfully under ${path}`);
+            alert("Data saved successfully!");
+            location.reload();
+        } catch (error) {
+            console.error("Error saving data:", error);
+            alert("Failed to save data.");
+        }
+    });
 });

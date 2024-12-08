@@ -12,7 +12,7 @@
     <meta name="author" content="pixelstrap">
     <link rel="icon" href="assets/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="assets/images/favicon.png" type="image/x-icon">
-    <title>Perikitis - Reports</title>
+    <title>Perikitis - Food Consumption details</title>
 
     <!-- Google font-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,50 +20,41 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
+    <!-- Fontawesome css -->
+    <link rel="stylesheet" type="text/css" href="assets/css/vendors/font-awesome.css">
+
     <!-- Linear Icon css -->
     <link rel="stylesheet" href="assets/css/linearicon.css">
+
+    <!-- Themify icon css -->
+    <link rel="stylesheet" type="text/css" href="assets/css/vendors/themify.css">
+
+    <!-- Feather icon css -->
+    <link rel="stylesheet" type="text/css" href="assets/css/vendors/feather-icon.css">
 
     <!-- remixicon css -->
     <link rel="stylesheet" type="text/css" href="assets/css/remixicon.css">
 
-    <!-- Fontawesome css -->
-    <link rel="stylesheet" type="text/css" href="assets/css/vendors/font-awesome.css">
-
-    <!-- Themify icon css-->
-    <link rel="stylesheet" type="text/css" href="assets/css/vendors/themify.css">
-
-    <!-- ratio css-->
-    <link rel="stylesheet" type="text/css" href="assets/css/ratio.css">
-
-    <!-- Feather icon css-->
-    <link rel="stylesheet" type="text/css" href="assets/css/vendors/feather-icon.css">
+    <!-- Data Table css -->
+    <link rel="stylesheet" type="text/css" href="assets/css/datatables.css">
 
     <!-- Plugins css -->
     <link rel="stylesheet" type="text/css" href="assets/css/vendors/scrollbar.css">
     <link rel="stylesheet" type="text/css" href="assets/css/vendors/animate.css">
 
-    <!-- datepicker css-->
-    <link rel="stylesheet" type="text/css" href="assets/css/vendors/date-picker.css">
-
-    <!-- Bootstrap css-->
+    <!-- Bootstrap css -->
     <link rel="stylesheet" type="text/css" href="assets/css/vendors/bootstrap.css">
-
-    <!-- vector map css  -->
-    <link rel="stylesheet" type="text/css" href="assets/css/vector-map.css">
-
-    <!-- slick slider css-->
-    <link rel="stylesheet" href="assets/css/vendors/slick.css">
 
     <!-- App css -->
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
 </head>
 
 <body>
-    <!-- tap on top start -->
+    <!-- tap on top start-->
     <div class="tap-top">
         <i class="ri-arrow-up-double-fill"></i>
     </div>
-    <!-- tap on tap end -->
+    <!-- tap on tap end-->
 
     <!-- loader start -->
     <div class="loader-wrapper">
@@ -93,11 +84,11 @@
                 </div>
                 <div class="welcome-title">
                     <h5>
-                        Expenses - In a detailed view !
+                        Food management in your hostel!
                         <img src="./assets/images/header.gif" alt="">
                     </h5>
                     <span>
-                        Representation of your expenses better way.
+                        Have a quick look at your food consumption!!
                     </span>
                 </div>
                 <div class="nav-right col-xl-6 col-5 pull-right right-header p-0">
@@ -193,7 +184,7 @@
                                         <img src="./assets/images/user/4.jpg" alt="">
                                         <div>
                                             <h5>
-                                                Nullam tempor
+                                                Nullam tempor 
                                             </h5>
                                             <p>Curabitur facilisis erat viverra.</p>
                                         </div>
@@ -291,18 +282,16 @@
                         <div id="sidebar-menu">
                             <ul class="sidebar-links" id="simple-bar">
                                 <li class="back-btn"></li>
-
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title link-nav" href="index.html">
                                         <i class="ri-home-line"></i>
                                         <span>Dashboard</span>
                                     </a>
                                 </li>
-
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-store-3-line"></i>
-                                        <span>Hostels</span>
+                                        <span>hostels</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
@@ -321,7 +310,7 @@
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="users.html">User List</a>
+                                            <a href="users.html">Users List</a>
                                         </li>
 
                                         <li>
@@ -368,23 +357,23 @@
                                         <i class="ri-car-line"></i>
                                         <span>Drivers</span>
                                     </a>
-                                </li>
+                                </li>-->
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-bowl-line"></i>
-                                        <span>Foods</span>
+                                        <span>Food Management</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="foods.html">Food List</a>
+                                            <a href="food-details.html">Food data</a>
                                         </li>
 
                                         <li>
-                                            <a href="add-new-food.html">Create Food</a>
+                                            <a href="food-management.html">Manage foo data</a>
                                         </li>
                                     </ul>
                                 </li>
-                                <li class="sidebar-list">
+                                <!--<li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-user-3-line"></i>
                                         <span>Users</span>
@@ -534,241 +523,97 @@
             </div>
             <!-- Page Sidebar Ends-->
 
-            <!-- Reports Section Start -->
+            <!-- Container-fluid starts-->
             <div class="page-body">
-                <!-- Container-fluid starts-->
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-xl-6">
-                            <h6>Category <span class="required">*</span></h6>
-                            <select class="js-example-basic-single w-100" id="categoryDropdown" required>
-                                <option value="">Select Category</option>
-                                <option value="utilities">Utilities</option>
-                                <option value="food">Food</option>
-                                <option value="maintenance">Maintenance</option>
-                                <option value="furniture">Furniture</option>
-                                <option value="rent">Rent</option>
-                                <option value="salary">Salary</option>
-                                <option value="miscellaneous">Miscellaneous</option>
-                            </select>
-                        </div>
-
-                        <div class="col-xl-6">
-                            <h6>Subcategory <span class="required">*</span></h6>
-                            <select class="js-example-basic-single w-100" style="margin-bottom: 20px;" id="subcategoryDropdown" required>
-                                <option value="">Select Subcategory</option>
-                            </select>
-                        </div>
-                       
-                        <!-- Salery Summy star-->
-                        <!--<div class="col-xl-6 col-lg-12 col-md-6">
-                            <div class="card o-hidden pb-0">
-                                <div class="card-header border-0 pb-1">
-                                    <div class="card-header-title">
-                                        <h4>Sales Summary</h4>
-                                    </div>
-                                </div>
-                                <div class="card-body p-0">
-                                    <div id="saler-summary"></div>
-                                </div>
-                            </div>
-                        </div>-->
-                        <!-- Salery Summy end-->
-
-                        <!-- Employ Salary  start
-                        <div class="col-xl-6 col-lg-12 col-md-6">
-                            <div class="h-100">
-                                <div class="card o-hidden sales overview">
-                                    <div class="card-header border-0 pb-1">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                            <div class="card-header-title">
-                                                <h4>Employees Satisfied</h4>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="card-body p-0">
-                                        <div class="sales-chart">
-                                            <div class="shap-2">
-                                                <div class="rounded-shap"><i></i><i></i></div>
-                                            </div>
-                                            <div class="shap-2">
-                                                <div class="rounded-shap"><i></i><i></i></div>
-                                            </div>
-                                            <div class="shap-2">
-                                                <div class="rounded-shap"><i></i><i></i></div>
-                                            </div>
-                                            <div class="shap-2">
-                                                <div class="rounded-shap"><i></i><i></i></div>
-                                            </div>
-                                            <div id="employ-salary"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>-->
-                        <!-- Employ Salary end-->
-
-                        <!-- Expenses star
-                        <div class="col-xl-4 col-lg-12 col-md-6">
-                            <div class="card o-hidden">
-                                <div class="card-header border-0 pb-1">
-                                    <div class="card-header-title">
-                                        <h4>Expenses</h4>
-                                    </div>
-                                </div>
-                                <div class="card-body p-0">
-                                    <div id="expenses-cart"></div>
-                                </div>
-                            </div>
-                        </div>-->
-                        <!-- Expenses end-->
-
-                        <!-- Sales / Purchase chart start -->
-                        <div class="col-xl-12 col-lg-12 col-md-8">
-                            <div class="card pb-0">
-                                <div class="card-header border-0 pb-1">
-                                    <div class="card-header-title">
-                                        <h4>Hostel Expenses</h4>
-                                    </div>
-                                </div>
-                                <div class="card-body p-0">
-                                    <div id="sales-purchase-chart"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Sales / Purchase chart end -->
-
-                        <!-- Sales / Purchase Return star
-                        <div class="col-12">
-                            <div class="card o-hidden">
-                                <div class="card-header border-0 pb-1">
-                                    <div class="card-header-title">
-                                        <h4>Sales / Purchase Return</h4>
-                                    </div>
-                                </div>
-                                <div class="card-body user-continent">
-                                    <div class="row">
-                                        <div class="col-md-2 box-col-2 share-icon">
-                                            <div class="contries-sale d-flex gap-4">
-                                                <div class="map-value">
-                                                    <ul>
-                                                        <li>
-                                                            <div class="d-flex gap-2">
-                                                                <div class="flex-shrink-0">
-                                                                    <span class="bg-primary"></span>
-                                                                </div>
-                                                                <div class="flex-grow-1">
-                                                                    <h6>United States</h6>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="d-flex gap-2">
-                                                                <div class="flex-shrink-0">
-                                                                    <span class="bg-secondary"></span>
-                                                                </div>
-                                                                <div class="flex-grow-1">
-                                                                    <h6>Russia</h6>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="d-flex gap-2">
-                                                                <div class="flex-shrink-0">
-                                                                    <span class="bg-warning"></span>
-                                                                </div>
-                                                                <div class="flex-grow-1">
-                                                                    <h6>Australia</h6>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="d-flex gap-2">
-                                                                <div class="flex-shrink-0">
-                                                                    <span class="bg-info"></span>
-                                                                </div>
-                                                                <div class="flex-grow-1">
-                                                                    <h6>Germany</h6>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="d-flex gap-2">
-                                                                <div class="flex-shrink-0">
-                                                                   <span class="bg-success"></span>
-                                                                </div>
-                                                                <div class="flex-grow-1">
-                                                                    <h6>Africa</h6>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="d-flex gap-2">
-                                                                <div class="flex-shrink-0">
-                                                                    <span class="bg-danger"></span>
-                                                                </div>
-                                                                <div class="flex-grow-1">
-                                                                    <h6>Europe</h6>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-10 box-col-10">
-                                            <div class="custom-data-label" id="userPosition"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>-->
-                        <!-- Sales / Purchase Return end-->
-
-                        <!-- Booking history start
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header border-0 pb-1">
-                                    <div class="card-header-title">
-                                        <h4>Transfer History</h4>
-                                    </div>
-                                </div>
-
+                        <div class="col-sm-12">
+                            <div class="card card-table">
                                 <div class="card-body">
+                                    <div class="title-header option-title d-sm-flex d-block">
+                                        <h5>Food management list</h5>
+                                        <div class="right-options">
+                                            <ul>
+                                                <!--<li>
+                                                    <a href="javascript:void(0)" class="product-btn-1">
+                                                        <i class="ri-download-2-fill me-1"></i>import</a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:void(0)" class="product-btn-1">
+                                                        <i class="ri-upload-2-fill me-1"></i>Export</a>
+                                                </li>-->
+                                                <li>
+                                                    <a class="btn btn-dashed" href="food-management.html">Add food data</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                     <div>
+                                        <div class="input-box">
+                                            <input class="search-box" type="search"
+                                                placeholder="Search User details here..." id="myInput"
+                                                onkeyup='searchTable()'>
+                                            <br>
+                                            <br>
+                                        </div>
                                         <div class="table-responsive theme-scrollbar">
-                                            <table class="table category-table dataTable no-footer">
+                                            <table class="table category-table dataTable no-footer" id="table_id">
                                                 <thead>
                                                     <tr>
-                                                        <th>Transfer Id</th>
-                                                        <th>Name</th>
+                                                        <th><input id="checkall" class="custom-checkbox" type="checkbox"
+                                                                name="text"></th>
+                                                        <!--<th>S. No</th>-->
+                                                        <th>Session</th>
                                                         <th>Date</th>
-                                                        <th>Total</th>
-                                                        <th>Options</th>
+                                                        <th>Category</th>
+                                                        <th>Food name</th>
+                                                        <th>Units Prepared</th>
+                                                        <th>Units consumed</th>
+                                                        <th>Units leftout</th>
+                                                        <th>Entered by</th>   
                                                     </tr>
                                                 </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td class="font-primary f-w-500">14783112</td>
-                                                        <td>Gray Brody</td>
-                                                        <td>20-05-2020</td>
-                                                        <td>$369</td>
-                                                        <td>
-                                                            <ul class="d-flex align-items-center justify-content-center gap-3">
 
+                                                <tbody id="tbody1">
+                                                    <tr>
+                                                        <!--<td><input class="custom-checkbox" type="checkbox" name="text"></td>
+                                                        <td>
+                                                            <div class="table-image">
+                                                                <img src="assets/images/product/1.png" class="img-fluid"
+                                                                    alt="">
+                                                            </div>
+                                                        </td>
+
+                                                        <td>Poultry Palace</td>
+
+                                                        <td>Buscuit</td>
+
+                                                        <td class="f-w-500">12</td>
+
+                                                        <td class="td-price">$95.97</td>
+
+                                                        <td class="status-danger">
+                                                            <span>Pending</span>
+                                                        </td>
+
+                                                        <td>
+                                                            <ul>
                                                                 <li>
                                                                     <a href="order-detail.html">
-                                                                        <span class="ri-eye-line"></span>
+                                                                        <i class="ri-eye-line"></i>
                                                                     </a>
                                                                 </li>
+
                                                                 <li>
                                                                     <a href="javascript:void(0)">
-                                                                        <span class="lnr lnr-pencil"></span>
+                                                                        <i class="ri-pencil-line"></i>
                                                                     </a>
                                                                 </li>
+
                                                                 <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <span class="lnr lnr-trash"></span>
+                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                                        data-bs-target="#exampleModalToggle">
+                                                                        <i class="ri-delete-bin-line"></i>
                                                                     </a>
                                                                 </li>
                                                             </ul>
@@ -776,25 +621,44 @@
                                                     </tr>
 
                                                     <tr>
-                                                        <td class="font-primary f-w-500">87541221</td>
-                                                        <td>Perez Alonzo</td>
-                                                        <td>07-12-2020</td>
-                                                        <td>$546</td>
+                                                        <td><input class="custom-checkbox" type="checkbox" name="text"></td>
                                                         <td>
-                                                            <ul class="d-flex align-items-center justify-content-center gap-3">
+                                                            <div class="table-image">
+                                                                <img src="assets/images/product/2.png" class="img-fluid"
+                                                                    alt="">
+                                                            </div>
+                                                        </td>
+
+                                                        <td>Cold Brew Coffee</td>
+
+                                                        <td>Drinks</td>
+
+                                                        <td class="f-w-500">10</td>
+
+                                                        <td class="td-price">$95.97</td>
+
+                                                        <td class="status-close">
+                                                            <span>Approved</span>
+                                                        </td>
+
+                                                        <td>
+                                                            <ul>
                                                                 <li>
                                                                     <a href="order-detail.html">
-                                                                        <span class="ri-eye-line"></span>
+                                                                        <i class="ri-eye-line"></i>
                                                                     </a>
                                                                 </li>
+
                                                                 <li>
                                                                     <a href="javascript:void(0)">
-                                                                        <span class="lnr lnr-pencil"></span>
+                                                                        <i class="ri-pencil-line"></i>
                                                                     </a>
                                                                 </li>
+
                                                                 <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <span class="lnr lnr-trash"></span>
+                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                                        data-bs-target="#exampleModalToggle">
+                                                                        <i class="ri-delete-bin-line"></i>
                                                                     </a>
                                                                 </li>
                                                             </ul>
@@ -802,25 +666,43 @@
                                                     </tr>
 
                                                     <tr>
-                                                        <td class="font-primary f-w-500">213514462</td>
-                                                        <td>woters maxine</td>
-                                                        <td>12-12-2020</td>
-                                                        <td>$369</td>
+                                                        <td><input class="custom-checkbox" type="checkbox" name="text"></td>
                                                         <td>
-                                                            <ul class="d-flex align-items-center justify-content-center gap-3">
+                                                            <div class="table-image">
+                                                                <img src="assets/images/product/3.png" class="img-fluid"
+                                                                    alt="">
+                                                            </div>
+                                                        </td>
+
+                                                        <td>Peanut Butter Cookies</td>
+
+                                                        <td>Cookies</td>
+
+                                                        <td class="f-w-500">9</td>
+
+                                                        <td class="td-price">$86.35</td>
+
+                                                        <td class="status-close">
+                                                            <span>Approved</span>
+                                                        </td>
+                                                        <td>
+                                                            <ul>
                                                                 <li>
                                                                     <a href="order-detail.html">
-                                                                        <span class="ri-eye-line"></span>
+                                                                        <i class="ri-eye-line"></i>
                                                                     </a>
                                                                 </li>
+
                                                                 <li>
                                                                     <a href="javascript:void(0)">
-                                                                        <span class="lnr lnr-pencil"></span>
+                                                                        <i class="ri-pencil-line"></i>
                                                                     </a>
                                                                 </li>
+
                                                                 <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <span class="lnr lnr-trash"></span>
+                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                                        data-bs-target="#exampleModalToggle">
+                                                                        <i class="ri-delete-bin-line"></i>
                                                                     </a>
                                                                 </li>
                                                             </ul>
@@ -828,25 +710,43 @@
                                                     </tr>
 
                                                     <tr>
-                                                        <td class="font-primary f-w-500">235896144</td>
-                                                        <td>christian</td>
-                                                        <td>16-05-2020</td>
-                                                        <td>$4699</td>
+                                                        <td><input class="custom-checkbox" type="checkbox" name="text"></td>
                                                         <td>
-                                                            <ul class="d-flex align-items-center justify-content-center gap-3">
+                                                            <div class="table-image">
+                                                                <img src="assets/images/product/4.png" class="img-fluid"
+                                                                    alt="">
+                                                            </div>
+                                                        </td>
+
+                                                        <td>Wheet Flakes</td>
+
+                                                        <td>Flakes</td>
+
+                                                        <td class="f-w-500">8</td>
+
+                                                        <td class="td-price">$95.97</td>
+
+                                                        <td class="status-danger">
+                                                            <span>Pending</span>
+                                                        </td>
+                                                        <td>
+                                                            <ul>
                                                                 <li>
                                                                     <a href="order-detail.html">
-                                                                        <span class="ri-eye-line"></span>
+                                                                        <i class="ri-eye-line"></i>
                                                                     </a>
                                                                 </li>
+
                                                                 <li>
                                                                     <a href="javascript:void(0)">
-                                                                        <span class="lnr lnr-pencil"></span>
+                                                                        <i class="ri-pencil-line"></i>
                                                                     </a>
                                                                 </li>
+
                                                                 <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <span class="lnr lnr-trash"></span>
+                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                                        data-bs-target="#exampleModalToggle">
+                                                                        <i class="ri-delete-bin-line"></i>
                                                                     </a>
                                                                 </li>
                                                             </ul>
@@ -854,29 +754,317 @@
                                                     </tr>
 
                                                     <tr>
-                                                        <td class="font-primary f-w-500">461178242</td>
-                                                        <td>Lane Skylar</td>
-                                                        <td>25-10-2020</td>
-                                                        <td>$1342</td>
+                                                        <td><input class="custom-checkbox" type="checkbox" name="text"></td>
                                                         <td>
-                                                            <ul class="d-flex align-items-center justify-content-center gap-3">
+                                                            <div class="table-image">
+                                                                <img src="assets/images/product/5.png" class="img-fluid"
+                                                                    alt="">
+                                                            </div>
+                                                        </td>
+
+                                                        <td>Potato Chips</td>
+
+                                                        <td>Chips</td>
+
+                                                        <td class="f-w-500">23</td>
+
+                                                        <td class="td-price">$95.97</td>
+
+                                                        <td class="status-close">
+                                                            <span>Approved</span>
+                                                        </td>
+
+                                                        <td>
+                                                            <ul>
                                                                 <li>
                                                                     <a href="order-detail.html">
-                                                                        <span class="ri-eye-line"></span>
+                                                                        <i class="ri-eye-line"></i>
                                                                     </a>
                                                                 </li>
+
                                                                 <li>
                                                                     <a href="javascript:void(0)">
-                                                                        <span class="lnr lnr-pencil"></span>
+                                                                        <i class="ri-pencil-line"></i>
                                                                     </a>
                                                                 </li>
+
                                                                 <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <span class="lnr lnr-trash"></span>
+                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                                        data-bs-target="#exampleModalToggle">
+                                                                        <i class="ri-delete-bin-line"></i>
                                                                     </a>
                                                                 </li>
                                                             </ul>
                                                         </td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td><input class="custom-checkbox" type="checkbox" name="text"></td>
+                                                        <td>
+                                                            <div class="table-image">
+                                                                <img src="assets/images/product/6.png" class="img-fluid"
+                                                                    alt="">
+                                                            </div>
+                                                        </td>
+
+                                                        <td>Wing Master</td>
+
+                                                        <td>Dals</td>
+
+                                                        <td class="f-w-500">50</td>
+
+                                                        <td class="td-price">$95.97</td>
+
+                                                        <td class="status-close">
+                                                            <span>Approved</span>
+                                                        </td>
+
+                                                        <td>
+                                                            <ul>
+                                                                <li>
+                                                                    <a href="order-detail.html">
+                                                                        <i class="ri-eye-line"></i>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a href="javascript:void(0)">
+                                                                        <i class="ri-pencil-line"></i>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                                        data-bs-target="#exampleModalToggle">
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td><input class="custom-checkbox" type="checkbox" name="text"></td>
+                                                        <td>
+                                                            <div class="table-image">
+                                                                <img src="assets/images/product/7.png" class="img-fluid"
+                                                                    alt="">
+                                                            </div>
+                                                        </td>
+
+                                                        <td>The Burger Barn</td>
+
+                                                        <td>Milk</td>
+
+                                                        <td class="f-w-500">25</td>
+
+                                                        <td class="td-price">$121.43</td>
+
+                                                        <td class="status-close">
+                                                            <span>Approved</span>
+                                                        </td>
+
+                                                        <td>
+                                                            <ul>
+                                                                <li>
+                                                                    <a href="order-detail.html">
+                                                                        <i class="ri-eye-line"></i>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a href="javascript:void(0)">
+                                                                        <i class="ri-pencil-line"></i>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                                        data-bs-target="#exampleModalToggle">
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td><input class="custom-checkbox" type="checkbox" name="text"></td>
+                                                        <td>
+                                                            <div class="table-image">
+                                                                <img src="assets/images/product/11.png"
+                                                                    class="img-fluid" alt="">
+                                                            </div>
+                                                        </td>
+
+                                                        <td>Wheat Bread</td>
+
+                                                        <td>Breads</td>
+
+                                                        <td class="f-w-500">6</td>
+
+                                                        <td class="td-price">$95.97</td>
+
+                                                        <td class="status-danger">
+                                                            <span>Pending</span>
+                                                        </td>
+
+                                                        <td>
+                                                            <ul>
+                                                                <li>
+                                                                    <a href="order-detail.html">
+                                                                        <i class="ri-eye-line"></i>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a href="javascript:void(0)">
+                                                                        <i class="ri-pencil-line"></i>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                                        data-bs-target="#exampleModalToggle">
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td><input class="custom-checkbox" type="checkbox" name="text"></td>
+                                                        <td>
+                                                            <div class="table-image">
+                                                                <img src="assets/images/product/8.png" class="img-fluid"
+                                                                    alt="">
+                                                            </div>
+                                                        </td>
+
+                                                        <td>Cup cake</td>
+
+                                                        <td>Pet Food</td>
+
+                                                        <td class="f-w-500">11</td>
+
+                                                        <td class="td-price">$95.97</td>
+
+                                                        <td class="status-close">
+                                                            <span>Approved</span>
+                                                        </td>
+                                                        <td>
+                                                            <ul>
+                                                                <li>
+                                                                    <a href="order-detail.html">
+                                                                        <i class="ri-eye-line"></i>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a href="javascript:void(0)">
+                                                                        <i class="ri-pencil-line"></i>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                                        data-bs-target="#exampleModalToggle">
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td><input class="custom-checkbox" type="checkbox" name="text"></td>
+                                                        <td>
+                                                            <div class="table-image">
+                                                                <img src="assets/images/product/9.png" class="img-fluid"
+                                                                    alt="">
+                                                            </div>
+                                                        </td>
+
+                                                        <td>Fresh Meat</td>
+
+                                                        <td>Meats</td>
+
+                                                        <td class="f-w-500">18</td>
+
+                                                        <td class="td-price">$95.97</td>
+
+                                                        <td class="status-close">
+                                                            <span>Approved</span>
+                                                        </td>
+
+                                                        <td>
+                                                            <ul>
+                                                                <li>
+                                                                    <a href="order-detail.html">
+                                                                        <i class="ri-eye-line"></i>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a href="javascript:void(0)">
+                                                                        <i class="ri-pencil-line"></i>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                                        data-bs-target="#exampleModalToggle">
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td><input class="custom-checkbox" type="checkbox" name="text"></td>
+                                                        <td>
+                                                            <div class="table-image">
+                                                                <img src="assets/images/product/10.png"
+                                                                    class="img-fluid" alt="">
+                                                            </div>
+                                                        </td>
+
+                                                        <td>Take It Cheesy</td>
+
+                                                        <td>Coffee</td>
+
+                                                        <td class="f-w-500">25</td>
+
+                                                        <td class="td-price">$86.35</td>
+
+                                                        <td class="status-close">
+                                                            <span>Approved</span>
+                                                        </td>
+
+                                                        <td>
+                                                            <ul>
+                                                                <li>
+                                                                    <a href="order-detail.html">
+                                                                        <i class="ri-eye-line"></i>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a href="javascript:void(0)">
+                                                                        <i class="ri-pencil-line"></i>
+                                                                    </a>
+                                                                </li>
+
+                                                                <li>
+                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                                        data-bs-target="#exampleModalToggle">
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </td>-->
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -884,14 +1072,13 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>-->
-                        <!-- Booking history  end-->
+                        </div>
                     </div>
                 </div>
                 <!-- Container-fluid Ends-->
 
-                <!-- footer start-->
                 <div class="container-fluid">
+                    <!-- footer start-->
                     <footer class="footer">
                         <div class="row">
                             <div class="col-md-12 footer-copyright text-center">
@@ -901,9 +1088,7 @@
                     </footer>
                 </div>
             </div>
-            <!-- Reports Section End -->
         </div>
-        <!-- Page Body End-->
     </div>
     <!-- page-wrapper End-->
 
@@ -923,12 +1108,71 @@
                 <div class="modal-footer">
                     <button class="btn btn-cancel" type="button" data-bs-dismiss="modal" aria-label="Close">No</button>
                     <button class="btn btn-submit" type="submit" data-bs-dismiss="modal" aria-label="Close"><a
-                            href="login.html">Yes</a></button>
+                            href="login.html"></a>Yes</a></button>
                 </div>
             </div>
         </div>
     </div>
     <!-- Modal End -->
+
+    <!-- Delete Modal Box Start -->
+    <div class="modal fade theme-modal remove-coupon" id="exampleModalToggle" aria-hidden="true" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header d-block text-center">
+                    <h5 class="modal-title w-100" id="exampleModalLabel22">Are You Sure ?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="remove-box">
+                        <p>The permission for the use/group, preview is inherited from the object, object will create a
+                            new permission for this object</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-target="#exampleModalToggle2"
+                        data-bs-toggle="modal" data-bs-dismiss="modal">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade theme-modal remove-coupon" id="exampleModalToggle2" aria-hidden="true" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-center" id="exampleModalLabel12">Done!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="remove-box text-center">
+                        <div class="wrapper">
+                            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                                <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                            </svg>
+                        </div>
+                        <h4 class="text-content">It's Removed.</h4>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Delete Modal Box End -->
+
+    <!-- Firebase js -->
+    <script src="assets/js/firebase-config.js" type="module" defer></script>
+
+    <!-- Hostel details js -->
+    <script src="assets/js/food-details.js" type="module" defer></script>
 
     <!-- latest js -->
     <script src="assets/js/jquery-3.6.0.min.js"></script>
@@ -947,60 +1191,53 @@
     <!-- Sidebar js -->
     <script src="assets/js/config.js"></script>
 
-    <!-- tooltip init js -->
-    <script src="assets/js/tooltip-init.js"></script>
-
-    <!-- Plugins JS -->
-    <script src="assets/js/sidebar-menu.js"></script>
-    <!-- Apexchar js -->
-    <script src="assets/js/chart/apex-chart/apex-chart1.js"></script>
-    <script src="assets/js/chart/apex-chart/moment.min.js"></script>
-    <script src="assets/js/chart/apex-chart/apex-chart.js"></script>
-    <script src="assets/js/chart/apex-chart/stock-prices.js"></script>
-    <script src="assets/js/chart/apex-chart/chart-custom.js"></script>
-
     <!-- customizer js
     <script src="assets/js/customizer.js"></script>-->
 
-    <!-- ratio js -->
-    <script src="assets/js/ratio.js"></script>
+    <!-- Plugins JS -->
+    <script src="assets/js/sidebar-menu.js"></script>
+    <!-- Data table js -->
+    <script src="assets/js/jquery.dataTables.js"></script>
+    <script src="assets/js/custom-data-table.js"></script>
 
     <!-- Theme js -->
     <script src="assets/js/script.js"></script>
     <script>
-        // Mapping of categories to subcategories
-        const categoryToSubcategories = {
-            utilities: ["Water", "Electricity", "Gas", "Internet", "Water Supplies"],
-            food: ["Cooking Supplies - Vegetables or Fruits", "Groceries", "Cooking Supplies - Raw Materials"],
-            maintenance: ["Repairs", "Cleaning"],
-            furniture: ["Purchase/Repair"],
-            rent: [],
-            salary: [],
-            miscellaneous: [],
-        };
+        $("#checkall").change(function () {
+            var checked = $(this).is(":checked");
+            if (checked) {
+                $(".custom-checkbox").each(function () {
+                    $(this).prop("checked", true);
+                });
 
-        // Reference to dropdown elements
-        const categoryDropdown = document.getElementById("categoryDropdown");
-        const subcategoryDropdown = document.getElementById("subcategoryDropdown");
-
-        // Event listener for category change
-        categoryDropdown.addEventListener("change", () => {
-            const selectedCategory = categoryDropdown.value;
-
-            // Clear existing options in subcategory dropdown
-            subcategoryDropdown.innerHTML = `<option value="">Select Subcategory</option>`;
-
-            // Populate subcategories based on the selected category
-            if (categoryToSubcategories[selectedCategory]) {
-                categoryToSubcategories[selectedCategory].forEach(subcategory => {
-                    const option = document.createElement("option");
-                    option.value = subcategory;
-                    option.textContent = subcategory;
-                    subcategoryDropdown.appendChild(option);
+            } else {
+                $(".custom-checkbox").each(function () {
+                    $(this).prop("checked", false);
                 });
             }
         });
 
+        function searchTable() {
+            var input, filter, found, table, tr, td, i, j;
+            input = document.getElementById("myInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("table_id");
+            tr = table.getElementsByTagName("tr");
+            for (i = 1; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td");
+                for (j = 0; j < td.length; j++) {
+                    if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        found = true;
+                    }
+                }
+                if (found) {
+                    tr[i].style.display = "";
+                    found = false;
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
     </script>
 </body>
 
