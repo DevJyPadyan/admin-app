@@ -291,13 +291,15 @@
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-store-3-line"></i>
-                                        <span>hostels</span>
+                                        <span>Hostels</span>
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
                                             <a href="products.html">Hostel List</a>
                                         </li>
-
+                                        <li>
+                                            <a href="hotel-reports.html">Hostel Reports</a>
+                                        </li>
                                         <li>
                                             <a href="add-new-product.html">Register Hostel</a>
                                         </li>
@@ -579,28 +581,38 @@
                                                                 name="text"></th>
                                                         <!--<th>S. No</th>-->
                                                         <th>User Name</th>
-                                                        <th>Full Name</th>
+                                                        <th onclick="sortTable(1)">Full Name<span
+                                                            class="sort-icon">⬍</span></th>
                                                         <th>Gender</th>
                                                         <th>Phone</th>
                                                         <th>Email ID</th>
                                                         <th>Address line 1</th>
                                                         <th>Address line 2</th>
-                                                        <th>City</th>
-                                                        <th>State</th>
+                                                        <th onclick="sortTable(2)">City<span
+                                                            class="sort-icon">⬍</span></th>
+                                                        <th onclick="sortTable(3)">State<span
+                                                            class="sort-icon">⬍</span></th>
                                                         <th>Pincode</th>
-                                                        <th>Guard Name</th>
+                                                        <th onclick="sortTable(4)">Guard Name<span
+                                                            class="sort-icon">⬍</span></th>
                                                         <th>Guard Relation</th>
                                                         <th>Guard Phone</th>
                                                         <th>Guard Email</th>
                                                         <th>Guard Address 1</th>
                                                         <th>Guard Address 2</th>
-                                                        <th>Guard City</th>
-                                                        <th>Guard State</th>
+                                                        <th onclick="sortTable(5)">Guard City<span
+                                                            class="sort-icon">⬍</span></th>
+                                                        <th onclick="sortTable(6)">Guard State<span
+                                                            class="sort-icon">⬍</span></th>
                                                         <th>Guard Pincode</th>
-                                                        <th>Room type</th>
-                                                        <th>Floor</th>
-                                                        <th>Air conditioning</th>
-                                                        <th>Room price</th>
+                                                        <th onclick="sortTable(7)">Room type<span
+                                                            class="sort-icon">⬍</span></th>
+                                                        <th onclick="sortTable(8)">Floor<span
+                                                            class="sort-icon">⬍</span></th>
+                                                        <th onclick="sortTable(9)">Air conditioning<span
+                                                            class="sort-icon">⬍</span></th>
+                                                        <th onclick="sortTable(10)">Room price<span
+                                                            class="sort-icon">⬍</span></th>
                                                         <th>Payment Status</th>
                                                         <th>Delete</th>
                                                     </tr>
@@ -1269,6 +1281,37 @@
                     tr[i].style.display = "none";
                 }
             }
+        }
+        let sortOrder = {}; // Keeps track of current sort order for each column
+
+        function sortTable(columnIndex) {
+            const tableBody = document.getElementById("tbody1");
+            const rows = Array.from(tableBody.rows);
+
+            // Determine if the column is numeric
+            const isNumeric = !isNaN(rows[0]?.cells[columnIndex]?.innerText.trim());
+
+            // Toggle sort order for the column
+            sortOrder[columnIndex] = sortOrder[columnIndex] === "asc" ? "desc" : "asc";
+
+            // Sort rows
+            rows.sort((a, b) => {
+                const cellA = a.cells[columnIndex]?.innerText.trim();
+                const cellB = b.cells[columnIndex]?.innerText.trim();
+
+                if (isNumeric) {
+                    return sortOrder[columnIndex] === "asc"
+                        ? parseFloat(cellA) - parseFloat(cellB)
+                        : parseFloat(cellB) - parseFloat(cellA);
+                } else {
+                    return sortOrder[columnIndex] === "asc"
+                        ? cellA.localeCompare(cellB)
+                        : cellB.localeCompare(cellA);
+                }
+            });
+
+            // Re-render rows in sorted order
+            rows.forEach(row => tableBody.appendChild(row));
         }
     </script>
 </body>

@@ -297,7 +297,9 @@
                                         <li>
                                             <a href="products.html">Hostel List</a>
                                         </li>
-
+                                        <li>
+                                            <a href="hotel-reports.html">Hostel Reports</a>
+                                        </li>
                                         <li>
                                             <a href="add-new-product.html">Register Hostel</a>
                                         </li>
@@ -573,7 +575,8 @@
                                                         <i class="ri-upload-2-fill me-1"></i>Export</a>
                                                 </li>-->
                                                 <li>
-                                                    <a class="btn btn-dashed" href="add-new-expense.html">Add Expense</a>
+                                                    <a class="btn btn-dashed" href="add-new-expense.html">Add
+                                                        Expense</a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -594,15 +597,24 @@
                                                         <th><input id="checkall" class="custom-checkbox" type="checkbox"
                                                                 name="text"></th>
                                                         <!--<th>S. No</th>-->
-                                                        <th>Hostel name</th>
-                                                        <th>Frequency</th>
-                                                        <th>From date</th>
-                                                        <th>To date</th>
-                                                        <th>Category</th>
-                                                        <th>Sub-Category</th>
-                                                        <th>Units consumed</th>
-                                                        <th>Measurement Unit</th>
-                                                        <th>Cost</th>
+                                                        <th onclick="sortTable(1)">Hostel name<span
+                                                            class="sort-icon">⬍</span></th>
+                                                        <th onclick="sortTable(2)">Frequency<span
+                                                            class="sort-icon">⬍</span></th>
+                                                        <th onclick="sortTable(3)">From date<span
+                                                            class="sort-icon">⬍</span></th>
+                                                        <th onclick="sortTable(4)">To date<span
+                                                            class="sort-icon">⬍</span></th>
+                                                        <th onclick="sortTable(5)">Category<span
+                                                            class="sort-icon">⬍</span></th>
+                                                        <th onclick="sortTable(6)">Sub-Category<span
+                                                            class="sort-icon">⬍</span></th>
+                                                        <th onclick="sortTable(7)">Units consumed<span
+                                                            class="sort-icon">⬍</span></th>
+                                                        <th onclick="sortTable(8)">Measurement Unit<span
+                                                            class="sort-icon">⬍</span></th>
+                                                        <th onclick="sortTable(9)">Cost<span
+                                                            class="sort-icon">⬍</span></th>
                                                         <th>Room</th>
                                                         <th>Floor</th>
                                                         <th>Remarks</th>
@@ -784,6 +796,38 @@
                 }
             }
         }
+        let sortOrder = {}; // Keeps track of current sort order for each column
+
+        function sortTable(columnIndex) {
+            const tableBody = document.getElementById("tbody1");
+            const rows = Array.from(tableBody.rows);
+
+            // Determine if the column is numeric
+            const isNumeric = !isNaN(rows[0]?.cells[columnIndex]?.innerText.trim());
+
+            // Toggle sort order for the column
+            sortOrder[columnIndex] = sortOrder[columnIndex] === "asc" ? "desc" : "asc";
+
+            // Sort rows
+            rows.sort((a, b) => {
+                const cellA = a.cells[columnIndex]?.innerText.trim();
+                const cellB = b.cells[columnIndex]?.innerText.trim();
+
+                if (isNumeric) {
+                    return sortOrder[columnIndex] === "asc"
+                        ? parseFloat(cellA) - parseFloat(cellB)
+                        : parseFloat(cellB) - parseFloat(cellA);
+                } else {
+                    return sortOrder[columnIndex] === "asc"
+                        ? cellA.localeCompare(cellB)
+                        : cellB.localeCompare(cellA);
+                }
+            });
+
+            // Re-render rows in sorted order
+            rows.forEach(row => tableBody.appendChild(row));
+        }
+
     </script>
 </body>
 
