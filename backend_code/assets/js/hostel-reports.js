@@ -57,7 +57,7 @@ async function populateHostelDropdown1() {
 }
 window.addEventListener('DOMContentLoaded', populateHostelDropdown1);
 
-// Fetch bed details of the room based on selected hostel and calculate the vaccancy
+// Fetch bed details of the room based on selected hostel and calculate the vacancy
 async function fetchRoomDetails(hostelName) {
     console.log("Fetching room details for:", hostelName); // Log to see if this function is called
     const roomsRef = ref(db, `Hostel details/${hostelName}/rooms/`);
