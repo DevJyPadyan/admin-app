@@ -596,16 +596,21 @@
                                                         <th><input id="checkall" class="custom-checkbox" type="checkbox"
                                                                 name="text"></th>
                                                         <!--<th>S. No</th>-->
-                                                        <th>Hostel Name</th>
-                                                        <th>Hostel Type</th>
+                                                        <th onclick="sortTable(1)">Hostel Name<span
+                                                            class="sort-icon">⬍</span></th>
+                                                        <th onclick="sortTable(2)">Hostel Type<span
+                                                            class="sort-icon">⬍</span></th>
                                                         <th>Address 1</th>
                                                         <th>Address 2</th>
-                                                        <th>City</th>
-                                                        <th>State</th>
+                                                        <th onclick="sortTable(3)">City<span
+                                                            class="sort-icon">⬍</span></th>
+                                                        <th onclick="sortTable(4)">State<span
+                                                            class="sort-icon">⬍</span></th>
                                                         <th>Phone</th>
                                                         <th>Email ID</th>
                                                         <th>Pin code</th>
-                                                        <th>Floors</th>
+                                                        <th onclick="sortTable(5)">Floors<span
+                                                            class="sort-icon">⬍</span></th>
                                                         <th>Delete</th>
                                                     </tr>
                                                 </thead>
@@ -783,6 +788,37 @@
                     tr[i].style.display = "none";
                 }
             }
+        }
+        let sortOrder = {}; // Keeps track of current sort order for each column
+
+        function sortTable(columnIndex) {
+            const tableBody = document.getElementById("tbody1");
+            const rows = Array.from(tableBody.rows);
+
+            // Determine if the column is numeric
+            const isNumeric = !isNaN(rows[0]?.cells[columnIndex]?.innerText.trim());
+
+            // Toggle sort order for the column
+            sortOrder[columnIndex] = sortOrder[columnIndex] === "asc" ? "desc" : "asc";
+
+            // Sort rows
+            rows.sort((a, b) => {
+                const cellA = a.cells[columnIndex]?.innerText.trim();
+                const cellB = b.cells[columnIndex]?.innerText.trim();
+
+                if (isNumeric) {
+                    return sortOrder[columnIndex] === "asc"
+                        ? parseFloat(cellA) - parseFloat(cellB)
+                        : parseFloat(cellB) - parseFloat(cellA);
+                } else {
+                    return sortOrder[columnIndex] === "asc"
+                        ? cellA.localeCompare(cellB)
+                        : cellB.localeCompare(cellA);
+                }
+            });
+
+            // Re-render rows in sorted order
+            rows.forEach(row => tableBody.appendChild(row));
         }
     </script>
 </body>
