@@ -57,7 +57,7 @@ async function populateHostelDropdown1() {
 }
 window.addEventListener('DOMContentLoaded', populateHostelDropdown1);
 
-// Fetch bed details of the room based on selected hostel and calculate the vaccancy
+// Fetch bed details of the room based on selected hostel and calculate the vacancy
 async function fetchRoomDetails(hostelName) {
     console.log("Fetching room details for:", hostelName); // Log to see if this function is called
     const roomsRef = ref(db, `Hostel details/${hostelName}/rooms/`);
@@ -140,7 +140,7 @@ const appendExpenseRow = (
     td8.innerText = bookedBedsCount;
 
     var detailsButton = document.createElement('a');
-    detailsButton.innerHTML = '<a data-bs-toggle="modal" data-bs-target="#viewRoomDetails" style="cursor:pointer; color:orange; text-decoration: underline">Deatils </a>';
+    detailsButton.innerHTML = '<a data-bs-toggle="modal" data-bs-target="#viewRoomDetails" style="cursor:pointer; color:orange; text-decoration: underline">View beds </a>';
     detailsButton.onclick = function (event) {
         event.stopPropagation(); // Prevent row click event
         loadBedView(floor, roomNo);
