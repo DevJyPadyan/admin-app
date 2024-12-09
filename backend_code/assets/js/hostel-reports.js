@@ -140,7 +140,7 @@ const appendExpenseRow = (
     td8.innerText = bookedBedsCount;
 
     var detailsButton = document.createElement('a');
-    detailsButton.innerHTML = '<a data-bs-toggle="modal" data-bs-target="#viewRoomDetails" style="cursor:pointer; color:orange; text-decoration: underline">Deatils </a>';
+    detailsButton.innerHTML = '<a data-bs-toggle="modal" data-bs-target="#viewRoomDetails" style="cursor:pointer; color:orange; text-decoration: underline">View beds </a>';
     detailsButton.onclick = function (event) {
         event.stopPropagation(); // Prevent row click event
         loadBedView(floor, roomNo);
