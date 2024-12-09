@@ -84,11 +84,11 @@
                 </div>
                 <div class="welcome-title">
                     <h5>
-                        Hostel expenses - overview
+                        Hostel Room Avaiablity - overview
                         <img src="./assets/images/header.gif" alt="">
                     </h5>
                     <span>
-                        Have a quick look at your expenses !
+                        Have a quick look at your Vaccancy Report !
                     </span>
                 </div>
                 <div class="nav-right col-xl-6 col-5 pull-right right-header p-0">
@@ -331,21 +331,6 @@
                                         </li>
                                     </ul>
                                 </li>
-                                <li class="sidebar-list">
-                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-bowl-line"></i>
-                                        <span>Food Management</span>
-                                    </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="food-details.html">Food data</a>
-                                        </li>
-
-                                        <li>
-                                            <a href="food-management.html">Manage foo data</a>
-                                        </li>
-                                    </ul>
-                                </li>
                                 <!--<li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-bowl-line"></i>
@@ -563,7 +548,8 @@
                             <div class="card card-table">
                                 <div class="card-body">
                                     <div class="title-header option-title d-sm-flex d-block">
-                                        <h5>Expense List</h5>
+                                        <h5>Hostel Vaccancy Report</h5>
+                                        
                                         <div class="right-options">
                                             <ul>
                                                 <!--<li>
@@ -574,20 +560,28 @@
                                                     <a href="javascript:void(0)" class="product-btn-1">
                                                         <i class="ri-upload-2-fill me-1"></i>Export</a>
                                                 </li>-->
-                                                <li>
+                                                <!-- <li>
                                                     <a class="btn btn-dashed" href="add-new-expense.html">Add Expense</a>
-                                                </li>
+                                                </li> -->
                                             </ul>
                                         </div>
                                     </div>
                                     <div>
                                         <div class="input-box">
 
+                                            <div class="input-box">
+                                                <h6>Hostel Name</h6>
+                                                <select id="hostelDropdown1" style="margin-bottom:30px;">
+                                                    <option value="">Select Hostel</option>
+                                                </select>
+                                            </div>
+
                                             <input class="search-box" type="search"
                                                 placeholder="Search expense details here..." id="myInput"
                                                 onkeyup='searchTable()'>
                                             <br>
                                             <br>
+                                            
                                         </div>
                                         <div class="table-responsive theme-scrollbar">
                                             <table class="table category-table dataTable no-footer" id="table_id">
@@ -596,7 +590,7 @@
                                                         <th><input id="checkall" class="custom-checkbox" type="checkbox"
                                                                 name="text"></th>
                                                         <!--<th>S. No</th>-->
-                                                        <th>Hostel name</th>
+                                                        <!-- <th>Hostel name</th>
                                                         <th>Frequency</th>
                                                         <th>From date</th>
                                                         <th>To date</th>
@@ -604,11 +598,15 @@
                                                         <th>Sub-Category</th>
                                                         <th>Units consumed</th>
                                                         <th>Measurement Unit</th>
-                                                        <th>Cost</th>
-                                                        <th>Room</th>
+                                                         -->
                                                         <th>Floor</th>
-                                                        <th>Remarks</th>
-                                                        <th>Bills</th>
+                                                        <th>Room No</th>
+                                                        <th>Room Type</th>
+                                                        <th>Cost</th>
+                                                        <th>Total Beds</th>
+                                                        <th>Avaiable Count</th>
+                                                        <th>Booked Count</th>
+                                                        <th>Details</th>
                                                     </tr>
                                                 </thead>
 
@@ -716,11 +714,36 @@
     </div>
     <!-- Delete Modal Box End -->
 
+    <!-- Modal Start -->
+    <div class="modal theme-modal fade" id="viewRoomDetails" tabindex="-1" role="dialog" aria-modal="true">
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Room Details</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Room Bed view</p>
+                    <div id="bedParent" style="display: grid;gap: 20px;grid-template-columns:1fr 1fr 1fr;">
+                        <!-- all other contents are Generated from JS  -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-cancel" type="button" data-bs-dismiss="modal"
+                    aria-label="Close">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal End -->
+
     <!-- Firebase js -->
     <script src="assets/js/firebase-config.js" type="module" defer></script>
 
     <!-- Hostel details js -->
-    <script src="assets/js/reports.js" type="module" defer></script>
+    <script src="assets/js/hostel-reports.js" type="module" defer></script>
 
     <!-- latest js -->
     <script src="assets/js/jquery-3.6.0.min.js"></script>
