@@ -196,7 +196,7 @@ document.getElementById("aircond").addEventListener("change", debounceAutofill);
 window.addEventListener('DOMContentLoaded', populateHostelDropdown);
 
 async function prefillUserDetails() {
-  const storedData = localStorage.getItem('userDetails');
+  const storedData = localStorage.getItem('userDetailsAmin');
   if (storedData) {
     const userData = JSON.parse(storedData);
 

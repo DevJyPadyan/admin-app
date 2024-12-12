@@ -74,7 +74,7 @@ function view() {
             data.push(hosemail);
             data.push(hospin);
             data.push(hosfloors);
-            localStorage.setItem('hosteldetails', JSON.stringify(data));
+            localStorage.setItem('hosteldetailsAdmin', JSON.stringify(data));
             console.log(data);
             window.location.href = 'edit-hostel.html';
 

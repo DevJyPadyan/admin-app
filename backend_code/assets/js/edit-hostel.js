@@ -833,7 +833,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Prefill hostel details from localStorage
     function prefillHostelDetails() {
-        const storedData = localStorage.getItem('hosteldetails');
+        const storedData = localStorage.getItem('hosteldetailsAdmin');
         if (storedData) {
             const hostelData = JSON.parse(storedData);
 

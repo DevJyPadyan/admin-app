@@ -149,7 +149,7 @@ function view() {
             data.push(hostelName);
             data.push(paymentComplete);
 
-            localStorage.setItem('userDetails', JSON.stringify(data));
+            localStorage.setItem('userDetailsAmin', JSON.stringify(data));
             console.log(data);
             // Redirect to edit-users.html
             window.location.href = "././edit-users.html";
