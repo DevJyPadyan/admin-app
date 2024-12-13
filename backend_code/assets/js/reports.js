@@ -59,7 +59,8 @@ const fetchAndDisplayExpenses = () => {
                                 toDate,
                                 categoryName,
                                 subCategoryName,
-                                expenseDetails
+                                expenseDetails,
+
                             );
                         });
                     });
@@ -96,6 +97,7 @@ const appendExpenseRow = (
     const td12 = document.createElement("td");
     const td13 = document.createElement("td");
     const td14 = document.createElement("td");
+    const td15 = document.createElement("td");
 
     td1.innerText = id;
     td2.innerText = hostelName;
@@ -108,34 +110,38 @@ const appendExpenseRow = (
     td9.innerText = details.measurementUnit || "N/A";
     td10.innerText = details.cost || "N/A";
 
+    // Description
+    td11.innerText = details.description || "N/A";
+
     // Room number
-    td11.innerText =
+    td12.innerText =
         subCategory.toLowerCase() === "electricity" && details.roomNumber
             ? details.roomNumber
             : "N/A";
 
     // Floor number
-    td12.innerText =
+    td13.innerText =
         subCategory.toLowerCase() === "electricity" && details.floorNumber
             ? details.floorNumber
             : "N/A";
 
+
     // Remarks
-    td13.innerText = details.remarks || "N/A";
+    td14.innerText = details.remarks || "N/A";
 
     // Bills
     if (details.billImages && details.billImages.length > 0) {
-        td14.innerHTML = details.billImages
+        td15.innerHTML = details.billImages
             .map(
                 (image, index) =>
                     `<a href="${image}" target="_blank">Bill ${index + 1}</a>`
             )
             .join(", ");
     } else {
-        td14.innerText = "No Bills";
+        td15.innerText = "No Bills";
     }
 
-    trow.append(td1, td2, td3, td4, td5, td6, td7, td8, td9, td10, td11, td12, td13, td14);
+    trow.append(td1, td2, td3, td4, td5, td6, td7, td8, td9, td10, td11, td12, td13, td14, td15);
     tbody.appendChild(trow);
 };
 

@@ -45,7 +45,8 @@ const fetchAndDisplayData = () => {
                             foodDetails.unitsPrepared,
                             foodDetails.unitsConsumed,
                             foodDetails.leftover,
-                            foodDetails.enteredBy
+                            foodDetails.enteredBy,
+                            foodDetails.peopleConsumed
                         );
                     });
                 });
@@ -64,7 +65,8 @@ const appendTableRow = (
     unitsPrepared,
     unitsConsumed,
     leftover,
-    enteredBy
+    enteredBy,
+    peopleConsumed
 ) => {
     const row = document.createElement("tr");
 
@@ -76,6 +78,7 @@ const appendTableRow = (
     const foodNameCell = document.createElement("td");
     const unitsPreparedCell = document.createElement("td");
     const unitsConsumedCell = document.createElement("td");
+    const peopleConsumedCell = document.createElement("td");
     const leftoverCell = document.createElement("td");
     const enteredByCell = document.createElement("td");
 
@@ -87,6 +90,7 @@ const appendTableRow = (
     foodNameCell.innerText = foodName || "N/A";
     unitsPreparedCell.innerText = unitsPrepared || 0;
     unitsConsumedCell.innerText = unitsConsumed || 0;
+    peopleConsumedCell.innerText = peopleConsumed || 0;
     leftoverCell.innerText = leftover || 0;
     enteredByCell.innerText = enteredBy || "N/A";
 
@@ -99,6 +103,7 @@ const appendTableRow = (
         foodNameCell,
         unitsPreparedCell,
         unitsConsumedCell,
+        peopleConsumedCell,
         leftoverCell,
         enteredByCell
     );
