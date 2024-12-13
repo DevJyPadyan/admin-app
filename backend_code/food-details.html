@@ -545,7 +545,7 @@
                                                         <i class="ri-upload-2-fill me-1"></i>Export</a>
                                                 </li>-->
                                                 <li>
-                                                    <a id="export_table_btn" class="product-btn-1">
+                                                    <a id="export_table_btn" onclick="downloadExcel()" class="product-btn-1">
                                                         <i class="ri-upload-2-fill me-1"></i>Export</a>
                                                 </li>
                                                 <li>
@@ -1285,6 +1285,36 @@
         }
 
     </script>
+        <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+        <script>
+            function getFormattedDateTime() {
+                const now = new Date();
+    
+                // Format: YYYYMMDD_hhmmss
+                const formattedDate = now.getFullYear().toString().padStart(4, '0') +
+                    (now.getMonth() + 1).toString().padStart(2, '0') +
+                    now.getDate().toString().padStart(2, '0');
+                const formattedTime = now.getHours().toString().padStart(2, '0') +
+                    now.getMinutes().toString().padStart(2, '0') +
+                    now.getSeconds().toString().padStart(2, '0');
+    
+                return formattedDate+"_"+formattedTime;
+            }
+    
+    
+            const fileName = "food_list_"+getFormattedDateTime()+".xlsx";
+            function downloadExcel() {
+    
+                // Get the table element
+                const table = document.getElementById('table_id');
+    
+                // Convert the table to a workbook
+                const workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+    
+                // Export to Excel file
+                XLSX.writeFile(workbook, fileName);
+            }
+        </script>
 </body>
 
 </html>

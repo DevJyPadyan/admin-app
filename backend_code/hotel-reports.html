@@ -553,15 +553,16 @@
                                 </select>
                             </div>
                             <div class="card card-table">
-                             <!-- Table 1: Hostel Beds Report -->
+                                <!-- Table 1: Hostel Beds Report -->
                                 <div class="card-body" id="beds-table-div">
                                     <div class="title-header option-title d-sm-flex d-block">
                                         <h5>Hostel Rooms Report</h5>
-                                        
+
                                         <div class="right-options">
                                             <ul>
                                                 <li>
-                                                    <a id="export_table_btn1" class="product-btn-1">
+                                                    <a id="export_table_btn1" onclick="downloadExcel()"
+                                                        class="product-btn-1">
                                                         <i class="ri-upload-2-fill me-1"></i>Export</a>
                                                 </li>
                                                 <!--<li>
@@ -583,20 +584,20 @@
 
                                             <div class="input-box">
                                                 <h6>Hostel Name</h6>
-                                                <select id="hostelDropdown1"  style="margin-bottom:30px;">
+                                                <select id="hostelDropdown1" style="margin-bottom:30px;">
                                                     <option value="">Select Hostel</option>
                                                 </select>
                                             </div>
 
-                                            <input class="search-box" type="search"
-                                                placeholder="Search details here..." id="myInput"
-                                                onkeyup='searchTable()'>
+                                            <input class="search-box" type="search" placeholder="Search details here..."
+                                                id="myInput" onkeyup='searchTable()'>
                                             <br>
                                             <br>
-                                            
+
                                         </div>
                                         <div class="table-responsive theme-scrollbar">
-                                            <table data-name="rooms" class="table category-table dataTable no-footer" id="table_id">
+                                            <table data-name="rooms" class="table category-table dataTable no-footer"
+                                                id="table_id">
                                                 <thead>
                                                     <tr>
                                                         <th><input id="checkall" class="custom-checkbox" type="checkbox"
@@ -622,15 +623,16 @@
                                 </div>
 
                                 <!-- Table 2: Vaccancy Report -->
-                                 <br>
+                                <br>
                                 <div class="card-body" id="vacancy-table-div" style="display: none;">
                                     <div class="title-header option-title d-sm-flex d-block">
                                         <h5>Hostel Vacancy Report</h5>
-                                        
+
                                         <div class="right-options">
                                             <ul>
                                                 <li>
-                                                    <a id="export_table_btn2" class="product-btn-1">
+                                                    <a id="export_table_btn2" onclick="downloadExcel2()"
+                                                        class="product-btn-1">
                                                         <i class="ri-upload-2-fill me-1"></i>Export</a>
                                                 </li>
                                                 <!--<li>
@@ -657,12 +659,11 @@
                                                 </select>
                                             </div>
 
-                                            <input class="search-box" type="search"
-                                                placeholder="Search details here..." id="myInput"
-                                                onkeyup='searchTable2()'>
+                                            <input class="search-box" type="search" placeholder="Search details here..."
+                                                id="myInput" onkeyup='searchTable2()'>
                                             <br>
                                             <br>
-                                            
+
                                         </div>
                                         <div class="table-responsive theme-scrollbar">
                                             <table class="table category-table dataTable no-footer" id="table_id_2">
@@ -804,7 +805,7 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-cancel" type="button" data-bs-dismiss="modal"
-                    aria-label="Close">Close</button>
+                        aria-label="Close">Close</button>
                 </div>
             </div>
         </div>
@@ -822,36 +823,33 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                        <div class="input-items">
-                            <div class="row gy-3">
-                                <div class="col-xl-6">
-                                    <div class="input-box">
-                                        <h6>User Name</h6>
-                                        <input type="text" placeholder="User Name" readonly
-                                            id="username">
-                                    </div>
+                    <div class="input-items">
+                        <div class="row gy-3">
+                            <div class="col-xl-6">
+                                <div class="input-box">
+                                    <h6>User Name</h6>
+                                    <input type="text" placeholder="User Name" readonly id="username">
                                 </div>
-                                <div class="col-xl-6">
-                                    <div class="input-box">
-                                        <h6>User Phone</h6>
-                                        <input type="text" placeholder="User Phone" readonly
-                                            id="userphone">
-                                    </div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="input-box">
+                                    <h6>User Phone</h6>
+                                    <input type="text" placeholder="User Phone" readonly id="userphone">
                                 </div>
-                                <div class="col-xl-6">
-                                    <div class="input-box">
-                                        <h6>User Phone</h6>
-                                        <input type="text" placeholder="User Email" readonly
-                                            id="useremail">
-                                    </div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="input-box">
+                                    <h6>User Phone</h6>
+                                    <input type="text" placeholder="User Email" readonly id="useremail">
                                 </div>
                             </div>
                         </div>
-                        
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-cancel" type="button" data-bs-dismiss="modal"
-                    aria-label="Close">Close</button>
+                        aria-label="Close">Close</button>
                 </div>
             </div>
         </div>
@@ -951,6 +949,47 @@
                     tr[i].style.display = "none";
                 }
             }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script>
+        function getFormattedDateTime() {
+            const now = new Date();
+
+            // Format: YYYYMMDD_hhmmss
+            const formattedDate = now.getFullYear().toString().padStart(4, '0') +
+                (now.getMonth() + 1).toString().padStart(2, '0') +
+                now.getDate().toString().padStart(2, '0');
+            const formattedTime = now.getHours().toString().padStart(2, '0') +
+                now.getMinutes().toString().padStart(2, '0') +
+                now.getSeconds().toString().padStart(2, '0');
+
+            return formattedDate + "_" + formattedTime;
+        }
+
+
+        function downloadExcel() {
+            const fileName = "rooms_list_" + getFormattedDateTime() + ".xlsx";
+            // Get the table element
+            const table = document.getElementById('table_id');
+
+            // Convert the table to a workbook
+            const workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+
+            // Export to Excel file
+            XLSX.writeFile(workbook, fileName);
+        }
+        function downloadExcel2() {
+            const fileName = "vacancy_list_" + getFormattedDateTime() + ".xlsx";
+
+            // Get the table element
+            const table = document.getElementById('table_id2');
+
+            // Convert the table to a workbook
+            const workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+
+            // Export to Excel file
+            XLSX.writeFile(workbook, fileName);
         }
     </script>
 </body>
