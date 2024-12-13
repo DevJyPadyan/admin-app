@@ -7,9 +7,22 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 const storage = getStorage(app);
 
+hostelDropdown3.addEventListener("change", function () {
+    let option = this.value;
+    if (option == 'vacancy') {
+        document.getElementById('vacancy-table-div').style.display = 'block';
+        document.getElementById('beds-table-div').style.display = 'none';
+    }
+
+    if (option == 'rooms') {
+        document.getElementById('beds-table-div').style.display = 'block';
+        document.getElementById('vacancy-table-div').style.display = 'none';
+    }
+
+});
 
 const tbody = document.getElementById("tbody1");
-
+const tbody2 = document.getElementById("tbody2");
 
 // Fetch room details for the selected hostel
 async function populateHostelDropdown1() {
@@ -200,3 +213,168 @@ function loadBedView(floor, roomNo) {
 }
 // Call the function to fetch and display data on page load
 // window.addEventListener("load", fetchAndDisplayExpenses);
+
+
+
+
+// Fetch vacancy details for the selected hostel
+async function populateHostelDropdown2() {
+    const hostelDropdown2 = document.getElementById("hostelDropdown2");
+    const hostelsRef = ref(db, "Hostel details/");
+
+    try {
+        console.log("Fetching hostels from Firebase...");
+        const snapshot = await get(hostelsRef);
+        console.log("Snapshot received:", snapshot.exists(), snapshot.val());
+
+        if (snapshot.exists()) {
+            const hostels = snapshot.val();
+            console.log("Hostels data:", hostels);
+
+            hostelDropdown2.innerHTML = '<option value="">Select Hostel</option>';
+            for (let hostelName in hostels) {
+                let option = document.createElement("option");
+                option.value = hostelName;
+                option.text = hostelName;
+                hostelDropdown2.appendChild(option);
+            }
+
+            // Log the dropdown element to ensure it's correctly referenced
+            console.log("Dropdown populated:", hostelDropdown2.innerHTML);
+
+            // Attach the event listener here
+            hostelDropdown2.addEventListener("change", async function () {
+                console.log("Dropdown change event triggered"); // Check if this log shows up
+                const hostelName = this.value; // Get the selected hostel name
+                console.log("Selected Hostel:", hostelName); // Log the selected hostel name
+                tbody2.innerHTML = '';//clearing table rows fully, when user/admin changes the hostel name
+                if (hostelName) {
+                    await fetchVacancyRoomDetails(hostelName); // Ensure this function is correctly defined and returns a promise
+                } else {
+                    alert("Please select a valid hostel.");
+                }
+            });
+        } else {
+            console.log("No hostels found.");
+        }
+    } catch (error) {
+        console.error("Error fetching hostels for hostelDropdown1:", error);
+    }
+}
+// Fetch bed details of the room based on selected hostel and calculate the vacancy
+async function fetchVacancyRoomDetails(hostelName) {
+    console.log("Fetching room details for:", hostelName); // Log to see if this function is called
+    const roomsRef = ref(db, `Hostel details/${hostelName}/Rooms on Vacation/`);
+
+    try {
+        const snapshot = await get(roomsRef);
+        console.log("Room details snapshot received:", snapshot.exists(), snapshot.val());
+        let expenseId = 1
+        if (snapshot.exists()) {
+            const rooms = snapshot.val();
+            for (let floor in rooms) {
+                for (let room in rooms[floor]) {
+                    const roomData = rooms[floor][room];
+                    let bedCount = [];
+                    let bedBooked = 0;
+                    let bedNotbooked = 0;
+                    let stringArray;
+                    for (let bed in roomData.beds) {
+                        bedCount.push(bed);
+                        const bedData = roomData.beds[bed];
+                        console.log(bedData);
+                        stringArray = bedData.split('/');
+                        let fromDateArray = (stringArray[2].split('-'));
+                        let toDateArray = (stringArray[3].split('-'));
+                        let totalDays  = Number(toDateArray[2] -  fromDateArray[2]);
+                        if (stringArray[0] == 'yes vacation') {
+                            bedBooked++;
+                            // Append data to the table
+                            appendExpenseRow2(
+                                expenseId++,
+                                stringArray[1],
+                                roomData.floor,
+                                roomData.room,
+                                bed,
+                                stringArray[2],
+                                stringArray[3],
+                                totalDays
+                            );
+                        }
+                        // else if (bedData == 'not booked') {
+                        //     bedNotbooked++;
+                        // }
+                    }
+                }
+            }
+        } else {
+            console.log("No rooms found for this hostel.");
+        }
+    } catch (error) {
+        console.error("Error fetching room details:", error);
+    }
+}
+// Function to append a single expense record to the table
+const appendExpenseRow2 = (
+    id,
+    username,
+    floor,
+    roomNo,
+    bedId,
+    from,
+    to,
+    totaldays,
+    
+) => {
+    const trow = document.createElement("tr");
+
+    const td1 = document.createElement("td");
+    const td2 = document.createElement("td");
+    const td3 = document.createElement("td");
+    const td4 = document.createElement("td");
+    const td5 = document.createElement("td");
+    const td6 = document.createElement("td");
+    const td7 = document.createElement("td");
+    const td8 = document.createElement("td");
+    const td9 = document.createElement("td");
+
+
+
+    td1.innerText = id;
+    td2.innerText = username;
+    td3.innerText = floor;
+    td4.innerText = roomNo;
+    td5.innerText = bedId;
+    td6.innerText = from;
+    td7.innerText = to;
+    td8.innerText = totaldays;
+
+    var detailsButton = document.createElement('a');
+    detailsButton.innerHTML = '<a data-bs-toggle="modal" data-bs-target="#viewUserDetails" style="cursor:pointer; color:orange; text-decoration: underline">User Details</a>';
+    detailsButton.onclick = function (event) {
+        event.stopPropagation(); // Prevent row click event
+        loadUserView(username);
+    };
+
+    // Remove reference to the removed columns
+    // Example: Append the remove button to the correct column
+    td9.appendChild(detailsButton);
+
+    trow.append(td1, td2, td3, td4, td5, td6, td7, td8,td9);
+    tbody2.appendChild(trow);
+};
+window.addEventListener('DOMContentLoaded', populateHostelDropdown2);
+
+async function loadUserView(userUid){
+    console.log(userUid);
+    const dbref = await ref(db, "User details/" + userUid );
+        try {
+            const h = await get(dbref);
+            document.getElementById('username').value=h.val().userName;
+            document.getElementById('userphone').value=h.val().userPhone;
+            document.getElementById('useremail').value=h.val().userEmail;
+
+        } catch (error) {
+            console.error('Error fetching floor:', error);
+        }
+}

@@ -84,11 +84,11 @@
                 </div>
                 <div class="welcome-title">
                     <h5>
-                        Hostel Room Avaiablity - overview
+                        Hostel Rooms Report - overview
                         <img src="./assets/images/header.gif" alt="">
                     </h5>
                     <span>
-                        Have a quick look at your Vacancy Report !
+                        Have a quick look at your Hostel Report !
                     </span>
                 </div>
                 <div class="nav-right col-xl-6 col-5 pull-right right-header p-0">
@@ -545,8 +545,81 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-sm-12">
+                            <div class="input-box">
+                                <h6>Hostel Report Type</h6>
+                                <select id="hostelDropdown3" style="margin-bottom:30px;">
+                                    <option value="rooms">Rooms Report</option>
+                                    <option value="vacancy">Vacancy Report</option>
+                                </select>
+                            </div>
                             <div class="card card-table">
-                                <div class="card-body">
+                             <!-- Table 1: Hostel Beds Report -->
+                                <div class="card-body" id="beds-table-div">
+                                    <div class="title-header option-title d-sm-flex d-block">
+                                        <h5>Hostel Rooms Report</h5>
+                                        
+                                        <div class="right-options">
+                                            <ul>
+                                                <!--<li>
+                                                    <a href="javascript:void(0)" class="product-btn-1">
+                                                        <i class="ri-download-2-fill me-1"></i>import</a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:void(0)" class="product-btn-1">
+                                                        <i class="ri-upload-2-fill me-1"></i>Export</a>
+                                                </li>-->
+                                                <!-- <li>
+                                                    <a class="btn btn-dashed" href="add-new-expense.html">Add Expense</a>
+                                                </li> -->
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="input-box">
+
+                                            <div class="input-box">
+                                                <h6>Hostel Name</h6>
+                                                <select id="hostelDropdown1"  style="margin-bottom:30px;">
+                                                    <option value="">Select Hostel</option>
+                                                </select>
+                                            </div>
+
+                                            <input class="search-box" type="search"
+                                                placeholder="Search details here..." id="myInput"
+                                                onkeyup='searchTable()'>
+                                            <br>
+                                            <br>
+                                            
+                                        </div>
+                                        <div class="table-responsive theme-scrollbar">
+                                            <table class="table category-table dataTable no-footer" id="table_id">
+                                                <thead>
+                                                    <tr>
+                                                        <th><input id="checkall" class="custom-checkbox" type="checkbox"
+                                                                name="text"></th>
+                                                        <th>Floor</th>
+                                                        <th>Room No</th>
+                                                        <th>Room Type</th>
+                                                        <th>Room Rent</th>
+                                                        <th>Total Beds</th>
+                                                        <th>Avaiable Count</th>
+                                                        <th>Booked Count</th>
+                                                        <th>Details</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody id="tbody1">
+                                                    <tr>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Table 2: Vaccancy Report -->
+                                 <br>
+                                <div class="card-body" id="vacancy-table-div" style="display: none;">
                                     <div class="title-header option-title d-sm-flex d-block">
                                         <h5>Hostel Vacancy Report</h5>
                                         
@@ -571,46 +644,37 @@
 
                                             <div class="input-box">
                                                 <h6>Hostel Name</h6>
-                                                <select id="hostelDropdown1" style="margin-bottom:30px;">
+                                                <select id="hostelDropdown2" style="margin-bottom:30px;">
                                                     <option value="">Select Hostel</option>
                                                 </select>
                                             </div>
 
                                             <input class="search-box" type="search"
                                                 placeholder="Search details here..." id="myInput"
-                                                onkeyup='searchTable()'>
+                                                onkeyup='searchTable2()'>
                                             <br>
                                             <br>
                                             
                                         </div>
                                         <div class="table-responsive theme-scrollbar">
-                                            <table class="table category-table dataTable no-footer" id="table_id">
+                                            <table class="table category-table dataTable no-footer" id="table_id_2">
                                                 <thead>
                                                     <tr>
                                                         <th><input id="checkall" class="custom-checkbox" type="checkbox"
                                                                 name="text"></th>
-                                                        <!--<th>S. No</th>-->
-                                                        <!-- <th>Hostel name</th>
-                                                        <th>Frequency</th>
-                                                        <th>From date</th>
-                                                        <th>To date</th>
-                                                        <th>Category</th>
-                                                        <th>Sub-Category</th>
-                                                        <th>Units consumed</th>
-                                                        <th>Measurement Unit</th>
-                                                         -->
+
+                                                        <th>User ID</th>
                                                         <th>Floor</th>
                                                         <th>Room No</th>
-                                                        <th>Room Type</th>
-                                                        <th>Cost</th>
-                                                        <th>Total Beds</th>
-                                                        <th>Avaiable Count</th>
-                                                        <th>Booked Count</th>
-                                                        <th>Details</th>
+                                                        <th>Bed ID</th>
+                                                        <th>From</th>
+                                                        <th>To</th>
+                                                        <th>Total Days on vacation</th>
+                                                        <th>User Details</th>
                                                     </tr>
                                                 </thead>
 
-                                                <tbody id="tbody1">
+                                                <tbody id="tbody2">
                                                     <tr>
                                                     </tr>
                                                 </tbody>
@@ -714,7 +778,7 @@
     </div>
     <!-- Delete Modal Box End -->
 
-    <!-- Modal Start -->
+    <!-- Modal Start - room details -->
     <div class="modal theme-modal fade" id="viewRoomDetails" tabindex="-1" role="dialog" aria-modal="true">
         <div class="modal-dialog modal-md modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -737,7 +801,54 @@
             </div>
         </div>
     </div>
-    <!-- Modal End -->
+    <!-- Modal End - room details -->
+
+    <!-- Modal Start - user details -->
+    <div class="modal theme-modal fade" id="viewUserDetails" tabindex="-1" role="dialog" aria-modal="true">
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>User Details</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                        <div class="input-items">
+                            <div class="row gy-3">
+                                <div class="col-xl-6">
+                                    <div class="input-box">
+                                        <h6>User Name</h6>
+                                        <input type="text" placeholder="User Name" readonly
+                                            id="username">
+                                    </div>
+                                </div>
+                                <div class="col-xl-6">
+                                    <div class="input-box">
+                                        <h6>User Phone</h6>
+                                        <input type="text" placeholder="User Phone" readonly
+                                            id="userphone">
+                                    </div>
+                                </div>
+                                <div class="col-xl-6">
+                                    <div class="input-box">
+                                        <h6>User Phone</h6>
+                                        <input type="text" placeholder="User Email" readonly
+                                            id="useremail">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-cancel" type="button" data-bs-dismiss="modal"
+                    aria-label="Close">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal End - user details -->
 
     <!-- Firebase js -->
     <script src="assets/js/firebase-config.js" type="module" defer></script>
@@ -793,6 +904,27 @@
             input = document.getElementById("myInput");
             filter = input.value.toUpperCase();
             table = document.getElementById("table_id");
+            tr = table.getElementsByTagName("tr");
+            for (i = 1; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td");
+                for (j = 0; j < td.length; j++) {
+                    if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        found = true;
+                    }
+                }
+                if (found) {
+                    tr[i].style.display = "";
+                    found = false;
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+        function searchTable2() {
+            var input, filter, found, table, tr, td, i, j;
+            input = document.getElementById("myInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("table_id_2");
             tr = table.getElementsByTagName("tr");
             for (i = 1; i < tr.length; i++) {
                 td = tr[i].getElementsByTagName("td");
