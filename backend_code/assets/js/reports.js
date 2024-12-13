@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { firebaseConfig } from "./firebase-config.js";
+import { export_table_to_csv } from "././export-table.js"
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase();
@@ -140,3 +141,8 @@ const appendExpenseRow = (
 
 // Call the function to fetch and display data on page load
 window.addEventListener("load", fetchAndDisplayExpenses);
+
+//exporting table as CSV file.
+export_table_btn.addEventListener("click", function () {
+    export_table_to_csv("expenses_table.csv", "table_id");
+});
