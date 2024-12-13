@@ -2,6 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getDatabase, ref, get, set, child, update, remove, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { getStorage, ref as ref2, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 import { firebaseConfig } from "./firebase-config.js";
+import { export_table_to_csv } from "././export-table.js"
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase();
@@ -286,7 +287,7 @@ async function fetchVacancyRoomDetails(hostelName) {
                         stringArray = bedData.split('/');
                         let fromDateArray = (stringArray[2].split('-'));
                         let toDateArray = (stringArray[3].split('-'));
-                        let totalDays  = Number(toDateArray[2] -  fromDateArray[2]);
+                        let totalDays = Number(toDateArray[2] - fromDateArray[2]);
                         if (stringArray[0] == 'yes vacation') {
                             bedBooked++;
                             // Append data to the table
@@ -324,7 +325,7 @@ const appendExpenseRow2 = (
     from,
     to,
     totaldays,
-    
+
 ) => {
     const trow = document.createElement("tr");
 
@@ -360,21 +361,31 @@ const appendExpenseRow2 = (
     // Example: Append the remove button to the correct column
     td9.appendChild(detailsButton);
 
-    trow.append(td1, td2, td3, td4, td5, td6, td7, td8,td9);
+    trow.append(td1, td2, td3, td4, td5, td6, td7, td8, td9);
     tbody2.appendChild(trow);
 };
 window.addEventListener('DOMContentLoaded', populateHostelDropdown2);
 
-async function loadUserView(userUid){
+async function loadUserView(userUid) {
     console.log(userUid);
-    const dbref = await ref(db, "User details/" + userUid );
-        try {
-            const h = await get(dbref);
-            document.getElementById('username').value=h.val().userName;
-            document.getElementById('userphone').value=h.val().userPhone;
-            document.getElementById('useremail').value=h.val().userEmail;
+    const dbref = await ref(db, "User details/" + userUid);
+    try {
+        const h = await get(dbref);
+        document.getElementById('username').value = h.val().userName;
+        document.getElementById('userphone').value = h.val().userPhone;
+        document.getElementById('useremail').value = h.val().userEmail;
 
-        } catch (error) {
-            console.error('Error fetching floor:', error);
-        }
+    } catch (error) {
+        console.error('Error fetching floor:', error);
+    }
 }
+
+//exporting table as CSV file.
+//rooms table
+export_table_btn1.addEventListener("click", function () {
+    export_table_to_csv("rooms_table.csv", "table_id");
+});
+//vacancy table
+export_table_btn2.addEventListener("click", function () {
+    export_table_to_csv("vacancy_table.csv", "table_id_2");
+});
