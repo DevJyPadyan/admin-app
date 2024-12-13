@@ -285,9 +285,10 @@ async function fetchVacancyRoomDetails(hostelName) {
                         const bedData = roomData.beds[bed];
                         console.log(bedData);
                         stringArray = bedData.split('/');
-                        let fromDateArray = (stringArray[2].split('-'));
-                        let toDateArray = (stringArray[3].split('-'));
-                        let totalDays = Number(toDateArray[2] - fromDateArray[2]);
+                        let fromDateArray = new Date(stringArray[2]);
+                        let toDateArray = new Date(stringArray[3]);
+                        let Difference_In_Time =toDateArray.getTime() - fromDateArray.getTime();
+                        let Difference_In_Days = Math.round(Difference_In_Time / (1000 * 3600 * 24));
                         if (stringArray[0] == 'yes vacation') {
                             bedBooked++;
                             // Append data to the table
@@ -299,7 +300,7 @@ async function fetchVacancyRoomDetails(hostelName) {
                                 bed,
                                 stringArray[2],
                                 stringArray[3],
-                                totalDays
+                                Difference_In_Days
                             );
                         }
                         // else if (bedData == 'not booked') {
@@ -316,7 +317,7 @@ async function fetchVacancyRoomDetails(hostelName) {
     }
 }
 // Function to append a single expense record to the table
-const appendExpenseRow2 = (
+const appendExpenseRow2 = async (
     id,
     username,
     floor,
@@ -339,10 +340,18 @@ const appendExpenseRow2 = (
     const td8 = document.createElement("td");
     const td9 = document.createElement("td");
 
+    const dbref = await ref(db, "User details/" + username);
+    let userDbName = username;
+    try {
+        const h = await get(dbref);
+        userDbName = h.val().userName
 
+    } catch (error) {
+        console.error('Error fetching floor:', error);
+    }
 
     td1.innerText = id;
-    td2.innerText = username;
+    td2.innerText = userDbName;
     td3.innerText = floor;
     td4.innerText = roomNo;
     td5.innerText = bedId;
