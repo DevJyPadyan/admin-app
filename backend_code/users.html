@@ -560,7 +560,8 @@
                                                         <i class="ri-upload-2-fill me-1"></i>Export</a>
                                                 </li>-->
                                                 <li>
-                                                    <a id="export_table_btn" class="product-btn-1">
+                                                    <a id="export_table_btn" onclick="downloadExcel()"
+                                                        class="product-btn-1">
                                                         <i class="ri-upload-2-fill me-1"></i>Export</a>
                                                 </li>
                                                 <li>
@@ -586,37 +587,37 @@
                                                         <!--<th>S. No</th>-->
                                                         <th>User Name</th>
                                                         <th onclick="sortTable(1)">Full Name<span
-                                                            class="sort-icon">⬍</span></th>
+                                                                class="sort-icon">⬍</span></th>
                                                         <th>Gender</th>
                                                         <th>Phone</th>
                                                         <th>Email ID</th>
                                                         <th>Address line 1</th>
                                                         <th>Address line 2</th>
-                                                        <th onclick="sortTable(2)">City<span
-                                                            class="sort-icon">⬍</span></th>
-                                                        <th onclick="sortTable(3)">State<span
-                                                            class="sort-icon">⬍</span></th>
+                                                        <th onclick="sortTable(2)">City<span class="sort-icon">⬍</span>
+                                                        </th>
+                                                        <th onclick="sortTable(3)">State<span class="sort-icon">⬍</span>
+                                                        </th>
                                                         <th>Pincode</th>
                                                         <th onclick="sortTable(4)">Guard Name<span
-                                                            class="sort-icon">⬍</span></th>
+                                                                class="sort-icon">⬍</span></th>
                                                         <th>Guard Relation</th>
                                                         <th>Guard Phone</th>
                                                         <th>Guard Email</th>
                                                         <th>Guard Address 1</th>
                                                         <th>Guard Address 2</th>
                                                         <th onclick="sortTable(5)">Guard City<span
-                                                            class="sort-icon">⬍</span></th>
+                                                                class="sort-icon">⬍</span></th>
                                                         <th onclick="sortTable(6)">Guard State<span
-                                                            class="sort-icon">⬍</span></th>
+                                                                class="sort-icon">⬍</span></th>
                                                         <th>Guard Pincode</th>
                                                         <th onclick="sortTable(7)">Room type<span
-                                                            class="sort-icon">⬍</span></th>
-                                                        <th onclick="sortTable(8)">Floor<span
-                                                            class="sort-icon">⬍</span></th>
+                                                                class="sort-icon">⬍</span></th>
+                                                        <th onclick="sortTable(8)">Floor<span class="sort-icon">⬍</span>
+                                                        </th>
                                                         <th onclick="sortTable(9)">Air conditioning<span
-                                                            class="sort-icon">⬍</span></th>
+                                                                class="sort-icon">⬍</span></th>
                                                         <th onclick="sortTable(10)">Room price<span
-                                                            class="sort-icon">⬍</span></th>
+                                                                class="sort-icon">⬍</span></th>
                                                         <th>Payment Status</th>
                                                         <th>Delete</th>
                                                     </tr>
@@ -1316,6 +1317,37 @@
 
             // Re-render rows in sorted order
             rows.forEach(row => tableBody.appendChild(row));
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script>
+        function getFormattedDateTime() {
+            const now = new Date();
+
+            // Format: YYYYMMDD_hhmmss
+            const formattedDate = now.getFullYear().toString().padStart(4, '0') +
+                (now.getMonth() + 1).toString().padStart(2, '0') +
+                now.getDate().toString().padStart(2, '0');
+            const formattedTime = now.getHours().toString().padStart(2, '0') +
+                now.getMinutes().toString().padStart(2, '0') +
+                now.getSeconds().toString().padStart(2, '0');
+
+            return formattedDate+"_"+formattedTime;
+        }
+
+
+        const fileName = "users_list_"+getFormattedDateTime()+".xlsx";
+        function downloadExcel() {
+
+            // Get the table element
+            const table = document.getElementById('table_id');
+
+            // Convert the table to a workbook
+            const workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+
+            // Export to Excel file
+            XLSX.writeFile(workbook, fileName);
         }
     </script>
 </body>

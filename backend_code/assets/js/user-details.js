@@ -270,6 +270,6 @@ const AddAllRecords = () => {
 window.addEventListener('load', SelectAlldataReal);
 
 //exporting table as CSV file.
-export_table_btn.addEventListener("click", function () {
-    export_table_to_csv("users_table.csv", "table_id");
-});
+// export_table_btn.addEventListener("click", function () {
+//     export_table_to_csv("users_table.csv", "table_id");
+// });

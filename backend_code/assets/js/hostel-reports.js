@@ -382,10 +382,10 @@ async function loadUserView(userUid) {
 
 //exporting table as CSV file.
 //rooms table
-export_table_btn1.addEventListener("click", function () {
-    export_table_to_csv("rooms_table.csv", "table_id");
-});
+// export_table_btn1.addEventListener("click", function () {
+//     export_table_to_csv("rooms_table.csv", "table_id");
+// });
 //vacancy table
-export_table_btn2.addEventListener("click", function () {
-    export_table_to_csv("vacancy_table.csv", "table_id_2");
-});
+// export_table_btn2.addEventListener("click", function () {
+//     export_table_to_csv("vacancy_table.csv", "table_id_2");
+// });
