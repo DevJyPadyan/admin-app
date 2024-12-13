@@ -800,7 +800,7 @@ registerHostel.addEventListener('click', async (e) => {
     const foodPrice = foodPriceInputs[index].value.trim();
 
     if (foodName && foodPrice) {
-      extras.push({ foodName: foodName, foodPrice: foodPrice });
+      extras.push({ foodName: foodName, foodPrice: foodPrice, available:'yes' });
     }
   });
 
