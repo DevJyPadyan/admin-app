@@ -1042,7 +1042,7 @@ updateHostel.addEventListener('click', async (e) => {
     }
 
     alert("Hostel details updated successfully");
-    // window.location.href = "././products.html";
+    window.location.href = "././products.html";
 
     // Function to get global meal timings
     function getMealTimings(mealTime) {
