@@ -6,6 +6,7 @@ import { firebaseConfig } from "./firebase-config.js";
 const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 const storage = getStorage(app);
+let phone = "";
 
 let userUid;
 var files = [];
@@ -243,6 +244,9 @@ async function prefillUserDetails() {
         for (const [uid, userDetails] of Object.entries(usersData)) {
           if (userDetails.userName === username) {
             userUid = uid;
+            phone = userDetails.userPhone
+            const href="https://api.whatsapp.com/send?phone="+phone;
+            document.getElementById('whatsapp').href = href;
             break;
           }
         }
@@ -301,6 +305,7 @@ updateUser.addEventListener("click", async (e) => {
 
   const userFullName = document.getElementById("userfullname").value;
   const userPhone = document.getElementById("userphone").value;
+  phone = document.getElementById("userphone").value;
   const userGender = document.getElementById("usergender").value;
   const userEmail = document.getElementById("usermail").value;
   const userAddress1 = document.getElementById("useradd1").value;

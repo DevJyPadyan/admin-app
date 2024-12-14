@@ -28,6 +28,8 @@
     <!-- Fontawesome css -->
     <link rel="stylesheet" type="text/css" href="assets/css/vendors/font-awesome.css">
 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
     <!-- Themify icon css -->
     <link rel="stylesheet" type="text/css" href="assets/css/vendors/themify.css">
 
@@ -63,6 +65,27 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <style>
+        .float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 150px;
+            right: 20px;
+            background-color: #25d366;
+            color: #FFF;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 2px 2px 3px #999;
+            z-index: 100;
+        }
+
+        .my-float {
+            margin-top: 16px;
+        }
+    </style>
 
 </head>
 
@@ -378,6 +401,9 @@
 
             <div class="page-body">
 
+                <a id="whatsapp" class="float" target="_blank">
+                    <i class="fa fa-whatsapp my-float"></i>
+                </a>
                 <!-- New Product Add Start -->
                 <div class="container-fluid" id="hostelDetailsForm">
                     <div class="row">
@@ -386,7 +412,10 @@
                                 <div class="col-12">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h5>Personal Information</h5>
+                                                <h5>Personal Information</h5>
+                                                <!-- <a id="whatsapp" target="_blank"
+                                                    style="display: table; font-family: sans-serif; text-decoration: none; margin: 1em auto; color: #fff; font-size: 0.9em; padding: 1em 2em 1em 3.5em; border-radius: 2em; font-weight: bold; background: #25d366 url('https://tochat.be/click-to-chat-directory/css/whatsapp.svg') no-repeat 1.5em center; background-size: 1.6em;">Contact
+                                                    on WhatsApp</a> -->
                                         </div>
                                         <div class="card-body">
                                             <div class="input-items">
