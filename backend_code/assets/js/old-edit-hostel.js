@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const getRoomButton = document.getElementById("getroom");
     const roomContainer = document.getElementById("room-container");
     const getMenuDetailsButton = document.getElementById("getMenuDetails");
-
+    
     const morningTimeContainer = document.getElementById("morningTimeContainer");
     const afternoonTimeContainer = document.getElementById("afternoonTimeContainer");
     const nightTimeContainer = document.getElementById("nightTimeContainer");
@@ -264,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function () {
     nightTimeContainer.appendChild(createTimeRangeInput('nightStart', 'nightEnd'));
     const weekDropdown = document.createElement('select');
     weekDropdown.id = 'weekDropdown';
-    weekDropdown.style.marginLeft = '10px';
+    weekDropdown.style.marginLeft= '10px';
 
     const weekContainer = document.getElementById('weekContainer');
 
@@ -276,10 +276,10 @@ document.addEventListener('DOMContentLoaded', function () {
         option.innerText = week;
         weekDropdown.appendChild(option);
     });
-
+    
     const labelText = document.createElement('span');
     labelText.innerText = 'Select Week:';
-    labelText.style.marginRight = '10px';
+    labelText.style.marginRight = '10px'; 
 
     // Add dropdown to the UI
     const dropdownContainer = document.createElement('div');
@@ -845,8 +845,8 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById("hostelstate").value = hostelData[5] || "";
             document.getElementById("hostelphone").value = hostelData[6] || "";
             document.getElementById("hostelemail").value = hostelData[7] || "";
-            document.getElementById("hostelpin").value = hostelData[8] || "";
-            document.getElementById("hostelfloorsDB").value = hostelData[9] || "";
+            document.getElementById("hostelpin").value = hostelData[8] || ""; 
+            document.getElementById("hostelfloorsDB").value = hostelData[9] || "";            
 
             displayHostelImages(hostelData[0]);
 
@@ -879,7 +879,7 @@ updateHostel.addEventListener('click', async (e) => {
     // Keep extras from existing hostel details
     const extras = existingHostelDetails.extras || {}; // Assuming extras are stored under 'extras'
 
-
+    
     // Fetch existing room data first
     const existingRoomsRef = ref(db, `Hostel details/${hostelName}/rooms`);
     const existingRoomsSnapshot = await get(existingRoomsRef);
@@ -920,48 +920,14 @@ updateHostel.addEventListener('click', async (e) => {
             rooms[floorKey] = {};
         }
 
-        //fetching the existing beds and appending it to the record.
-
-        const existingRoomsBeds = ref(db, `Hostel details/${hostelName}/rooms/floor${floor}/room${roomKey}/beds/`);
-        const existingRoomsBedsSnapshot = await get(existingRoomsBeds);
-        // re-iterating the bed count from the room type and adding all the booking as not booked
-        let matches = roomType.match(/(\d+)/);
-        let bedCount = parseInt(matches[0]);
-        for (let k = 1; k <= bedCount; k++) {
-            let key = 'bed ' + k;
-            await update(ref(db, `Hostel details/${hostelName}/rooms/floor${floor}/room${roomKey}/beds/`), {
-                [key]: 'not booked'
-            })
-                .then(() => {
-                    //console.log(db, "Hostel details/" + hname)
-                })
-                .catch((error) => {
-                    alert(error);
-                });
-        }
-        //After updating the count of beds and updating the booking status of each bed, if they're already booked
-        //at the time of hostel updation, it'll set that particular bedId to booked.
-        existingRoomsBedsSnapshot.forEach(async (h)=> {
-            await update(ref(db, `Hostel details/${hostelName}/rooms/floor${floor}/room${roomKey}/beds/`), {
-                [h.key]: h.val()
-            })
-                .then(() => {
-                    //console.log(db, "Hostel details/" + hname)
-                })
-                .catch((error) => {
-                    alert(error);
-                });
-        })
         rooms[floorKey][`room${roomKey}`] = {
             roomNumber: roomKey,
-            floor: floor,
             ac,
             roomCount: roomCountVal,
             bathroom,
             roomType: roomType,
             price: price,
             amenities: amenities,
-            // beds: existingRoomsBedsSnapshot.val(),
             imagesLink: imagelink1.length > 0 ? imagelink1 : [] // Keep existing if no new images
         };
 
@@ -985,7 +951,7 @@ updateHostel.addEventListener('click', async (e) => {
         hostelCity: hcity,
         hostelState: hstate,
         hostelPin: hpin,
-        hostelFloors: hfloorsDB,
+        hostelFloor:hfloorsDB,
         extras: extras,
         rooms: rooms // Merge with existing rooms
     });
@@ -1042,7 +1008,7 @@ updateHostel.addEventListener('click', async (e) => {
     }
 
     alert("Hostel details updated successfully");
-    // window.location.href = "././products.html";
+    window.location.href = "././products.html";
 
     // Function to get global meal timings
     function getMealTimings(mealTime) {

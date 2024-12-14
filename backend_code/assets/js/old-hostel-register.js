@@ -800,7 +800,7 @@ registerHostel.addEventListener('click', async (e) => {
     const foodPrice = foodPriceInputs[index].value.trim();
 
     if (foodName && foodPrice) {
-      extras.push({ foodName: foodName, foodPrice: foodPrice, available: 'yes' });
+      extras.push({ foodName: foodName, foodPrice: foodPrice, available:'yes' });
     }
   });
 
@@ -851,39 +851,6 @@ registerHostel.addEventListener('click', async (e) => {
       }
     }
 
-    await update(ref(db, "Hostel details/" + hname + '/rooms/floor' + floor + '/room' + i), {
-      roomNumber: i, // Store the room number
-      floor: floor,   // Store the floor number
-      ac: ac,
-      roomCount: roomCountVal,
-      bathroom: bathroom,
-      roomType: roomType,
-      price: price,
-      amenities: amenities,
-      imagesLink: imagelink1,
-    })
-      .then(async () => {
-        let matches = roomType.match(/(\d+)/);
-        let bedCount = parseInt(matches[0]);
-        for (let k = 1; k <= bedCount; k++) {
-          let key = 'bed ' + k;
-          console.log(key, " Hostel details/" + hname + '/rooms/floor' + floor + '/room' + i + '/beds/')
-          await update(ref(db, "Hostel details/" + hname + '/rooms/floor' + floor + '/room' + i + '/beds/'), {
-            [key]: 'not booked'
-          })
-            .then(() => {
-              //console.log(db, "Hostel details/" + hname)
-            })
-            .catch((error) => {
-              alert(error);
-            });
-        }
-      })
-      .catch((error) => {
-        alert(error);
-      });
-
-    console.log('than')
     // Create or get the floor object
     if (!rooms[`floor${floor}`]) {
       rooms[`floor${floor}`] = {};
@@ -899,7 +866,7 @@ registerHostel.addEventListener('click', async (e) => {
       roomType: roomType,
       price: price,
       amenities: amenities,
-      imagesLink: imagelink1,
+      imagesLink: imagelink1
     };
   }
   update(ref(db, "Hostel details/" + hname + '/'), {
@@ -914,7 +881,7 @@ registerHostel.addEventListener('click', async (e) => {
     hostelPin: hpin,
     hostelFloors: hfloors,
     extras: extras,
-    // rooms: rooms
+    rooms: rooms
   })
     .then(() => {
       //console.log(db, "Hostel details/" + hname)
