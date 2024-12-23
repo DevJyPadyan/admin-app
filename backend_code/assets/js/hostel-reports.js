@@ -78,37 +78,41 @@ async function fetchRoomDetails(hostelName) {
 
     try {
         const snapshot = await get(roomsRef);
-        console.log("Room details snapshot received:", snapshot.exists(), snapshot.val());
         let expenseId = 1
         if (snapshot.exists()) {
             const rooms = snapshot.val();
             for (let floor in rooms) {
-                for (let room in rooms[floor]) {
-                    const roomData = rooms[floor][room];
-                    let bedCount = [];
-                    let bedBooked = 0;
-                    let bedNotbooked = 0;
-                    for (let bed in roomData.beds) {
-                        bedCount.push(bed);
-                        const bedData = roomData.beds[bed];
-                        if (bedData == 'booked') {
-                            bedBooked++;
-                        }
-                        else if (bedData == 'not booked') {
-                            bedNotbooked++;
+                for (let type in rooms[floor]) {
+                    for (let ac in rooms[floor][type].rooms) {
+                        for (let single_room in rooms[floor][type].rooms[ac]) {
+                            let roomData = rooms[floor][type].rooms[ac][single_room];
+                            let bedCount = [];
+                            let bedBooked = 0;
+                            let bedNotbooked = 0;
+                            for (let bed in roomData.beds) {
+                                bedCount.push(bed);
+                                const bedData = roomData.beds[bed];
+                                if (bedData == 'booked') {
+                                    bedBooked++;
+                                }
+                                else if (bedData == 'not booked') {
+                                    bedNotbooked++;
+                                }
+                            }
+                            // Append data to the table
+                            appendExpenseRow(
+                                expenseId++,
+                                roomData.floor,
+                                roomData.roomNumber,
+                                roomData.roomType + ", " + roomData.ac + ", " + roomData.bathroom + ", " + roomData.amenities,
+                                roomData.price,
+                                bedCount.length,
+                                bedNotbooked,
+                                bedBooked,
+                            );
+            
                         }
                     }
-                    // Append data to the table
-                    appendExpenseRow(
-                        expenseId++,
-                        roomData.floor,
-                        roomData.roomNumber,
-                        roomData.roomType + ", " + roomData.ac + " " + roomData.bathroom + ", " + roomData.amenities,
-                        roomData.price,
-                        bedCount.length,
-                        bedNotbooked,
-                        bedBooked,
-                    );
                 }
             }
         } else {
@@ -157,7 +161,7 @@ const appendExpenseRow = (
     detailsButton.innerHTML = '<a data-bs-toggle="modal" data-bs-target="#viewRoomDetails" style="cursor:pointer; color:orange; text-decoration: underline">View beds </a>';
     detailsButton.onclick = function (event) {
         event.stopPropagation(); // Prevent row click event
-        loadBedView(floor, roomNo);
+        loadBedView(floor, roomNo, roomType);
     };
 
     // Remove reference to the removed columns
@@ -173,11 +177,12 @@ const appendExpenseRow = (
  * @param {*} floor 
  * @param {*} roomNo 
  */
-function loadBedView(floor, roomNo) {
+async function loadBedView(floor, roomNo, roomType) {
     const hostelName = document.getElementById("hostelDropdown1").value;
-    const dbref = ref(db, 'Hostel details/' + hostelName + '/rooms/' + "floor" + floor + '/' + "room" + roomNo + '/beds');
+    let details = roomType.split(', ')
+    const dbref = ref(db, 'Hostel details/' + hostelName + '/rooms/' + "floor" + floor + '/'+details[0]+'/rooms/'+details[1]+'/room' + roomNo + '/beds');
     let hostelBedAvailability = []
-    onValue(dbref, (snapshot) => {
+    await onValue(dbref, (snapshot) => {
         console.log(snapshot)
         hostelBedAvailability = [];
         const parentContainer = document.getElementById('bedParent');
@@ -203,7 +208,7 @@ function loadBedView(floor, roomNo) {
             parentContainer.appendChild(elem);
         })
     })
-    console.log(hostelBedAvailability, 'Hostel details/' + hostelName + '/rooms/' + "floor" + floor + '/' + "room" + roomNo + '/beds');
+    console.log(hostelBedAvailability, 'Hostel details/' + hostelName + '/rooms/' + "floor" + floor + '/'+details[0]+'/rooms/'+details[1]+'/room' + roomNo + '/beds');
 
 
     // let bedId = 'bed ' + i;
