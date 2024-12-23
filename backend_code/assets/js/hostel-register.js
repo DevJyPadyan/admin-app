@@ -545,122 +545,196 @@ document.getElementById("uploadImage").addEventListener("click", async function 
 });
 /* End of Multiple image upload for hostel images*/
 
-/* Start of adding room details using dynamic form handling*/
-const addroom = document.getElementById("addroom");
-const roomContainer = document.getElementById("room-container");
-let roomCount = 0;
+/* Start of adding room details using dynamic form handling */
 document.addEventListener('DOMContentLoaded', function () {
-  addroom.addEventListener('click', () => {
+  function addStyles() {
+    const styles = `
+      /* Ensure full-width layout for Room Containers */
+        .room-wrapper {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+          width: 100%;
+        }
 
+        .card-body .btn.restaurant-button {
+          margin-bottom: 1rem;
+        }
+
+        .room-container {
+          border: 1px solid #ddd;
+          border-radius: 5px;
+          background-color: #f9f9f9;
+          padding: 15px;
+        }
+
+        .card-header {
+          background-color: #f1f1f1;
+          border-bottom: 1px solid #ddd;
+        }
+        
+        .input-box select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+
+      .input-box select:focus {
+        border-color: #66afe9;
+        outline: none;
+        box-shadow: 0 0 5px rgba(102, 175, 233, 0.6);
+      }
+    `;
+
+    const styleSheet = document.createElement("style");
+    styleSheet.type = "text/css";
+    styleSheet.innerText = styles;
+    document.head.appendChild(styleSheet);
+  }
+
+  // Call this function to inject the CSS when the script loads
+  addStyles();
+
+  const addFloorsButton = document.getElementById("addfloors");
+  const floorsContainer = document.getElementById("floors-container");
+
+  addFloorsButton.addEventListener('click', () => {
     const floorInput = document.getElementById("hostelfloors");
-    const floors = floorInput.value;
+    const numFloors = parseInt(floorInput.value);
 
-    // Check if the number of floors is entered
-    if (floors <= 0 || isNaN(floors)) {
-      alert("Please enter a valid number of floors before adding a room.");
-      return; // Stop the function if number of floors is not valid
+    if (numFloors <= 0 || isNaN(numFloors)) {
+      alert("Please enter a valid number of floors.");
+      return;
     }
-    roomCount++;
+
+    floorsContainer.innerHTML = "";
+
+    for (let i = 1; i <= numFloors; i++) {
+      createFloorContainer(i);
+    }
+  });
+
+  // Function to create a floor container
+  function createFloorContainer(floorNumber) {
+    const floorElem = document.createElement("div");
+    floorElem.classList.add("col-12", "mb-4");
+
+    const cardElem = document.createElement("div");
+    cardElem.classList.add("card");
+
+    const cardHeaderElem = document.createElement("div");
+    cardHeaderElem.classList.add("card-header", "d-flex", "justify-content-between", "align-items-center");
+
+    const floorLabel = document.createElement("h5");
+    floorLabel.innerText = `Floor ${floorNumber}`;
+    cardHeaderElem.appendChild(floorLabel);
+
+    const cardBodyElem = document.createElement("div");
+    cardBodyElem.classList.add("card-body");
+
+    const addRoomButton = document.createElement("button");
+    addRoomButton.type = "button";
+    addRoomButton.classList.add("btn", "restaurant-button", "mb-3");
+    addRoomButton.innerText = "Add Room Info";
+    addRoomButton.addEventListener("click", () => {
+      createRoomContainer(cardBodyElem, floorNumber);
+    });
+
+    cardBodyElem.appendChild(addRoomButton);
+    cardElem.appendChild(cardHeaderElem);
+    cardElem.appendChild(cardBodyElem);
+    floorElem.appendChild(cardElem);
+    floorsContainer.appendChild(floorElem);
+  }
+
+  // Function to create a room container
+  function createRoomContainer(parentElem, floorNumber) {
+    const roomCount = parentElem.querySelectorAll(".room-container").length + 1;
+
+    let roomWrapper = parentElem.querySelector(".room-wrapper");
+    if (!roomWrapper) {
+      roomWrapper = document.createElement("div");
+      roomWrapper.classList.add("room-wrapper", "d-flex", "flex-column", "gap-3");
+      parentElem.appendChild(roomWrapper);
+    }
 
     const mainParentElem = document.createElement('div');
     mainParentElem.classList.add('col-12');
 
-    const cardElem = document.createElement('div');
-    cardElem.classList.add('card');
-    cardElem.id = `room-${roomCount}`;
+    const roomElem = document.createElement("div");
+    roomElem.classList.add("card", "mb-3", "room-container");
 
-    const cardHeaderElem = document.createElement('div');
-    cardHeaderElem.classList.add('card-header', 'd-flex', 'justify-content-between', 'align-items-center');
+    // Add the data-floor attribute here
+    roomElem.setAttribute("data-floor", floorNumber);
 
-    // Room label
-    const roomLabel = document.createElement('h5');
-    roomLabel.innerText = `Room ${roomCount}`;
+    const roomHeader = document.createElement("div");
+    roomHeader.classList.add("card-header", "d-flex", "justify-content-between", "align-items-center");
 
-    // Delete icon
-    const deleteIcon = document.createElement('a');
-    deleteIcon.className = 'ri-delete-bin-line';
-    deleteIcon.style.fontSize = '24px';
-    deleteIcon.style.cursor = 'pointer';
-    deleteIcon.onclick = () => {
-      cardElem.remove();
-      roomCount--;
-    };
+    const roomLabel = document.createElement("h6");
+    roomLabel.innerText = `Room ${roomCount} (Floor ${floorNumber})`;
 
-    // Add room label and delete icon to header
-    cardHeaderElem.appendChild(roomLabel);
-    cardHeaderElem.appendChild(deleteIcon);
+    const deleteIcon = document.createElement("a");
+    deleteIcon.className = "ri-delete-bin-line";
+    deleteIcon.style.fontSize = "24px";
+    deleteIcon.style.cursor = "pointer";
+    deleteIcon.onclick = () => mainParentElem.remove();
 
-    const cardBodyElem = document.createElement('div');
-    cardBodyElem.classList.add('card-body');
+    roomHeader.appendChild(roomLabel);
+    roomHeader.appendChild(deleteIcon);
 
-    const inputItemsElem = document.createElement('div');
-    inputItemsElem.classList.add('input-items');
+    const roomBody = document.createElement("div");
+    roomBody.classList.add("card-body");
 
-    const rowElem = document.createElement('div');
-    rowElem.classList.add('row', 'gy-3');
+    const rowElem = document.createElement("div");
+    rowElem.classList.add("row", "gy-3");
 
-    // Floor
-    // rowElem.appendChild(createInputBox('Floor', `floor-${roomCount}`, 'number', true));
-    const floorarr = numberToArray(document.getElementById("hostelfloors").value);
-    rowElem.appendChild(createSelectBox('Floor', `floor-${roomCount}`, true, floorarr));
-
-
-    // Room Type
-    const roomTypeElem = createSelectBox('Room Type', `roomType-${roomCount}`, true, [
+    rowElem.appendChild(createSelectBox("Room Type", `roomType-${floorNumber}-${roomCount}`, true, [
       { value: '1 sharing', text: '1 sharing' },
       { value: '2 sharing', text: '2 sharing' },
       { value: '3 sharing', text: '3 sharing' },
-      { value: '4 sharing', text: '4 sharing' },
-    ]);
-    rowElem.appendChild(roomTypeElem);
+      { value: '4 sharing', text: '4 sharing' }
+    ]));
+    rowElem.appendChild(createInputBox("Room Count", `roomCount-${floorNumber}-${roomCount}`, "number", true));
+    rowElem.appendChild(createInputBox("Amenities", `amenities-${floorNumber}-${roomCount}`, "text", false, "e.g., WiFi, Laundry"));
+    rowElem.appendChild(createInputBox("Room Number", `roomNumber-${floorNumber}-${roomCount}`, "text", false, "e.g.,101, 102 .."));
+    rowElem.appendChild(createInputBox("Price", `price-${floorNumber}-${roomCount}`, "number", true));
+    rowElem.appendChild(createInputBox("Upload Room Images", `roomImage-${floorNumber}-${roomCount}`, "file", false, "", true));
 
-    // Room Count
-    rowElem.appendChild(createInputBox('Room Count', `roomCount-${roomCount}`, 'number', true));
+    rowElem.appendChild(createSelectBox("Bathroom Type", `bathroom-${floorNumber}-${roomCount}`, true, [
+      { value: "attached", text: "attached" },
+      { value: "common", text: "common" },
+    ]));
 
-    // Amenities
-    rowElem.appendChild(createInputBox('Amenities', `amenities-${roomCount}`, 'text', false, 'e.g. WiFi, Laundry'));
+    rowElem.appendChild(createSelectBox("AC Type", `acType-${floorNumber}-${roomCount}`, true, [
+      { value: "ac", text: "ac" },
+      { value: "non-ac", text: "non-ac" },
+    ]));
 
-    // Air Conditioning
-    const acElem = createSelectBox('Air Conditioning', `ac-${roomCount}`, true, [
-      { value: 'ac', text: 'ac' },
-      { value: 'non-ac', text: 'non-ac' },
-    ]);
-    rowElem.appendChild(acElem);
+    rowElem.appendChild(createInputBox("Remarks", `remarks-${floorNumber}-${roomCount}`, "text", false, "Additional comments"));
 
-    // Bathroom
-    const bathroomElem = createSelectBox('Bathroom', `bathroom-${roomCount}`, true, [
-      { value: 'attached', text: 'attached' },
-      { value: 'common', text: 'common' },
-    ]);
-    rowElem.appendChild(bathroomElem);
+    roomBody.appendChild(rowElem);
 
-    // Price
-    rowElem.appendChild(createInputBox('Price', `price-${roomCount}`, 'number', true));
+    // Append room details
+    roomElem.appendChild(roomHeader);
+    roomElem.appendChild(roomBody);
 
-    // Upload Room Images
-    rowElem.appendChild(createInputBox('Upload Room Images', `roomImage-${roomCount}`, 'file', false, '', true));
-
-    // Append elements
-    inputItemsElem.appendChild(rowElem);
-    cardBodyElem.appendChild(inputItemsElem);
-    cardElem.appendChild(cardHeaderElem);
-    cardElem.appendChild(cardBodyElem);
-    mainParentElem.appendChild(cardElem);
-    roomContainer.appendChild(mainParentElem);
-  });
+    mainParentElem.appendChild(roomElem);
+    roomWrapper.appendChild(mainParentElem);
+  }
 
   // Helper function to create input boxes
-  function createInputBox(labelText, inputId, inputType, required, placeholder = '', multiple = false) {
-    const colElem = document.createElement('div');
-    colElem.classList.add('col-xl-6');
+  function createInputBox(labelText, inputId, inputType, required, placeholder = "", multiple = false) {
+    const colElem = document.createElement("div");
+    colElem.classList.add("col-xl-6");
 
-    const inputBoxElem = document.createElement('div');
-    inputBoxElem.classList.add('input-box');
+    const inputBoxElem = document.createElement("div");
+    inputBoxElem.classList.add("input-box");
 
-    const labelElem = document.createElement('h6');
+    const labelElem = document.createElement("h6");
     labelElem.innerText = labelText;
 
-    const inputElem = document.createElement('input');
+    const inputElem = document.createElement("input");
     inputElem.type = inputType;
     inputElem.id = inputId;
     inputElem.name = inputId;
@@ -675,36 +749,26 @@ document.addEventListener('DOMContentLoaded', function () {
     return colElem;
   }
 
-  function numberToArray(number) { const result = []; for (let i = 1; i <= number; i++) { result.push(i); } return result; }
-
   // Helper function to create select boxes
   function createSelectBox(labelText, selectId, required, options) {
-    const colElem = document.createElement('div');
-    colElem.classList.add('col-xl-6');
+    const colElem = document.createElement("div");
+    colElem.classList.add("col-xl-6");
 
-    const inputBoxElem = document.createElement('div');
-    inputBoxElem.classList.add('input-box');
+    const inputBoxElem = document.createElement("div");
+    inputBoxElem.classList.add("input-box");
 
-    const labelElem = document.createElement('h6');
+    const labelElem = document.createElement("h6");
     labelElem.innerText = labelText;
 
-    const selectElem = document.createElement('select');
+    const selectElem = document.createElement("select");
     selectElem.id = selectId;
     selectElem.name = selectId;
     if (required) selectElem.required = true;
 
     options.forEach(option => {
-      const optElem = document.createElement('option');
-      if (option.value && option.text) {
-        optElem.value = option.value;
-        optElem.text = option.text;
-      }
-      else {
-        //sets the floor drop down box in dynamic forms when number of floors entered
-        optElem.value = option;
-        optElem.text = `Floor ${option}`;
-
-      }
+      const optElem = document.createElement("option");
+      optElem.value = option.value;
+      optElem.text = option.text;
       selectElem.appendChild(optElem);
     });
 
@@ -715,70 +779,9 @@ document.addEventListener('DOMContentLoaded', function () {
     return colElem;
   }
 });
+/* End of adding room details using dynamic form handling */
 
-/* End of adding room details using dynamic form handling*/
-
-
-/*Start of single image upload*/
-/*let hostelimg;
-uploadImage.addEventListener('click', (e) => {
-
-    upload();
-});
-async function upload() {
-    const fileInput = document.getElementById("files");
-    const file = fileInput.files[0];
-
-    if (file) {
-        const storageRef = ref2(storage, `uploaded_images/${file.name}`);
-        await uploadBytes(storageRef, file);
-
-        const imageURL = await getDownloadURL(storageRef);
-        const imagePreview = document.getElementById("imagePreview");
-        imagePreview.src = imageURL;
-        //console.log(imageURL);
-        hostelimg = imageURL;
-        sessionStorage.setItem('hostelurl', hostelimg);
-        console.log(hostelimg);
-        //image.append(imageURL);
-    }
-}*/
-/*End of single image upload*/
-
-/*Start of storing room details inside modal*/
-/*addroom.addEventListener('click', (e) => {
-  var hname = document.getElementById("hostelname").value;
-  var htype = document.getElementById("hosteltype").value;
-  var hphone = document.getElementById("hostelphone").value;
-  var hemail = document.getElementById("hostelemail").value;
-  var hadd1 = document.getElementById("hosteladd1").value;
-  var hadd2 = document.getElementById("hosteladd2").value;
-  var hcity = document.getElementById("hostelcity").value;
-  var hstate = document.getElementById("hostelstate").value;
-  var hpin = document.getElementById("hostelpin").value;
-  var hrent = document.getElementById("roomprice").value;
-  var hfood = document.getElementById("foodprice").value;
-  var ac = document.getElementById("acprice").value;
-  var nonac = document.getElementById("nonprice").value;
-
-  var roomtype = document.getElementById("rtype").value;
-  var roomno = document.getElementById("rnumber").value;
-  var roomprice = document.getElementById("rprice").value;
-  var roomfac = document.getElementById("rfac").value;
-
-  set(ref(db, 'Hostel details/' + hname + '/Room details/' + roomtype), {
-
-    Roomtype: roomtype,
-    Roomno: roomno,
-    Roomprice: roomprice,
-    Roomfac: roomfac
-
-  })
-  alert("Room details added successfully");
-});*/
-/*Start of storing room details inside modal*/
-
-/*Start of storing hostel details when register button is clicked*/
+/* Start of storing hostel details when register button is clicked */
 registerHostel.addEventListener('click', async (e) => {
   var hname = document.getElementById("hostelname").value;
   var htype = document.getElementById("hosteltype").value;
@@ -823,86 +826,125 @@ registerHostel.addEventListener('click', async (e) => {
   }
 
   // Validate if at least one image is uploaded
+  const imageInputs = document.querySelectorAll("input[type='file']");
+  let files = [];
+  imageInputs.forEach(input => {
+    files.push(...input.files);
+  });
   if (files.length === 0) {
     alert("Please upload at least one image.");
     return;
   }
 
-  let rooms = {};
-  for (let i = 1; i <= roomCount; i++) {
-    const floor = document.getElementById(`floor-${i}`).value;
-    const roomType = document.getElementById(`roomType-${i}`).value;
-    const roomCountVal = document.getElementById(`roomCount-${i}`).value;
-    const amenities = document.getElementById(`amenities-${i}`).value;
-    const ac = document.getElementById(`ac-${i}`).value;
-    const bathroom = document.getElementById(`bathroom-${i}`).value;
-    const price = document.getElementById(`price-${i}`).value;
-    const imageInput = document.getElementById(`roomImage-${i}`);
-    const files = imageInput.files;
-    let imagelink1 = [];
+  // Loop through each floor and its rooms
+  const floorCount = document.querySelectorAll('.card-header h5').length; // Counting the number of floors
+  for (let floorIndex = 1; floorIndex <= floorCount; floorIndex++) {
+    const floorNumber = floorIndex;
 
-    // Storing room images data into an array called imagelink1[]
-    if (files.length != 0) {
-      for (let j = 0; j < files.length; j++) {
-        const storageRef = ref2(storage, 'Roomimages/' + hname + '/room-' + i + '/' + files[j].name);
-        await uploadBytes(storageRef, files[j]);
-        const imageUrl = await getDownloadURL(storageRef);
-        imagelink1.push(imageUrl);
+    // Get all room containers for the current floor
+    const roomContainers = document.querySelectorAll(`.room-container[data-floor="${floorNumber}"]`);
+
+    // Loop through room containers and add room data
+    for (let roomIndex = 0; roomIndex < roomContainers.length; roomIndex++) {
+      const roomElem = roomContainers[roomIndex];
+      const roomNumbersVal = roomElem.querySelector(`#roomNumber-${floorNumber}-${roomIndex + 1}`).value.split(",").map((num) => num.trim());
+      const roomCountVal = parseInt(roomElem.querySelector(`#roomCount-${floorNumber}-${roomIndex + 1}`).value);
+      const roomType = roomElem.querySelector(`#roomType-${floorNumber}-${roomIndex + 1}`).value;
+      const amenities = roomElem.querySelector(`#amenities-${floorNumber}-${roomIndex + 1}`).value;
+      const ac = roomElem.querySelector(`#acType-${floorNumber}-${roomIndex + 1}`).value;
+      const bathroom = roomElem.querySelector(`#bathroom-${floorNumber}-${roomIndex + 1}`).value;
+      const price = roomElem.querySelector(`#price-${floorNumber}-${roomIndex + 1}`).value;
+      const remarks = roomElem.querySelector(`#remarks-${floorNumber}-${roomIndex + 1}`).value;
+      const imageInput = roomElem.querySelector(`#roomImage-${floorNumber}-${roomIndex + 1}`);
+      const files = imageInput.files;
+      let imagelink1 = [];
+
+      // Upload images and generate image links
+      if (files.length !== 0) {
+        for (let j = 0; j < files.length; j++) {
+          const storageRef = ref2(storage, `Roomimages/${hname}/room-${roomNumbersVal[0]}/${files[j].name}`);
+          await uploadBytes(storageRef, files[j]);
+          const imageUrl = await getDownloadURL(storageRef);
+          imagelink1.push(imageUrl);
+        }
+      }
+
+      // Check if roomCount matches the number of roomNumbers provided
+      if (roomNumbersVal.length !== roomCountVal) {
+        alert(`Please provide exactly ${roomCountVal} room numbers for floor ${floorNumber}.`);
+        return;
+      }
+
+      // Loop through each roomNumber and store its data
+      for (let roomNumberVal of roomNumbersVal) {
+        // Calculate the 'bedsAvailable' for the roomType at the floor level (roomCount * roomType)
+        const roomTypeBedsAvailable = parseInt(roomType.match(/\d+/)[0]) * roomCountVal; // bedsAvailable for roomType
+
+        // Update the floor-level roomType details (e.g., "2 sharing")
+        await update(
+          ref(
+            db,
+            `Hostel details/${hname}/rooms/floor${floorNumber}/${roomType}`
+          ),
+          {
+            floor: floorNumber,
+            price: price,
+            roomCount: roomCountVal,
+            roomType: roomType,
+            bedsAvailable: roomTypeBedsAvailable, // bedsAvailable for roomType (calculated)
+          }
+        )
+          .then(async () => {
+            // Calculate the 'bedsAvailable' for this room based on the sharing configuration
+            const bedsAvailableForRoom = parseInt(roomType.match(/\d+/)[0]); // E.g., 2 for "2 sharing"
+
+            // Update the room-level details (beds, amenities, price)
+            await update(
+              ref(
+                db,
+                `Hostel details/${hname}/rooms/floor${floorNumber}/${roomType}/rooms/${ac}/room${roomNumberVal}`
+              ),
+              {
+                ac: ac,
+                bathroom: bathroom,
+                bedsAvailable: bedsAvailableForRoom, // bedsAvailable for this specific room
+                price: price,
+                amenities: amenities,
+                remarks: remarks,
+                roomNumber: roomNumberVal,
+                roomCount: roomCountVal,
+                floor: floorNumber,
+                roomType: roomType,
+                imagelink1: imagelink1,
+                beds: {} // Assuming you want to initialize it as empty (you can add beds here based on your logic)
+              }
+            );
+
+            // Add the individual beds for the room (based on sharing configuration)
+            for (let bedIndex = 1; bedIndex <= bedsAvailableForRoom; bedIndex++) {
+              const bedKey = `bed ${bedIndex}`;
+              await update(
+                ref(
+                  db,
+                  `Hostel details/${hname}/rooms/floor${floorNumber}/${roomType}/rooms/${ac}/room${roomNumberVal}/beds/`
+                ),
+                {
+                  [bedKey]: 'not booked', // Initial status of the bed
+                }
+              ).catch((error) => {
+                alert(`Error updating bed ${bedKey}: ${error}`);
+              });
+            }
+          })
+          .catch((error) => {
+            alert(`Error updating room details for Room ${roomNumberVal}: ${error}`);
+          });
       }
     }
-
-    await update(ref(db, "Hostel details/" + hname + '/rooms/floor' + floor + '/room' + i), {
-      roomNumber: i, // Store the room number
-      floor: floor,   // Store the floor number
-      ac: ac,
-      roomCount: roomCountVal,
-      bathroom: bathroom,
-      roomType: roomType,
-      price: price,
-      amenities: amenities,
-      imagesLink: imagelink1,
-    })
-      .then(async () => {
-        let matches = roomType.match(/(\d+)/);
-        let bedCount = parseInt(matches[0]);
-        for (let k = 1; k <= bedCount; k++) {
-          let key = 'bed ' + k;
-          console.log(key, " Hostel details/" + hname + '/rooms/floor' + floor + '/room' + i + '/beds/')
-          await update(ref(db, "Hostel details/" + hname + '/rooms/floor' + floor + '/room' + i + '/beds/'), {
-            [key]: 'not booked'
-          })
-            .then(() => {
-              //console.log(db, "Hostel details/" + hname)
-            })
-            .catch((error) => {
-              alert(error);
-            });
-        }
-      })
-      .catch((error) => {
-        alert(error);
-      });
-
-    console.log('than')
-    // Create or get the floor object
-    if (!rooms[`floor${floor}`]) {
-      rooms[`floor${floor}`] = {};
-    }
-
-    // Add room to the corresponding floor
-    rooms[`floor${floor}`][`room${i}`] = {
-      roomNumber: i, // Store the room number
-      floor: floor,   // Store the floor number
-      ac: ac,
-      roomCount: roomCountVal,
-      bathroom: bathroom,
-      roomType: roomType,
-      price: price,
-      amenities: amenities,
-      imagesLink: imagelink1,
-    };
   }
-  update(ref(db, "Hostel details/" + hname + '/'), {
+
+  // Save hostel details to Firebase
+  await update(ref(db, `Hostel details/${hname}/`), {
     hostelName: hname,
     hostelType: htype,
     hostelPhone: hphone,
@@ -914,15 +956,13 @@ registerHostel.addEventListener('click', async (e) => {
     hostelPin: hpin,
     hostelFloors: hfloors,
     extras: extras,
-    // rooms: rooms
   })
     .then(() => {
-      //console.log(db, "Hostel details/" + hname)
-      alert("Hostel details added successfully");
-      window.location.href = "././products.html";
+      alert('Hostel details added successfully');
+      window.location.href = "././hostel-list.html";
     })
     .catch((error) => {
-      alert(error);
+      alert(`Error saving hostel details: ${error}`);
     });
 });
-/*End of storing hostel details when register button is clicked*/
+/* End of storing hostel details when register button is clicked */

@@ -12,7 +12,7 @@
     <meta name="author" content="pixelstrap">
     <link rel="icon" href="assets/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="assets/images/favicon.png" type="image/x-icon">
-    <title>Perikitis - Hostel Expenses</title>
+    <title>Perikitis - Food Menu List</title>
 
     <!-- Google font-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -84,11 +84,11 @@
                 </div>
                 <div class="welcome-title">
                     <h5>
-                        Hostel expenses - overview
+                        Foods that you have in your menu!
                         <img src="./assets/images/header.gif" alt="">
                     </h5>
                     <span>
-                        Have a quick look at your expenses !
+                        Have a quick look at your list of food menu..
                     </span>
                 </div>
                 <div class="nav-right col-xl-6 col-5 pull-right right-header p-0">
@@ -382,7 +382,7 @@
                             <div class="card card-table">
                                 <div class="card-body">
                                     <div class="title-header option-title d-sm-flex d-block">
-                                        <h5>Expense List</h5>
+                                        <h5>Food List</h5>
                                         <div class="right-options">
                                             <ul>
                                                 <!--<li>
@@ -398,8 +398,7 @@
                                                         <i class="ri-upload-2-fill me-1"></i>Export</a>
                                                 </li>
                                                 <li>
-                                                    <a class="btn btn-dashed" href="add-new-expense.html">Add
-                                                        Expense</a>
+                                                    <a class="btn btn-dashed" href="edit-food.html">Edit Menu</a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -408,7 +407,7 @@
                                         <div class="input-box">
 
                                             <input class="search-box" type="search"
-                                                placeholder="Search expense details here..." id="myInput"
+                                                placeholder="Search hostel details here..." id="myInput"
                                                 onkeyup='searchTable()'>
                                             <br>
                                             <br>
@@ -420,28 +419,17 @@
                                                         <th><input id="checkall" class="custom-checkbox" type="checkbox"
                                                                 name="text"></th>
                                                         <!--<th>S. No</th>-->
-                                                        <th onclick="sortTable(1)">Hostel name<span
+                                                        <th onclick="sortTable(1)">Session<span
                                                             class="sort-icon">⬍</span></th>
-                                                        <th onclick="sortTable(2)">Frequency<span
+                                                        <th onclick="sortTable(2)">Main Dish<span
                                                             class="sort-icon">⬍</span></th>
-                                                        <th onclick="sortTable(3)">From date<span
+                                                        <th onclick="sortTable(3)">Side Dishes<span
                                                             class="sort-icon">⬍</span></th>
-                                                        <th onclick="sortTable(4)">To date<span
+                                                        <th onclick="sortTable(4)">Special dish<span
                                                             class="sort-icon">⬍</span></th>
-                                                        <th onclick="sortTable(5)">Category<span
+                                                        <th onclick="sortTable(5)">Beverages<span
                                                             class="sort-icon">⬍</span></th>
-                                                        <th onclick="sortTable(6)">Sub-Category<span
-                                                            class="sort-icon">⬍</span></th>
-                                                        <th onclick="sortTable(7)">Units consumed<span
-                                                            class="sort-icon">⬍</span></th>
-                                                        <th onclick="sortTable(8)">Measurement Unit<span
-                                                            class="sort-icon">⬍</span></th>
-                                                        <th onclick="sortTable(9)">Cost<span
-                                                            class="sort-icon">⬍</span></th>
-                                                        <th>Room</th>
-                                                        <th>Floor</th>
-                                                        <th>Remarks</th>
-                                                        <th>Bills</th>
+                                                        <th>Images</th>
                                                     </tr>
                                                 </thead>
 
@@ -552,8 +540,8 @@
     <!-- Firebase js -->
     <script src="assets/js/firebase-config.js" type="module" defer></script>
 
-    <!-- report details js -->
-    <script src="assets/js/reports.js" type="module" defer></script>
+    <!-- Hostel details js -->
+    <script src="assets/js/food-list.js" type="module" defer></script>
 
     <!-- latest js -->
     <script src="assets/js/jquery-3.6.0.min.js"></script>
@@ -650,38 +638,37 @@
             // Re-render rows in sorted order
             rows.forEach(row => tableBody.appendChild(row));
         }
-
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-    <script>
-        function getFormattedDateTime() {
-            const now = new Date();
-
-            // Format: YYYYMMDD_hhmmss
-            const formattedDate = now.getFullYear().toString().padStart(4, '0') +
-                (now.getMonth() + 1).toString().padStart(2, '0') +
-                now.getDate().toString().padStart(2, '0');
-            const formattedTime = now.getHours().toString().padStart(2, '0') +
-                now.getMinutes().toString().padStart(2, '0') +
-                now.getSeconds().toString().padStart(2, '0');
-
-            return formattedDate+"_"+formattedTime;
-        }
-
-
-        const fileName = "expenses_list_"+getFormattedDateTime()+".xlsx";
-        function downloadExcel() {
-
-            // Get the table element
-            const table = document.getElementById('table_id');
-
-            // Convert the table to a workbook
-            const workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
-
-            // Export to Excel file
-            XLSX.writeFile(workbook, fileName);
-        }
-    </script>
+     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+     <script>
+         function getFormattedDateTime() {
+             const now = new Date();
+ 
+             // Format: YYYYMMDD_hhmmss
+             const formattedDate = now.getFullYear().toString().padStart(4, '0') +
+                 (now.getMonth() + 1).toString().padStart(2, '0') +
+                 now.getDate().toString().padStart(2, '0');
+             const formattedTime = now.getHours().toString().padStart(2, '0') +
+                 now.getMinutes().toString().padStart(2, '0') +
+                 now.getSeconds().toString().padStart(2, '0');
+ 
+             return formattedDate+"_"+formattedTime;
+         }
+ 
+ 
+         const fileName = "hostels_list_"+getFormattedDateTime()+".xlsx";
+         function downloadExcel() {
+ 
+             // Get the table element
+             const table = document.getElementById('table_id');
+ 
+             // Convert the table to a workbook
+             const workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+ 
+             // Export to Excel file
+             XLSX.writeFile(workbook, fileName);
+         }
+     </script>
 </body>
 
 </html>
