@@ -72,136 +72,102 @@ document.getElementById("uploadImage").addEventListener("click", async function 
 });
 
 /* Start of adding room details using dynamic form handling*/
-const addroom = document.getElementById("addroom");
-const roomContainer = document.getElementById("room-container");
 
 document.addEventListener('DOMContentLoaded', function () {
-    let roomCount = 0; // This will track the number of rooms
+    const addRoomButton = document.getElementById("addroom");
+    const roomContainer = document.getElementById("additional-room-container");
 
-    addroom.addEventListener('click', async () => {
-        try {
-            var hostelName = document.getElementById("hostelname").value;
-            var noOfFloors = parseInt(document.getElementById("hostelfloors").value); // Get the number of floors from input
-            const roomsRef = ref(db, `Hostel details/${hostelName}/rooms`);
-            const snapshot = await get(roomsRef);
+    let roomCount = 0;  // Initialize room count
 
-            let roomCount = 0;
-
-            if (snapshot.exists()) {
-                const roomsData = snapshot.val();
-                roomCount = getRoomCountFromData(roomsData); // Get existing room count from Firebase data
-            }
-
-            roomCount++; // Increment room count for the new room
-            const floorOptions = numberToArray(noOfFloors); // Generate floor options array
-
-            addRoomForm(roomCount, {}, floorOptions); // Pass the floor options array
-        } catch (error) {
-            console.error('Error fetching room count:', error);
-        }
+    addRoomButton.addEventListener('click', () => {
+        addRoomForm(); // Create a new room container
     });
 
-    // Helper function to convert number to array for floor options
-    function numberToArray(number) {
-        const result = [];
-        for (let i = 1; i <= number; i++) {
-            result.push(i);
-        }
-        return result;
-    }
+    function addRoomForm() {
+        roomCount++;  // Increment room count every time a new room is added
 
-    function addRoomForm(roomNumber, roomData = {}, floorOptions = []) {
         const mainParentElem = document.createElement('div');
         mainParentElem.classList.add('col-12');
 
-        const cardElem = document.createElement('div');
-        cardElem.classList.add('card');
-        cardElem.id = `room-${roomNumber}`;
+        const roomElem = document.createElement("div");
+        roomElem.classList.add("card", "mb-3", "additional-room-container");
+        roomElem.id = `room-${roomCount}`; // Ensure `.card` gets a unique ID
 
-        const cardHeaderElem = document.createElement('div');
-        cardHeaderElem.classList.add('card-header');
-        cardHeaderElem.innerHTML = `<h5>Room ${roomNumber}</h5>`;
-        const removeRoomBtn = document.createElement('span');
-        removeRoomBtn.className = 'btn restaurant-button';
-        removeRoomBtn.innerHTML = 'Remove Room';
-        removeRoomBtn.onclick = () => {
-            cardElem.remove();
-        };
-        cardHeaderElem.appendChild(removeRoomBtn);
+        const roomHeader = document.createElement("div");
+        roomHeader.classList.add("card-header", "d-flex", "justify-content-between", "align-items-center");
 
-        const cardBodyElem = document.createElement('div');
-        cardBodyElem.classList.add('card-body');
+        const roomLabel = document.createElement("h6");
+        roomLabel.innerText = `Additional room data (Room ${roomCount})`;
 
-        const inputItemsElem = document.createElement('div');
-        inputItemsElem.classList.add('input-items');
+        const deleteIcon = document.createElement("a");
+        deleteIcon.className = "ri-delete-bin-line";
+        deleteIcon.style.fontSize = "24px";
+        deleteIcon.style.cursor = "pointer";
+        deleteIcon.onclick = () => mainParentElem.remove();
 
-        const rowElem = document.createElement('div');
-        rowElem.classList.add('row', 'gy-3');
+        roomHeader.appendChild(roomLabel);
+        roomHeader.appendChild(deleteIcon);
 
-        // Create and prefill form fields
-        const floorSelectOptions = floorOptions.map(floor => `Floor ${floor}`);
-        rowElem.appendChild(createSelectBox('Floor', `floor-${roomNumber}`, true, floorSelectOptions, `Floor ${roomData.floor}`));
-        rowElem.appendChild(createSelectBox('Room Type', `roomType-${roomNumber}`, true, ['1 sharing', '2 sharing', '3 sharing', '4 sharing'], roomData.roomType));
-        rowElem.appendChild(createInputBox('Room Count', `roomCount-${roomNumber}`, 'number', true, '', false, roomData.roomCount));
-        rowElem.appendChild(createInputBox('Amenities', `amenities-${roomNumber}`, 'text', false, 'e.g. WiFi, Laundry', false, roomData.amenities));
-        rowElem.appendChild(createSelectBox('Air Conditioning', `ac-${roomNumber}`, true, ['ac', 'non-ac'], roomData.ac));
-        rowElem.appendChild(createSelectBox('Bathroom', `bathroom-${roomNumber}`, true, ['attached', 'common'], roomData.bathroom));
-        rowElem.appendChild(createInputBox('Price', `price-${roomNumber}`, 'number', true, '', false, roomData.price));
+        const roomBody = document.createElement("div");
+        roomBody.classList.add("card-body");
 
-        // Add image upload input 
-        const imageInput = document.createElement('input');
-        imageInput.type = 'file';
-        imageInput.id = `roomImage-${roomNumber}`;
-        imageInput.name = `roomImage-${roomNumber}`;
-        imageInput.multiple = true;
-        imageInput.classList.add('form-control');
-        const imageLabel = document.createElement('h6');
-        imageLabel.innerText = 'Upload Images';
-        const imageBox = document.createElement('div');
-        imageBox.classList.add('col-xl-6');
-        imageBox.classList.add('input-box');
-        imageBox.appendChild(imageLabel);
-        imageBox.appendChild(imageInput);
-        rowElem.appendChild(imageBox);
+        const rowElem = document.createElement("div");
+        rowElem.classList.add("row", "gy-3");
 
-        // Append elements
-        inputItemsElem.appendChild(rowElem);
-        cardBodyElem.appendChild(inputItemsElem);
-        cardElem.appendChild(cardHeaderElem);
-        cardElem.appendChild(cardBodyElem);
-        mainParentElem.appendChild(cardElem);
+        // Add floor number input field
+        rowElem.appendChild(createInputBox("Floor Number", `floorNumber-${roomCount}`, "number", true));
+
+        // Add form fields (room type, amenities, price, etc.)
+        rowElem.appendChild(createSelectBox("Room Type", `roomType-${roomCount}`, true, [
+            { value: '1 sharing', text: '1 sharing' },
+            { value: '2 sharing', text: '2 sharing' },
+            { value: '3 sharing', text: '3 sharing' },
+            { value: '4 sharing', text: '4 sharing' }
+        ]));
+        rowElem.appendChild(createInputBox("Room Count", `roomCount-${roomCount}`, "number", true));
+        rowElem.appendChild(createInputBox("Room Number", `roomNumber-${roomCount}`, "text", false, "e.g.,101, 102 .."));
+        rowElem.appendChild(createInputBox("Amenities", `amenities-${roomCount}`, "text", false, "e.g., WiFi, Laundry"));
+        rowElem.appendChild(createInputBox("Price", `price-${roomCount}`, "number", true));
+        rowElem.appendChild(createInputBox("Upload Room Images", `roomImage-${roomCount}`, "file", false, "", true));
+
+        rowElem.appendChild(createSelectBox("Bathroom Type", `bathroom-${roomCount}`, true, [
+            { value: "attached", text: "attached" },
+            { value: "common", text: "common" }
+        ]));
+
+        rowElem.appendChild(createSelectBox("AC Type", `acType-${roomCount}`, true, [
+            { value: "ac", text: "ac" },
+            { value: "non-ac", text: "non-ac" }
+        ]));
+
+        rowElem.appendChild(createInputBox("Remarks", `remarks-${roomCount}`, "text", false, "Additional comments"));
+
+        roomBody.appendChild(rowElem);
+
+        roomElem.appendChild(roomHeader);
+        roomElem.appendChild(roomBody);
+
+        mainParentElem.appendChild(roomElem);
         roomContainer.appendChild(mainParentElem);
     }
 
-    // Helper function to get room count from data
-    function getRoomCountFromData(roomsData) {
-        let count = 0;
-        Object.keys(roomsData).forEach(floorKey => {
-            const floorRooms = roomsData[floorKey];
-            count += Object.keys(floorRooms).length;
-        });
-        return count;
-    }
+    function createInputBox(labelText, inputId, inputType, required, placeholder = "", multiple = false) {
+        const colElem = document.createElement("div");
+        colElem.classList.add("col-xl-6");
 
-    // Helper function to create input boxes
-    function createInputBox(labelText, inputId, inputType, required, placeholder = '', multiple = false, value = '') {
-        const colElem = document.createElement('div');
-        colElem.classList.add('col-xl-6');
+        const inputBoxElem = document.createElement("div");
+        inputBoxElem.classList.add("input-box");
 
-        const inputBoxElem = document.createElement('div');
-        inputBoxElem.classList.add('input-box');
-
-        const labelElem = document.createElement('h6');
+        const labelElem = document.createElement("h6");
         labelElem.innerText = labelText;
 
-        const inputElem = document.createElement('input');
+        const inputElem = document.createElement("input");
         inputElem.type = inputType;
         inputElem.id = inputId;
         inputElem.name = inputId;
         if (required) inputElem.required = true;
         if (placeholder) inputElem.placeholder = placeholder;
         if (multiple) inputElem.multiple = true;
-        inputElem.value = value; // Prefill value
 
         inputBoxElem.appendChild(labelElem);
         inputBoxElem.appendChild(inputElem);
@@ -210,30 +176,25 @@ document.addEventListener('DOMContentLoaded', function () {
         return colElem;
     }
 
-    // Helper function to create select boxes
-    function createSelectBox(labelText, selectId, required, options, selectedValue = '') {
-        const colElem = document.createElement('div');
-        colElem.classList.add('col-xl-6');
+    function createSelectBox(labelText, selectId, required, options) {
+        const colElem = document.createElement("div");
+        colElem.classList.add("col-xl-6");
 
-        const inputBoxElem = document.createElement('div');
-        inputBoxElem.classList.add('input-box');
+        const inputBoxElem = document.createElement("div");
+        inputBoxElem.classList.add("input-box");
 
-        const labelElem = document.createElement('h6');
+        const labelElem = document.createElement("h6");
         labelElem.innerText = labelText;
 
-        const selectElem = document.createElement('select');
+        const selectElem = document.createElement("select");
         selectElem.id = selectId;
         selectElem.name = selectId;
         if (required) selectElem.required = true;
 
         options.forEach(option => {
-            const optElem = document.createElement('option');
-            optElem.value = option.replace('Floor ', ''); // Store only the floor number (1, 2, etc.)
-            optElem.text = option; // Display as "Floor 1", "Floor 2", etc.
-
-            if (optElem.value === selectedValue.replace('Floor ', '')) {
-                optElem.selected = true;
-            }
+            const optElem = document.createElement("option");
+            optElem.value = option.value;
+            optElem.text = option.text;
             selectElem.appendChild(optElem);
         });
 
@@ -247,11 +208,58 @@ document.addEventListener('DOMContentLoaded', function () {
 /* End of adding room details using dynamic form handling*/
 
 /*start of Get Menu and Get Room details from firebase DB*/
-let roomCount = 0; // Track the number of rooms
-
 document.addEventListener('DOMContentLoaded', function () {
+
+    function addStyles() {
+        const styles = `
+          /* Ensure full-width layout for Room Containers */
+            .room-wrapper {
+              display: flex;
+              flex-direction: column;
+              gap: 1rem;
+              width: 100%;
+            }
+    
+            .card-body .btn.restaurant-button {
+              margin-bottom: 1rem;
+            }
+    
+            .room-container {
+              border: 1px solid #ddd;
+              border-radius: 5px;
+              background-color: #f9f9f9;
+              padding: 15px;
+            }
+    
+            .card-header {
+              background-color: #f1f1f1;
+              border-bottom: 1px solid #ddd;
+            }
+            
+            .input-box select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+          }
+    
+          .input-box select:focus {
+            border-color: #66afe9;
+            outline: none;
+            box-shadow: 0 0 5px rgba(102, 175, 233, 0.6);
+          }
+        `;
+
+        const styleSheet = document.createElement("style");
+        styleSheet.type = "text/css";
+        styleSheet.innerText = styles;
+        document.head.appendChild(styleSheet);
+    }
+
+    // Call this function to inject the CSS when the script loads
+    addStyles();
     const getRoomButton = document.getElementById("getroom");
-    const roomContainer = document.getElementById("room-container");
+    const floorsContainer = document.getElementById("floorsContainer");
     const getMenuDetailsButton = document.getElementById("getMenuDetails");
 
     const morningTimeContainer = document.getElementById("morningTimeContainer");
@@ -600,7 +608,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Prefill hostel details on page load
     window.addEventListener('load', prefillHostelDetails);
 
-    // Fetch and prefill room details when "Get Room" button is clicked
+    // Fetch and prefill room details when "Get Room" button is clicked 
     getRoomButton.addEventListener('click', async () => {
         const hostelName = document.getElementById("hostelname").value;
         const roomsRef = ref(db, `Hostel details/${hostelName}/rooms`);
@@ -609,116 +617,139 @@ document.addEventListener('DOMContentLoaded', function () {
             const snapshot = await get(roomsRef);
             if (snapshot.exists()) {
                 const roomsData = snapshot.val();
-                roomContainer.innerHTML = ''; // Clear existing room forms
+                floorsContainer.innerHTML = ''; // Clear existing floor containers
 
                 // Loop through each floor and its rooms
                 Object.keys(roomsData).forEach((floorKey) => {
                     const floorData = roomsData[floorKey];
-                    const floorNumber = floorKey.replace('floor', ''); // Extract only the floor number
-
-                    Object.keys(floorData).forEach((roomKey) => {
-                        const roomData = floorData[roomKey];
-                        const roomNumber = roomKey.replace('room', ''); // Extract only the room number
-
-                        // Prefill the form with room and floor data
-                        addRoomForm(roomNumber, roomData, floorNumber);
-
-                        // Call displayRoomImages with roomNumber and imagesLink from roomData
-                        if (Array.isArray(roomData.imagesLink)) {
-                            displayRoomImages(roomNumber, roomData.imagesLink);
-                        } else {
-                            console.log(`No images found for room ${roomNumber}`);
-                        }
-                    });
+                    const floorNumber = floorKey.replace('floor', ''); // Extract floor number
+                    createFloorContainer(floorNumber, floorData); // Create floor container
                 });
             } else {
+                console.log('No rooms data found for this hostel.'); // Debug: Log if no data exists
                 alert('No rooms found for this hostel.');
             }
         } catch (error) {
             console.error('Error fetching rooms:', error);
         }
     });
-    //Function which displays the room images from firebase database
-    function displayRoomImages(roomNumber, images) {
-        const roomCard = document.getElementById(`room-${roomNumber}`);
 
-        if (roomCard) {
-            const existingImageContainer = roomCard.querySelector('.image-preview-container');
+    // Function to create a floor container with grouped rooms
+    function createFloorContainer(floorNumber, floorData) {
+        const floorElem = document.createElement("div");
+        floorElem.classList.add("col-12", "mb-4");
+        floorElem.id = floorNumber;
 
-            // If image container already exists (from a previous call), clear it
-            if (existingImageContainer) {
-                existingImageContainer.innerHTML = '';
-            } else {
-                // Create a new container for image previews
-                const imageContainer = document.createElement('div');
-                imageContainer.classList.add('image-preview-container');
-                roomCard.querySelector('.input-items .row').appendChild(imageContainer);
-            }
+        const cardElem = document.createElement("div");
+        cardElem.classList.add("card");
 
-            // Check if images are available in the array
-            if (images && images.length > 0) {
-                images.forEach((imageUrl) => {
-                    const img = document.createElement('img');
-                    img.src = imageUrl;
-                    img.alt = 'Room Image';
-                    img.style.width = '100px';
-                    img.style.height = '100px';
-                    img.style.margin = '10px';
-                    img.classList.add('image-preview');
-                    roomCard.querySelector('.image-preview-container').appendChild(img);
+        const cardHeaderElem = document.createElement("div");
+        cardHeaderElem.classList.add("card-header", "d-flex", "justify-content-between", "align-items-center");
+
+        const floorLabel = document.createElement("h5");
+        floorLabel.innerText = `Floor ${floorNumber}`;
+        cardHeaderElem.appendChild(floorLabel);
+
+        const cardBodyElem = document.createElement("div");
+        cardBodyElem.classList.add("card-body");
+
+        const roomWrapper = document.createElement("div");
+        roomWrapper.classList.add("room-wrapper", "d-flex", "flex-column", "gap-3");
+        cardBodyElem.appendChild(roomWrapper);
+
+        // Loop through room types (e.g., "2 sharing")
+        Object.keys(floorData).forEach((roomTypeKey) => {
+            const roomTypeData = floorData[roomTypeKey];
+
+            // Loop through room configurations (e.g., "ac", "non-ac")
+            Object.keys(roomTypeData.rooms).forEach((roomConfigKey) => {
+                const rooms = roomTypeData.rooms[roomConfigKey];
+
+                // Loop through individual rooms
+                Object.keys(rooms).forEach((roomKey) => {
+                    const roomDetails = rooms[roomKey];
+                    createRoomContainer(roomWrapper, floorNumber, roomKey, roomDetails);
                 });
-            } else {
-                console.log(`No images found for room ${roomNumber}`);
-            }
-        }
+            });
+        });
+
+        cardElem.appendChild(cardHeaderElem);
+        cardElem.appendChild(cardBodyElem);
+        floorElem.appendChild(cardElem);
+        floorsContainer.appendChild(floorElem);
     }
-    // Function to create and prefill the room form
-    function addRoomForm(roomNumber, roomData = {}, floorNumber) {
+
+    function createRoomContainer(parentElem, floorNumber, roomKey, roomDetails) {
         const mainParentElem = document.createElement('div');
         mainParentElem.classList.add('col-12');
 
-        const cardElem = document.createElement('div');
-        cardElem.classList.add('card');
-        cardElem.id = `room-${roomNumber}`;
+        const roomElem = document.createElement("div");
+        roomElem.classList.add("card", "mb-3", "room-container");
 
-        const cardHeaderElem = document.createElement('div');
-        cardHeaderElem.classList.add('card-header', 'd-flex', 'justify-content-between', 'align-items-center');
+        // Add the data-floor attribute
+        roomElem.setAttribute("data-floor", floorNumber);
+        roomElem.id = `room-${roomKey}`; // Add an ID to the room container for image functionality
 
-        const roomLabel = document.createElement('h5');
-        roomLabel.innerText = `Room ${roomNumber}`; // Display room number
+        const roomHeader = document.createElement("div");
+        roomHeader.classList.add("card-header", "d-flex", "justify-content-between", "align-items-center");
 
-        const deleteIcon = document.createElement('span');
-        deleteIcon.classList.add('ri-delete-bin-line');
-        deleteIcon.style.fontSize = '24px';
-        deleteIcon.style.cursor = 'pointer';
-        deleteIcon.id = `delete-room-${roomNumber}`;
+        const roomLabel = document.createElement("h6");
+        roomLabel.innerText = `Room ${roomKey.replace('room', '')} (${roomDetails.roomType}) - Floor ${floorNumber}`;
 
-        cardHeaderElem.appendChild(roomLabel);
-        cardHeaderElem.appendChild(deleteIcon);
+        const deleteIcon = document.createElement("a");
+        deleteIcon.className = "ri-delete-bin-line";
+        deleteIcon.style.fontSize = "24px";
+        deleteIcon.style.cursor = "pointer";
+        deleteIcon.id = `delete-room-${roomKey}`;
 
-        const cardBodyElem = document.createElement('div');
-        cardBodyElem.classList.add('card-body');
+        deleteIcon.addEventListener('click', async () => {
+            if (confirm('Are you sure you want to delete this room?')) {
+                try {
 
-        const inputItemsElem = document.createElement('div');
-        inputItemsElem.classList.add('input-items');
+                    const hostelName = document.getElementById("hostelname").value;
+                    const roomType = roomDetails.roomType;
+                    const roomConfig = roomDetails.ac;
+                    const roomPath = `Hostel details/${hostelName}/rooms/floor${floorNumber}/${roomType}/rooms/${roomConfig}/${roomKey}`;
 
-        const rowElem = document.createElement('div');
-        rowElem.classList.add('row', 'gy-3');
+                    console.log('Deleting from Firebase path:', roomPath);
+                    await remove(ref(db, roomPath));
+                    // Remove the room from the DOM
+                    const roomElement = document.getElementById(`room-${roomKey}`);
+                    if (roomElement) {
+                        roomElement.remove();
+                    }
+                    alert('Room deleted successfully.');
+                } catch (error) {
+                    console.error('Error deleting room:', error);
+                    alert('Failed to delete room.');
+                }
+            }
+        });
 
-        // Create and prefill form fields
-        rowElem.appendChild(createInputBox('Floor', `floor-${roomNumber}`, 'text', true, '', false, floorNumber));
-        rowElem.appendChild(createSelectBox('Room Type', `roomType-${roomNumber}`, true, ['1 sharing', '2 sharing', '3 sharing', '4 sharing'], roomData.roomType));
-        rowElem.appendChild(createInputBox('Room Count', `roomCount-${roomNumber}`, 'number', true, '', false, roomData.roomCount));
-        rowElem.appendChild(createInputBox('Amenities', `amenities-${roomNumber}`, 'text', false, 'e.g. WiFi, Laundry', false, roomData.amenities));
-        rowElem.appendChild(createSelectBox('Air Conditioning', `ac-${roomNumber}`, true, ['ac', 'non-ac'], roomData.ac));
-        rowElem.appendChild(createSelectBox('Bathroom', `bathroom-${roomNumber}`, true, ['attached', 'common'], roomData.bathroom));
-        rowElem.appendChild(createInputBox('Price', `price-${roomNumber}`, 'number', true, '', false, roomData.price));
+        roomHeader.appendChild(roomLabel);
+        roomHeader.appendChild(deleteIcon);
 
-        // Add image upload input 
+        const roomBody = document.createElement("div");
+        roomBody.classList.add("card-body");
+
+        const rowElem = document.createElement("div");
+        rowElem.classList.add("row", "gy-3");
+
+        // Prefill room data
+        rowElem.appendChild(createSelectBox('Room Type', `roomType-${floorNumber}-${roomKey}`, true, ['1 sharing', '2 sharing', '3 sharing', '4 sharing'], roomDetails.roomType));
+        rowElem.appendChild(createInputBox('Room Count', `roomCount-${floorNumber}-${roomKey}`, 'number', true, '', true, roomDetails.roomCount));
+        rowElem.appendChild(createInputBox('Room Number', `roomNumber-${floorNumber}-${roomKey}`, 'number', true, '', true, roomDetails.roomNumber));
+        rowElem.appendChild(createInputBox('Amenities', `amenities-${floorNumber}-${roomKey}`, 'text', false, 'e.g. WiFi, Laundry', false, roomDetails.amenities));
+        rowElem.appendChild(createSelectBox('Air Conditioning', `acType-${floorNumber}-${roomKey}`, true, ['ac', 'non-ac'], roomDetails.ac));
+        rowElem.appendChild(createSelectBox('Bathroom', `bathroom-${floorNumber}-${roomKey}`, true, ['attached', 'common'], roomDetails.bathroom));
+        rowElem.appendChild(createInputBox('Price', `price-${floorNumber}-${roomKey}`, 'number', true, '', false, roomDetails.price));
+        rowElem.appendChild(createInputBox("Remarks", `remarks-${floorNumber}-${roomKey}`, "text", false, "Additional comments", false, roomDetails.remarks || ''));
+
+        // Add image upload functionality
         const imageInput = document.createElement('input');
         imageInput.type = 'file';
-        imageInput.id = `roomImage-${roomNumber}`;
-        imageInput.name = `roomImage-${roomNumber}`;
+        imageInput.id = `roomImage-${roomKey}`;
+        imageInput.name = `roomImage-${roomKey}`;
         imageInput.multiple = true;
         imageInput.classList.add('form-control');
 
@@ -730,33 +761,62 @@ document.addEventListener('DOMContentLoaded', function () {
         imageBox.appendChild(imageInput);
         rowElem.appendChild(imageBox);
 
-        // Append elements
-        inputItemsElem.appendChild(rowElem);
-        cardBodyElem.appendChild(inputItemsElem);
-        cardElem.appendChild(cardHeaderElem);
-        cardElem.appendChild(cardBodyElem);
-        mainParentElem.appendChild(cardElem);
-        roomContainer.appendChild(mainParentElem);
+        // Add the image preview container
+        const imageContainer = document.createElement('div');
+        imageContainer.classList.add('image-preview-container', 'd-flex', 'flex-wrap', 'gap-2', 'mt-3');
+        rowElem.appendChild(imageContainer);
 
-        // Delete room logic
-        deleteIcon.addEventListener('click', async () => {
-            if (confirm('Are you sure you want to delete this room?')) {
-                try {
-                    const hostelName = document.getElementById("hostelname").value;
-                    const roomPath = `Hostel details/${hostelName}/rooms/floor${floorNumber}/room${roomNumber}`;
+        roomBody.appendChild(rowElem);
 
-                    await remove(ref(db, roomPath));
-                    document.getElementById(`room-${roomNumber}`).remove();
-                    alert('Room deleted successfully.');
-                } catch (error) {
-                    console.error('Error deleting room:', error);
-                    alert('Failed to delete room.');
-                }
+        roomElem.appendChild(roomHeader);
+        roomElem.appendChild(roomBody);
+
+        mainParentElem.appendChild(roomElem);
+        parentElem.appendChild(mainParentElem);
+
+        setTimeout(() => {
+            if (Array.isArray(roomDetails.imagesLink)) {
+                displayRoomImages(roomKey, roomDetails.imagesLink || []);
+            } else {
+                console.warn(`No images available for room ${roomKey}`);
             }
-        });
+        }, 0); // Using a timeout to ensure DOM rendering is complete
     }
+
+    function displayRoomImages(roomKey, images) {
+        const roomCard = document.getElementById(`room-${roomKey}`);
+        if (roomCard) {
+            let imageContainer = roomCard.querySelector('.image-preview-container');
+            if (!imageContainer) {
+                console.warn(`Image container not found for room ${roomKey}.`);
+                return;
+            }
+            // Clear any existing images or messages
+            imageContainer.innerHTML = '';
+            if (images.length > 0) {
+                images.forEach((imageUrl) => {
+                    const img = document.createElement('img');
+                    img.src = imageUrl;
+                    img.alt = 'Room Image';
+                    img.style.width = '100px';
+                    img.style.height = '100px';
+                    img.style.objectFit = 'cover';
+                    img.classList.add('image-preview', 'border', 'rounded');
+                    imageContainer.appendChild(img);
+                });
+            } else {
+                const noImageText = document.createElement('p');
+                noImageText.innerText = 'No images available';
+                noImageText.classList.add('text-muted');
+                imageContainer.appendChild(noImageText);
+            }
+        } else {
+            console.warn(`Room card not found for room ${roomKey}.`);
+        }
+    }
+
     // Helper function to create input boxes
-    function createInputBox(labelText, inputId, inputType, required, placeholder = '', multiple = false, value = '') {
+    function createInputBox(labelText, inputId, inputType, required, placeholder = '', readOnly = false, value = '') {
         const colElem = document.createElement('div');
         colElem.classList.add('col-xl-6');
 
@@ -772,7 +832,7 @@ document.addEventListener('DOMContentLoaded', function () {
         inputElem.name = inputId;
         if (required) inputElem.required = true;
         if (placeholder) inputElem.placeholder = placeholder;
-        if (multiple) inputElem.multiple = true;
+        if (readOnly) inputElem.readOnly = true; // Make input read-only
         inputElem.value = value; // Prefill value
 
         inputBoxElem.appendChild(labelElem);
@@ -798,20 +858,30 @@ document.addEventListener('DOMContentLoaded', function () {
         selectElem.name = selectId;
         if (required) selectElem.required = true;
 
+        // Ensure options is always an array
+        if (!Array.isArray(options)) {
+            console.error(`Error: options is not an array for ${labelText}. Using an empty array.`);
+            options = [];
+        }
+
         options.forEach(option => {
             const optElem = document.createElement('option');
-            if (option.value && option.text) {
+
+            // Handle options that may be objects with 'value' and 'text' properties
+            if (typeof option === 'object' && option.value && option.text) {
                 optElem.value = option.value;
                 optElem.text = option.text;
-            }
-            else {
+            } else {
+                // If option is not an object, treat it as a simple value
                 optElem.value = option;
                 optElem.text = option;
-
             }
+
+            // Set the selected value
             if (optElem.value === selectedValue) {
                 optElem.selected = true;
             }
+
             selectElem.appendChild(optElem);
         });
 
@@ -821,16 +891,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return colElem;
     }
-
-    // Helper function to convert number to array for floor options
-    function numberToArray(number) {
-        const result = [];
-        for (let i = 1; i <= number; i++) {
-            result.push(i);
-        }
-        return result;
-    }
-
     // Prefill hostel details from localStorage
     function prefillHostelDetails() {
         const storedData = localStorage.getItem('hosteldetailsAdmin');
@@ -857,125 +917,200 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
-// Updating hostel details in Firebase
+// Fetch and update hostel details
 updateHostel.addEventListener('click', async (e) => {
-    e.preventDefault();
 
-    var hostelName = document.getElementById("hostelname").value;
-    var htype = document.getElementById("hosteltype").value;
-    var hphone = document.getElementById("hostelphone").value;
-    var hemail = document.getElementById("hostelemail").value;
-    var hadd1 = document.getElementById("hosteladd1").value;
-    var hadd2 = document.getElementById("hosteladd2").value;
-    var hcity = document.getElementById("hostelcity").value;
-    var hstate = document.getElementById("hostelstate").value;
-    var hpin = document.getElementById("hostelpin").value;
-    var hfloorsDB = document.getElementById("hostelfloorsDB").value;
+    let hostelName = document.getElementById("hostelname").value;
+    let htype = document.getElementById("hosteltype").value;
+    let hphone = document.getElementById("hostelphone").value;
+    let hemail = document.getElementById("hostelemail").value;
+    let hadd1 = document.getElementById("hosteladd1").value;
+    let hadd2 = document.getElementById("hosteladd2").value;
+    let hcity = document.getElementById("hostelcity").value;
+    let hstate = document.getElementById("hostelstate").value;
+    let hpin = document.getElementById("hostelpin").value;
+    let hfloorsDB = document.getElementById("hostelfloorsDB").value;
 
-    const existingHostelRef = ref(db, `Hostel details/${hostelName}`); // Use the old name here
-    const existingHostelSnapshot = await get(existingHostelRef);
-    const existingHostelDetails = existingHostelSnapshot.exists() ? existingHostelSnapshot.val() : {};
+    // Fetch existing hostel details
+    let existingHostelRef = ref(db, `Hostel details/${hostelName}`);
+    let existingHostelSnapshot = await get(existingHostelRef);
+    let existingHostelDetails = existingHostelSnapshot.exists() ? existingHostelSnapshot.val() : {};
 
-    // Keep extras from existing hostel details
-    const extras = existingHostelDetails.extras || {}; // Assuming extras are stored under 'extras'
+    let floorContainers = document.querySelectorAll('.floorsContainer');
 
+    for (let floorElem of floorContainers) {
+        let roomElements = floorElem.querySelectorAll('.room-container');
 
-    // Fetch existing room data first
-    const existingRoomsRef = ref(db, `Hostel details/${hostelName}/rooms`);
-    const existingRoomsSnapshot = await get(existingRoomsRef);
-    const existingRooms = existingRoomsSnapshot.exists() ? existingRoomsSnapshot.val() : {};
+        for (let roomElem of roomElements) {
+            let floorKey = roomElem.getAttribute('data-floor');
+            let roomKey = roomElem.id.split('-')[1];
+            let roomType = document.getElementById(`roomType-${floorKey}-${roomKey}`).value;
+            let roomCount = parseInt(document.getElementById(`roomCount-${floorKey}-${roomKey}`).value, 10);
+            let amenities = document.getElementById(`amenities-${floorKey}-${roomKey}`).value;
+            let ac = document.getElementById(`acType-${floorKey}-${roomKey}`).value;
+            let bathroom = document.getElementById(`bathroom-${floorKey}-${roomKey}`).value;
+            let price = (document.getElementById(`price-${floorKey}-${roomKey}`).value); // Ensure price is a float
+            let remarks = document.getElementById(`remarks-${floorKey}-${roomKey}`).value;
 
-    const rooms = {};
+            let imageInput = document.getElementById(`roomImage-${roomKey}`);
+            let files = imageInput.files;
+            let imagelink1 = [];
 
-    const roomElements = document.querySelectorAll('.card[id^="room-"]');
-
-    for (let roomElem of roomElements) {
-        const roomKey = roomElem.id.split('-')[1];
-        const floor = document.getElementById(`floor-${roomKey}`).value;
-        const roomType = document.getElementById(`roomType-${roomKey}`).value;
-        const roomCountVal = document.getElementById(`roomCount-${roomKey}`).value;
-        const amenities = document.getElementById(`amenities-${roomKey}`).value;
-        const ac = document.getElementById(`ac-${roomKey}`).value;
-        const bathroom = document.getElementById(`bathroom-${roomKey}`).value;
-        const price = document.getElementById(`price-${roomKey}`).value;
-
-        const imageInput = document.getElementById(`roomImage-${roomKey}`);
-        const files = imageInput.files;
-        let imagelink1 = [];
-
-        // Upload new images if any
-        if (files.length != 0) {
-            for (let j = 0; j < files.length; j++) {
-                const storageRef = ref2(storage, 'images/' + hostelName + '/room-' + roomKey + '/' + files[j].name);
-                await uploadBytes(storageRef, files[j]);
-                const imageUrl = await getDownloadURL(storageRef);
-                imagelink1.push(imageUrl);
+            if (files.length !== 0) {
+                for (let j = 0; j < files.length; j++) {
+                    let storageRef = ref2(storage, `images/${hostelName}/room-${roomKey}/${files[j].name}`);
+                    await uploadBytes(storageRef, files[j]);
+                    let imageUrl = await getDownloadURL(storageRef);
+                    imagelink1.push(imageUrl);
+                }
             }
-        }
 
-        const floorKey = `floor${floor}`;
+            console.log(db, `Hostel details/${hostelName}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/room${roomKey}`);
+            // Fetch existing roomType level
+            let existingRoomTypeRef = ref(db, `Hostel details/${hostelName}/rooms/floor${floorKey}/${roomType}`);
+            let existingRoomTypeSnapshot = await get(existingRoomTypeRef);
+            let existingRoomTypeData = existingRoomTypeSnapshot.exists() ? existingRoomTypeSnapshot.val() : {};
 
-        // Merge new room details with existing room data
-        if (!rooms[floorKey]) {
-            rooms[floorKey] = {};
-        }
+            let existingRoomTypeBedsAvailable = existingRoomTypeData.bedsAvailable || 0;
 
-        //fetching the existing beds and appending it to the record.
+            // Update roomType-level
+            await update(
+                ref(db, `Hostel details/${hostelName}/rooms/floor${floorKey}/${roomType}`),
+                {
+                    floor: floorKey,
+                    price: price,
+                    roomCount: roomCount,
+                    roomType: roomType,
+                    bedsAvailable: existingRoomTypeBedsAvailable,
+                }
+            ).catch((error) => {
+                console.error(`Error updating roomType details for ${roomType}:`, error);
+                alert(`Error updating roomType details for ${roomType}: ${error}`);
+            });
 
-        const existingRoomsBeds = ref(db, `Hostel details/${hostelName}/rooms/floor${floor}/room${roomKey}/beds/`);
-        const existingRoomsBedsSnapshot = await get(existingRoomsBeds);
-        // re-iterating the bed count from the room type and adding all the booking as not booked
-        let matches = roomType.match(/(\d+)/);
-        let bedCount = parseInt(matches[0]);
-        for (let k = 1; k <= bedCount; k++) {
-            let key = 'bed ' + k;
-            await update(ref(db, `Hostel details/${hostelName}/rooms/floor${floor}/room${roomKey}/beds/`), {
-                [key]: 'not booked'
-            })
-                .then(() => {
-                    //console.log(db, "Hostel details/" + hname)
-                })
-                .catch((error) => {
-                    alert(error);
-                });
-        }
-        //After updating the count of beds and updating the booking status of each bed, if they're already booked
-        //at the time of hostel updation, it'll set that particular bedId to booked.
-        existingRoomsBedsSnapshot.forEach(async (h)=> {
-            await update(ref(db, `Hostel details/${hostelName}/rooms/floor${floor}/room${roomKey}/beds/`), {
-                [h.key]: h.val()
-            })
-                .then(() => {
-                    //console.log(db, "Hostel details/" + hname)
-                })
-                .catch((error) => {
-                    alert(error);
-                });
-        })
-        rooms[floorKey][`room${roomKey}`] = {
-            roomNumber: roomKey,
-            floor: floor,
-            ac,
-            roomCount: roomCountVal,
-            bathroom,
-            roomType: roomType,
-            price: price,
-            amenities: amenities,
-            // beds: existingRoomsBedsSnapshot.val(),
-            imagesLink: imagelink1.length > 0 ? imagelink1 : [] // Keep existing if no new images
-        };
+            // Fetch existing room-level data
+            let existingRoomRef = ref(db, `Hostel details/${hostelName}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/${roomKey}`);
+            let existingRoomSnapshot = await get(existingRoomRef);
+            let existingRoomData = existingRoomSnapshot.exists() ? existingRoomSnapshot.val() : {};
+            let existingBeds = existingRoomData.beds || {};
+            let existingBedsAvailable = existingRoomData.bedsAvailable;
+            // Update room-level details 
+            let roomnum = roomKey.match(/\d+/)[0];
+            let existingImages = existingRoomData.imagesLink || []; // Fetch existing images
+            let updatedImages = imagelink1.length > 0 ? [...existingImages, ...imagelink1] : existingImages;
 
-        // Ensure that existing rooms are preserved
-        if (existingRooms[floorKey] && existingRooms[floorKey][`room${roomKey}`]) {
-            rooms[floorKey][`room${roomKey}`] = {
-                ...existingRooms[floorKey][`room${roomKey}`], // Keep existing data
-                ...rooms[floorKey][`room${roomKey}`] // Update with new data
-            };
+            await update(
+                ref(db, `Hostel details/${hostelName}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/${roomKey}`),
+                {
+                    roomNumber: roomnum,
+                    floor: floorKey,
+                    ac: ac,
+                    roomCount: roomCount,
+                    roomType: roomType,
+                    bathroom: bathroom,
+                    price: price,
+                    amenities: amenities,
+                    remarks: remarks,
+                    imagesLink: updatedImages, // Use updated images array
+                    bedsAvailable: existingBedsAvailable, // Retain existing bedsAvailable value
+                }
+            ).catch((error) => {
+                console.error(`Error updating room details for Room ${roomKey}:`, error);
+                alert(`Error updating room details for Room ${roomKey}: ${error}`);
+            });
+
+            await update(
+                ref(db, `Hostel details/${hostelName}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/${roomKey}/beds`),
+                {
+                    beds: existingBeds, // Retain existing beds data
+                }
+            ).catch((error) => {
+                console.error(`Error updating bed details for Room ${roomKey}:`, error);
+                alert(`Error updating room details for Room ${roomKey}: ${error}`);
+            });
         }
     }
 
-    // Always update hostel details
-    await update(ref(db, "Hostel details/" + hostelName + '/'), {
+    // `.additional-room-container`
+    let additionalRoomContainers = document.querySelectorAll('.additional-room-container');
+    debugger;
+
+    for (let roomElem of additionalRoomContainers) {
+        let uniqueId = roomElem.id.split('-')[1]; // Extract unique ID for each room container
+
+        // Fetch the room data for this container
+        let floor = document.getElementById(`floorNumber-${uniqueId}`).value;
+        let roomType = document.getElementById(`roomType-${uniqueId}`).value;
+        let roomCount = parseInt(document.getElementById(`roomCount-${uniqueId}`).value, 10);
+        let roomNumbers = document.getElementById(`roomNumber-${uniqueId}`).value.split(',').map(num => num.trim()); // Parse room numbers from comma-separated input
+        let amenities = document.getElementById(`amenities-${uniqueId}`).value;
+        let price = document.getElementById(`price-${uniqueId}`).value;
+        let bathroom = document.getElementById(`bathroom-${uniqueId}`).value;
+        let ac = document.getElementById(`acType-${uniqueId}`).value;
+        let remarks = document.getElementById(`remarks-${uniqueId}`).value;
+
+        if (floor > hfloorsDB) {
+            hfloorsDB = floor; // Update hfloorsDB if needed
+        }
+
+        // Calculate beds available based on roomType and roomCount
+        const roomTypeBedsAvailable = parseInt(roomType.match(/\d+/)[0]) * roomCount;
+
+        // Beds available per room.
+        const bedsAvailableForRoom = parseInt(roomType.match(/\d+/)[0]);
+
+        let imageInput = document.getElementById(`roomImage-${uniqueId}`);
+        let files = imageInput.files;
+        let imageLinks = [];
+
+        if (files.length !== 0) {
+            for (let file of files) {
+                let storageRef = ref2(storage, `images/${hostelName}/room-${roomNumbers[0]}/${file.name}`);
+                await uploadBytes(storageRef, file);
+                let imageUrl = await getDownloadURL(storageRef);
+                imageLinks.push(imageUrl);
+            }
+        }
+
+        // Update roomType-level details
+        await update(ref(db, `Hostel details/${hostelName}/rooms/floor${floor}/${roomType}`), {
+            roomType: roomType,
+            roomCount: roomCount,
+            bedsAvailable: roomTypeBedsAvailable,
+        }).catch((error) => console.error(`Error updating roomType details for ${roomType}:`, error));
+
+        // Loop through each room number from the comma-separated list
+        for (let roomNumber of roomNumbers) {
+            // Update the room-level details for each room number
+            await update(ref(db, `Hostel details/${hostelName}/rooms/floor${floor}/${roomType}/rooms/${ac}/room${roomNumber}`), {
+                floor: floor,
+                roomType: roomType,
+                roomNumber: roomNumber,
+                roomCount: roomCount,
+                amenities: amenities,
+                ac: ac,
+                bathroom: bathroom,
+                price: price,
+                remarks: remarks,
+                bedsAvailable: bedsAvailableForRoom,
+                imagesLink: imageLinks,
+                beds: {} // Empty object to represent initial bed status
+            });
+
+            // Insert bed data for the current room (e.g., "bed 1", "bed 2", etc.)
+            for (let bedIndex = 1; bedIndex <= bedsAvailableForRoom; bedIndex++) {
+                const bedKey = `bed ${bedIndex}`;
+                await update(ref(db, `Hostel details/${hostelName}/rooms/floor${floor}/${roomType}/rooms/${ac}/room${roomNumber}/beds`), {
+                    [bedKey]: 'not booked', // Initial status of the bed
+                }).catch((error) => {
+                    alert(`Error updating bed ${bedKey}: ${error}`);
+                });
+            }
+        }
+    }
+
+    // Update hostel-level details (generic hostel info)
+    await update(ref(db, `Hostel details/${hostelName}/`), {
         hostelName: hostelName,
         hostelType: htype,
         hostelPhone: hphone,
@@ -986,44 +1121,39 @@ updateHostel.addEventListener('click', async (e) => {
         hostelState: hstate,
         hostelPin: hpin,
         hostelFloors: hfloorsDB,
-        extras: extras,
-        rooms: rooms // Merge with existing rooms
+        extras: existingHostelDetails.extras || {}, // Retain extras
     });
 
+
     let weeks = {}; // Collect week details
-    const weekCount = document.querySelectorAll('.card[id^="week-"]').length;
-    const weekDropdown = document.getElementById('weekDropdown'); // Access the dropdown here
+    let weekCount = document.querySelectorAll('.card[id^="week-"]').length;
+    let weekDropdown = document.getElementById('weekDropdown');
 
-    // Ensure the dropdown exists before trying to access its value
-    const selectedWeeks = weekDropdown ? Array.from(weekDropdown.selectedOptions).map(option => option.value) : []; // Get all selected weeks
-
-    console.log(`Week Count: ${weekCount}, Selected Weeks: ${selectedWeeks}`); // Debugging log
+    let selectedWeeks = weekDropdown ? Array.from(weekDropdown.selectedOptions).map(option => option.value) : [];
 
     if (weekCount > 0 && selectedWeeks.length > 0) { // Ensure there are weeks to process
-        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        let days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-        // Fetch existing weeks from Firebase
-        const weeksRef = ref(db, `Hostel details/${hostelName}/weeks`);
-        const snapshot = await get(weeksRef);
+        let weeksRef = ref(db, `Hostel details/${hostelName}/weeks`);
+        let snapshot = await get(weeksRef);
         let existingWeeks = snapshot.exists() ? snapshot.val() : {};
 
-        // Process the selected weeks
         selectedWeeks.forEach(selectedWeek => {
-            const weekData = {};
+            let weekData = {};
             days.forEach(day => {
                 weekData[day] = {};
-                const mealTimes = ['morning', 'afternoon', 'night'];
+                let mealTimes = ['morning', 'afternoon', 'night'];
                 mealTimes.forEach(mealTime => {
-                    const mainDishElement = document.getElementById(`mainDish-1-${day}-${mealTime}`);
-                    const sideDishElement = document.getElementById(`sideDish-1-${day}-${mealTime}`);
+                    let mainDishElement = document.getElementById(`mainDish-1-${day}-${mealTime}`);
+                    let sideDishElement = document.getElementById(`sideDish-1-${day}-${mealTime}`);
 
-                    const dishName = mainDishElement ? mainDishElement.value : ''; // Check for existence
-                    const sideDishName = sideDishElement ? sideDishElement.value : ''; // Check for existence
+                    let dishName = mainDishElement ? mainDishElement.value : '';
+                    let sideDishName = sideDishElement ? sideDishElement.value : '';
 
-                    console.log(`Processing Day: ${day}, Meal Time: ${mealTime}, Main Dish: ${dishName}, Side Dish: ${sideDishName}`); // Debugging log
+                    console.log(`Processing Day: ${day}, Meal Time: ${mealTime}, Main Dish: ${dishName}, Side Dish: ${sideDishName}`);
 
                     if (dishName !== 'select main dish' && sideDishName !== 'select side dish') {
-                        const timing = getMealTimings(mealTime); // Fetch the global timings
+                        let timing = getMealTimings(mealTime);
                         weekData[day][mealTime.toLowerCase()] = {
                             mainDish: dishName,
                             sideDish: sideDishName,
@@ -1033,16 +1163,14 @@ updateHostel.addEventListener('click', async (e) => {
                 });
             });
 
-            // Update the existing weeks data with the new week data
             existingWeeks[selectedWeek] = weekData;
         });
 
-        // Update Firebase with the merged weeks data
-        await update(ref(db, "Hostel details/" + hostelName + '/weeks'), existingWeeks);
+        await update(ref(db, `Hostel details/${hostelName}/weeks`), existingWeeks);
     }
 
     alert("Hostel details updated successfully");
-    window.location.href = "././products.html";
+    window.location.href = "././hostel-list.html";
 
     // Function to get global meal timings
     function getMealTimings(mealTime) {
@@ -1066,9 +1194,9 @@ updateHostel.addEventListener('click', async (e) => {
     function convertTo12Hour(time24) {
         if (!time24) return '';
         let [hours, minutes] = time24.split(':');
-        const ampm = hours >= 12 ? 'PM' : 'AM';
+        let ampm = hours >= 12 ? 'PM' : 'AM';
         hours = hours % 12;
-        hours = hours ? hours : 12; // the hour '0' should be '12'
+        hours = hours ? hours : 12;
         return `${hours}:${minutes} ${ampm}`;
     }
 });
