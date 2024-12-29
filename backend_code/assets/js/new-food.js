@@ -199,7 +199,7 @@ document.getElementById('save-food').addEventListener('click', async () => {
     try {
         await set(foodMenuRef, sessionData); // Store sessionData in Firebase
         alert('Food menu saved successfully to Firebase!');
-        window.location.href = "././food-list.html";
+        window.location.href = "././food-menu-list.html";
     } catch (error) {
         console.error('Error saving data to Firebase:', error);
         alert('Failed to save food menu. Please try again.');

@@ -78,6 +78,99 @@
     <!-- App css -->
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
 </head>
+<style>
+    .step {
+        display: none;
+    }
+
+    .step.active {
+        display: block;
+    }
+
+    .progress-bar {
+        height: 20px;
+        background: linear-gradient(to right, #f2a93e, #f07054);
+    }
+
+    .food-selector {
+        font-family: Arial, sans-serif;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        max-width: 900px;
+        margin: 1rem auto;
+        padding: 1rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Progress Steps */
+    .progress-steps {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .step-wrapper {
+        display: flex;
+        align-items: center;
+        width: 80%;
+        justify-content: space-between;
+        position: relative;
+    }
+
+    .circle {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #e0e0e0;
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 14px;
+        font-weight: bold;
+        z-index: 2;
+    }
+
+    .circle.completed {
+        background: #f07054;
+    }
+
+    .line {
+        flex: 1;
+        height: 5px;
+        background-color: #e0e0e0;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 1;
+    }
+
+    .line.completed {
+        background: #f07054;
+    }
+
+    .step-texts {
+        display: flex;
+        justify-content: space-between;
+        width: 80%;
+        text-align: center;
+        margin-top: 10px;
+        font-size: 14px;
+    }
+
+    .step-text {
+        color: #999;
+        text-align: center;
+    }
+
+    .step-text.active {
+        color: #000;
+        text-align: center;
+        font-weight: bold;
+    }
+</style>
 
 <body>
     <!-- tap on top start -->
@@ -123,155 +216,6 @@
                 </div>
                 <div class="nav-right col-xl-6 col-5 pull-right right-header p-0">
                     <ul class="nav-menus">
-                        <!--<li class="search-icon">
-                            <span class="header-search">
-                                <i class="ri-search-line"></i>
-                            </span>
-                        </li>
-                        <li class="onhover-dropdown">
-                            <div class="notification-box">
-                                <i class="ri-notification-line"></i>
-                                <span class="badge rounded-pill badge-theme">4</span>
-                            </div>
-                            <ul class="notification-dropdown onhover-show-div">
-                                <li>
-                                    <i class="ri-notification-line"></i>
-                                    <h4 class="mb-0">Notitications</h4>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-primary"></i>Delivery processing <span
-                                            class="pull-right">10 min.</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-success"></i>Order Complete<span
-                                            class="pull-right">1 hr</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-info"></i>Tickets Generated<span
-                                            class="pull-right">3 hr</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-danger"></i>Delivery Complete<span
-                                            class="pull-right">6 hr</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <a class="btn btn-primary" href="javascript:void(0)">Check all notification</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="onhover-dropdown">
-                            <div class="messages-box">
-                                <i class="ri-message-3-line"></i>
-                            </div>
-                            <ul class="messages-dropdown onhover-show-div">
-                                <li>
-                                    <i class="ri-message-3-line"></i>
-                                    <h4 class="mb-0">Messages</h4>
-                                </li>
-                                <li>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <img src="./assets/images/user/1.jpg" alt="">
-                                        <div>
-                                            <h5>
-                                                Nullam tempor
-                                            </h5>
-                                            <p>Curabitur facilisis erat viverra.</p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <img src="./assets/images/user/2.jpg" alt="">
-                                        <div>
-                                            <h5>
-                                                Nullam tempor
-                                            </h5>
-                                            <p>Curabitur facilisis erat viverra.</p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <img src="./assets/images/user/3.jpg" alt="">
-                                        <div>
-                                            <h5>
-                                                Nullam tempor
-                                            </h5>
-                                            <p>Curabitur facilisis erat viverra.</p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <img src="./assets/images/user/4.jpg" alt="">
-                                        <div>
-                                            <h5>
-                                                Nullam tempor
-                                            </h5>
-                                            <p>Curabitur facilisis erat viverra.</p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li>
-                                    <a class="btn btn-primary" href="javascript:void(0)">Go to Inbox</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <div class="mode">
-                                <i class="ri-moon-line"></i>
-                            </div>
-                        </li>
-                        <li class="profile-nav onhover-dropdown pe-0 me-0">
-                            <div class="media profile-media">
-                                <img class="user-profile rounded-circle" src="assets/images/users/4.jpg" alt="">
-                                <div class="user-name-hide media-body">
-                                    <span>Emay Walter</span>
-                                    <p class="mb-0 font-roboto">Admin<i class="middle ri-arrow-down-s-line"></i></p>
-                                </div>
-                            </div>
-                            <ul class="profile-dropdown onhover-show-div">
-                                <li>
-                                    <a href="all-users.html">
-                                        <i data-feather="users"></i>
-                                        <span>Users</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="order-list.html">
-                                        <i data-feather="archive"></i>
-                                        <span>Orders</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="support-ticket.html">
-                                        <i data-feather="phone"></i>
-                                        <span>Spports Tickets</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="profile-setting.html">
-                                        <i data-feather="settings"></i>
-                                        <span>Settings</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                        href="javascript:void(0)">
-                                        <i data-feather="log-out"></i>
-                                        <span>Log out</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>-->
                     </ul>
                 </div>
                 <div class="input-box">
@@ -406,527 +350,303 @@
 
             <div class="page-body">
 
+                <div class="progress-steps">
+                    <div class="step-wrapper">
+                        <div id="circle1" class="circle">1</div>
+                        <div id="line1" class="line"></div>
+                        <div id="circle2" class="circle">2</div>
+                        <div id="line2" class="line"></div>
+                        <div id="circle3" class="circle">3</div>
+                        <div id="line3" class="line"></div>
+                        <div id="circle4" class="circle">4</div>
+                    </div>
+
+                    <div class="step-texts">
+                        <div class="step-text" id="text1">Hostel Details</div>
+                        <div class="step-text" id="text2">Room Details</div>
+                        <div class="step-text" id="text3">Weekly Menu</div>
+                        <div class="step-text" id="text4">Submit</div>
+                    </div>
+                </div>
+                <div class="progress mb-4">
+                    <div id="progressBar" class="progress-bar" style="width: 50%;">Step 1 of 4</div>
+                </div>
+
                 <!-- New Product Add Start -->
                 <div class="container-fluid" id="hostelDetailsForm">
                     <div class="row">
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Hostel Information</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="input-items">
-                                                <div class="row gy-3">
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Hostel Name<span class="required">*</span></h6>
-                                                            <input type="text" placeholder="Hostel Name" id="hostelname"
-                                                                required>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Hostel Type<span class="required">*</span></h6>
-                                                            <select class="js-example-basic-single w-100" name="state"
-                                                                id="hosteltype" required>
-                                                                <option>Men</option>
-                                                                <option>Women</option>
-                                                                <option>Both</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Phone number<span class="required">*</span></h6>
-                                                            <input type="tel" placeholder="Hostel Phone"
-                                                                id="hostelphone" required>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Email address<span class="required">*</span></h6>
-                                                            <input type="email" placeholder="Hostel Email address"
-                                                                id="hostelemail" required>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Address Line 1<span class="required">*</span></h6>
-                                                            <input type="text" placeholder="Address line 1"
-                                                                id="hosteladd1" required>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Address Line 2<span class="required">*</span></h6>
-                                                            <input type="text" placeholder="Address line 2"
-                                                                id="hosteladd2" required>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>City<span class="required">*</span></h6>
-                                                            <input type="text" placeholder="City" id="hostelcity"
-                                                                required>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>State<span class="required">*</span></h6>
-                                                            <input type="text" placeholder="State" id="hostelstate"
-                                                                required>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Pincode<span class="required">*</span></h6>
-                                                            <input type="number" placeholder="Pincode" id="hostelpin"
-                                                                required>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>No. of floors<span class="required">*</span></h6>
-                                                            <input type="number" placeholder="No.of floors"
-                                                                id="hostelfloors" required>
-                                                        </div>
-                                                    </div>
-                                                    <!--<div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Category</h6>
-                                                            <select class="js-example-basic-single w-100" name="state">
-                                                                <option disabled>Category Menu</option>
-                                                                <option>Electronics</option>
-                                                                <option>TV & Appliances</option>
-                                                                <option>Home & Furniture</option>
-                                                                <option>Another</option>
-                                                                <option>Baby & Kids</option>
-                                                                <option>Health, Beauty & Perfumes</option>
-                                                                <option>Uncategorized</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Subcategory</h6>
-                                                            <select class="js-example-basic-single w-100" name="state">
-                                                                <option disabled>Subcategory Menu</option>
-                                                                <option>Ethnic Wear</option>
-                                                                <option>Ethnic Bottoms</option>
-                                                                <option>Women Western Wear</option>
-                                                                <option>Sandels</option>
-                                                                <option>Shoes</option>
-                                                                <option>Beauty & Grooming</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>-->
-                                                    <!--<div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Brand</h6>
-                                                            <select class="js-example-basic-single w-100">
-                                                                <option disabled>Brand Menu</option>
-                                                                <option value="puma">Puma</option>
-                                                                <option value="hrx">HRX</option>
-                                                                <option value="roadster">Roadster</option>
-                                                                <option value="zara">Zara</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Unit</h6>
-                                                            <select class="js-example-basic-single w-100">
-                                                                <option disabled>Unit Menu</option>
-                                                                <option>Kilogram</option>
-                                                                <option>Pieces</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <div class="input-box">
-                                                            <h6>Tags</h6>
-                                                            <input type="text" placeholder="Type tag & hit enter">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <div class="input-box">
-                                                            <div class="icon-state">
-                                                                <label class="switch-xsm mb-0">
-                                                                    <input type="checkbox" id="flexSwitchCheckDefault-1"
-                                                                        checked=""><span class="slider round"></span>
-                                                                </label>
-                                                                <label class="form-check-label"
-                                                                    for="flexSwitchCheckDefault-1">A/C</label>
+                        <!-- Step 1: Hostel Details -->
+                        <div class="step active" id="step1">
+                            <div class="col-12">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5>Step 1: Basic Hostel Info</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="input-items">
+                                                    <div class="row gy-3">
+                                                        <div class="col-xl-6">
+                                                            <div class="input-box">
+                                                                <h6>Hostel Name<span class="required">*</span></h6>
+                                                                <input type="text" placeholder="Hostel Name"
+                                                                    id="hostelname" required>
                                                             </div>
                                                         </div>
-                                                    </div>-->
-                                                    <div class="col-12">
-                                                        <button type="button" id="addfloors"
-                                                            class="btn restaurant-button">Add Floors</button>
+                                                        <div class="col-xl-6">
+                                                            <div class="input-box">
+                                                                <h6>Hostel Type<span class="required">*</span></h6>
+                                                                <select class="js-example-basic-single w-100"
+                                                                    name="state" id="hosteltype" required>
+                                                                    <option>Men</option>
+                                                                    <option>Women</option>
+                                                                    <option>Both</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xl-6">
+                                                            <div class="input-box">
+                                                                <h6>Phone number<span class="required">*</span></h6>
+                                                                <input type="tel" placeholder="Hostel Phone"
+                                                                    id="hostelphone" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xl-6">
+                                                            <div class="input-box">
+                                                                <h6>Email address<span class="required">*</span></h6>
+                                                                <input type="email" placeholder="Hostel Email address"
+                                                                    id="hostelemail" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xl-6">
+                                                            <div class="input-box">
+                                                                <h6>Address Line 1<span class="required">*</span></h6>
+                                                                <input type="text" placeholder="Address line 1"
+                                                                    id="hosteladd1" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xl-6">
+                                                            <div class="input-box">
+                                                                <h6>Address Line 2<span class="required">*</span></h6>
+                                                                <input type="text" placeholder="Address line 2"
+                                                                    id="hosteladd2" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xl-6">
+                                                            <div class="input-box">
+                                                                <h6>City<span class="required">*</span></h6>
+                                                                <input type="text" placeholder="City" id="hostelcity"
+                                                                    required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xl-6">
+                                                            <div class="input-box">
+                                                                <h6>State<span class="required">*</span></h6>
+                                                                <input type="text" placeholder="State" id="hostelstate"
+                                                                    required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xl-6">
+                                                            <div class="input-box">
+                                                                <h6>Pincode<span class="required">*</span></h6>
+                                                                <input type="number" placeholder="Pincode"
+                                                                    id="hostelpin" required>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <br>
-                                                    <div class="col-12" id="floors-container"></div>
-                                                    <!--<div class="col-12">
-                                                                <button type="button" data-bs-toggle="modal"
-                                                                    data-bs-target="#room"
-                                                                    class="btn restaurant-button">Add room</a>
-                                                    </div>-->
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5>Menu details</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div id="mealTimeContainer" class="container">
-                                        <div class="row gy-3">
-                                            <div class="col-xl-6" id="morningTimeContainer">
-                                                <label>Morning Timings</label>
-                                            </div>
-                                            <div class="col-xl-6" id="afternoonTimeContainer">
-                                                <label>Afternoon Timings</label>
-                                            </div>
-
-                                            <div class="col-xl-6" id="nightTimeContainer">
-                                                <label>Night Timings</label>
-                                            </div>
-                                        </div>
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Hostel Images</h5>
                                     </div>
-                                    <br>
-                                    <div>
-
-                                        <button id="addWeekButton" class="btn btn-primary"
-                                            style="margin-left:15px;display:flex;align-items: center;">Add
-                                            week</button>
-                                    </div>
-                                    <div id="weekContainer" class="mt-4"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5>Hostel Images</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="input-items">
-                                        <div class="row gy-3">
-                                            <div class="col-xl-6">
-                                                <div class="input-box">
-                                                    <h6>Images</h6>
-                                                    <input type="file" id="files" multiple>
-                                                </div>
-                                                <br>
-                                                <div class="col-12">
-                                                    <button id="uploadImage" class="btn restaurant-button">Upload
-                                                        Image</button>
-                                                </div>
-                                                <!--<p id="uploading"></p>
-                                                        <progress value="0" max="100" id="progress"></progress>
-                                                        <img id="imagePreview" src="" alt="Image Preview">-->
-
-                                            </div>
-                                            <div class="col-xl-6">
-                                                <div class="input-box">
-                                                    <h6>Thumbnail Image</h6>
-                                                    <input type="file" id="formFile1" multiple>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5>Add Extra Food</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div id="extras-container">
+                                    <div class="card-body">
                                         <div class="input-items">
                                             <div class="row gy-3">
                                                 <div class="col-xl-6">
                                                     <div class="input-box">
-                                                        <h6>Food Name</h6>
-                                                        <input type="text" class="food-name"
-                                                            placeholder="Enter Food Name">
+                                                        <h6>Images</h6>
+                                                        <input type="file" id="files" multiple>
+                                                    </div>
+                                                    <br>
+                                                    <div class="col-12">
+                                                        <button id="uploadImage" class="btn restaurant-button">Upload
+                                                            Image</button>
                                                     </div>
                                                 </div>
                                                 <div class="col-xl-6">
                                                     <div class="input-box">
-                                                        <h6>Food Price</h6>
-                                                        <input type="text" class="food-price"
-                                                            placeholder="Enter Food Price (in Rs)">
+                                                        <h6>Thumbnail Image</h6>
+                                                        <input type="file" id="formFile1" multiple>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <br>
-                                    <div class="d-flex justify-content-end gap-2 mt-3">
-                                        <button id="addItemButton" class="btn btn-primary">Add Item</button>
-                                        <button id="removeItemButton" class="ri-delete-bin-line"
-                                            style="font-size: 24px; cursor: pointer; border: none; background: none;"></button>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-5">
+                                <button type="button" class="btn restaurant-button" id="nextButtonStep1">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Room Details -->
+                        <div class="step" id="step2">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Step 2: Room Details Info</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="input-items">
+                                            <div class="row gy-3">
+                                                <div class="col-xl-6">
+                                                    <div class="input-box">
+                                                        <h6>No. of floors<span class="required">*</span></h6>
+                                                        <input type="number" placeholder="No.of floors"
+                                                            id="hostelfloors" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <button type="button" id="addfloors"
+                                                        class="btn restaurant-button">Add Floors</button>
+                                                </div>
+                                                <br>
+                                                <div class="col-12" id="floors-container"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-5 d-flex justify-content-between align-items-center">
+                                <button type="button" class="btn btn-primary" id="prevButton">Back</button>
+                                <button type="button" class="btn btn-primary" id="nextButtonStep2">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Weekly Menu Details -->
+                        <div class="step" id="step3">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Step 3: Weekly Food Menu</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="mealTimeContainer" class="container">
+                                            <div class="row gy-3">
+                                                <div class="col-xl-6" id="morningTimeContainer">
+                                                    <label>Morning Timings</label>
+                                                </div>
+                                                <div class="col-xl-6" id="afternoonTimeContainer">
+                                                    <label>Afternoon Timings</label>
+                                                </div>
+                                                <div class="col-xl-6" id="eveningTimeContainer">
+                                                    <label>Evening Timings</label>
+                                                </div>
+                                                <div class="col-xl-6" id="nightTimeContainer">
+                                                    <label>Night Timings</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button id="addWeekButton" class="btn btn-primary"
+                                            style="margin-left:15px;display:flex;align-items: center;">
+                                            Add week
+                                        </button>
+
+                                        <!-- Food Selector Section -->
+                                        <div id="foodSelectorsContainer">
+                                            <!-- Food selectors will be dynamically added here -->
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Add Extra Food</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="extras-container">
+                                            <div class="input-items">
+                                                <div class="row gy-3">
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Food Name</h6>
+                                                            <input type="text" class="food-name"
+                                                                placeholder="Enter Food Name">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <div class="input-box">
+                                                            <h6>Food Price</h6>
+                                                            <input type="text" class="food-price"
+                                                                placeholder="Enter Food Price (in Rs)">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="d-flex justify-content-end gap-2 mt-3">
+                                            <button id="addItemButton" class="btn btn-primary">Add Item</button>
+                                            <button id="removeItemButton" class="ri-delete-bin-line"
+                                                style="font-size: 24px; cursor: pointer; border: none; background: none;"></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-5 d-flex justify-content-between align-items-center">
+                                <button type="button" class="btn btn-primary" id="prevButtonStep3">Back</button>
+                                <button type="button" class="btn restaurant-button" id="nextButtonStep3">Next</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Submit Page -->
+                        <div class="step" id="step4">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Step 4: Submit</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <h4>Thank you for providing all details!</h4>
+                                        <p>Your data has been successfully saved.</p>
+                                        <button type="button" id="submitButton" class="btn btn-success">Go to
+                                            Home</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <!--<div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Product variations</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="input-items">
-                                                <div class="row gy-3">
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Option Name</h6>
-                                                            <select class="js-example-basic-single w-100" name="state">
-                                                                <option>Color</option>
-                                                                <option>Size</option>
-                                                                <option>Material</option>
-                                                                <option>Style</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Option Value</h6>
-                                                            <input type="text" class="px-0"
-                                                                placeholder="Type tag & hit enter"
-                                                                data-role="tagsinput">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Shipping</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="input-items">
-                                                <div class="row gy-3">
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Weight (kg)</h6>
-                                                            <input type="number" placeholder="Weight">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Dimensions (cm)</h6>
-                                                            <select class="js-example-basic-single w-100" name="state">
-                                                                <option>Length</option>
-                                                                <option>Width</option>
-                                                                <option>Height</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Product Price</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="input-items">
-                                                <div class="row gy-3">
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>price</h6>
-                                                            <input type="number" placeholder="0">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Compare at price</h6>
-                                                            <input type="number" placeholder="0">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Product Inventory</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="input-items">
-                                                <div class="row gy-3">
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>SKU</h6>
-                                                            <input type="text">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Stock Status</h6>
-                                                            <select class="js-example-basic-single w-100" name="state">
-                                                                <option>In Stock</option>
-                                                                <option>Out Of Stock</option>
-                                                                <option>On Backorder</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Link Products</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="input-items">
-                                                <div class="row gy-3">
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Upsells</h6>
-                                                            <input type="text" name="text">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Cross-Sells</h6>
-                                                            <input type="text" name="text">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>-->
-                        <div class="col-12 mb-5">
-                            <button type="button" id="registerHostel" class="btn restaurant-button">Save</button>
-                        </div>
-                        <!--<div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Search engine listing</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="input-items">
-                                                <div class="row gy-3">
-                                                    <div class="col-12">
-                                                        <div class="input-box">
-                                                            <div class="seo-view">
-                                                                <span class="link">https://zomo.com</span>
-                                                                <h5>Online Order From Neardy Restaurant</h5>
-                                                                <p>Find then best restaurants, cafes and bars on zomo,
-                                                                    view menus , photos, rating and user reviews for top
-                                                                    restaursnts.
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Page title</h6>
-                                                            <input type="search" placeholder="Fresh Fruits">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>URL handle</h6>
-                                                            <input type="search"
-                                                                placeholder="https://themes.pixelstrap.net/zomo/index.html">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <button type="button" id="registerHostel"
-                                                            class="btn restaurant-button">Save</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>-->
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- New Product Add End -->
+            <!-- New Product Add End -->
 
-        <!-- footer Start -->
-        <div class="container-fluid">
-            <footer class="footer">
-                <div class="row">
-                    <div class="col-md-12 footer-copyright text-center">
-                        <p class="mb-0">Copyright 2024 ©Perikitis</p>
+            <!-- footer Start -->
+            <div class="container-fluid">
+                <footer class="footer">
+                    <div class="row">
+                        <div class="col-md-12 footer-copyright text-center">
+                            <p class="mb-0">Copyright 2024 ©Perikitis</p>
+                        </div>
                     </div>
-                </div>
-            </footer>
+                </footer>
+            </div>
+            <!-- footer En -->
         </div>
-        <!-- footer En -->
-    </div>
-    <!-- Container-fluid End -->
+        <!-- Container-fluid End -->
     </div>
     <!-- Page Body End -->
     </div>
     <!-- page-wrapper End -->
-
-    <!--Add room Modal start-->
-    <div class="modal fade location-modal" id="room" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div class="modal-title">
-                        <h5 class="fw-semibold">Add room details</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                </div>
-                <div class="modal-body">
-                    <label>
-                        Room type:
-                    </label>
-                    <input type="text" name="roomtype" id="rtype" placeholder="Room type"><br>
-                    <label>
-                        No. of rooms:
-                    </label>
-                    <input type="text" name="roomtype" id="rnumber" placeholder="Room count"><br>
-                    <label>
-                        Room price:
-                    </label>
-                    <input type="text" name="roomtype" id="rprice" placeholder="Room price"><br>
-                    <label>
-                        Room facility:
-                    </label>
-                    <input type="text" name="roomtype" id="rfac" placeholder="Room facility"><br>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn gray-btn" data-bs-dismiss="modal">Close</button>
-                    <!--<button type="button" class="btn theme-btn mt-0" data-bs-dismiss="modal" id="addroom">Save</button>-->
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--Add room Modal End-->
 
 
     <!-- Modal Start -->
@@ -994,6 +714,10 @@
 
     <!-- Theme js -->
     <script src="assets/js/script.js"></script>
+    <script>
+
+    </script>
+
 </body>
 
 </html>
