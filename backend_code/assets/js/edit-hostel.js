@@ -2,61 +2,96 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getDatabase, ref, get, set, onValue, child, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"
 import { getStorage, ref as ref2, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js"
 import { firebaseConfig } from "./firebase-config.js";
-//import { firebaseConfig } from "./hostel-register.js";
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 const storage = getStorage(app);
 
-async function displayHostelImages(hostelName) {
-    const imageRef = ref(db, `Hostel details/${hostelName}/ImageData/`);
-    try {
-        const snapshot = await get(imageRef);
-        if (snapshot.exists()) {
-            const imageUrls = snapshot.val();
-            const imageContainer = document.getElementById('hostelImageContainer');
-            imageContainer.innerHTML = ''; // Clear existing images
+// Step-based navigation
+let currentStep = 1;
+var files = [];
+let imagelink = [];
 
-            imageUrls.forEach(url => {
-                const img = document.createElement('img');
-                img.src = url;
-                img.alt = 'Hostel Image';
-                img.style.width = '100px';
-                img.style.height = '100px';
-                img.style.margin = '5px';
-                imageContainer.appendChild(img);
-            });
-        } else {
-            console.log('No images found for this hostel.');
-        }
-    } catch (error) {
-        console.error('Error fetching images:', error);
+function nextStep(step) {
+    document.getElementById(`step${currentStep}`).classList.remove("active");
+    document.getElementById(`step${step}`).classList.add("active");
+    updateProgressBar(step);
+    updateProgressIndicators(step);
+    currentStep = step;
+    if (step === 3) {
+        setupWeekContainer(); //call this function for weekly menu data
+        prefillDishTimings();
     }
 }
 
-/*Multiple images upload*/
-var files = [];
-let imagelink = [];
+function prevStep(step) {
+    document.getElementById(`step${currentStep}`).classList.remove("active");
+    document.getElementById(`step${step}`).classList.add("active");
+    updateProgressBar(step);
+    updateProgressIndicators(step);
+    currentStep = step;
+}
+
+function updateProgressBar(step) {
+    const progressBar = document.getElementById("progressBar");
+    const progressPercentage = (step / 4) * 100;
+    progressBar.style.width = `${progressPercentage}%`;
+    progressBar.innerText = `Step ${step} of 4`;
+}
+
+function updateProgressIndicators(step) {
+    const circles = Array.from(document.querySelectorAll(".circle"));
+    const lines = Array.from(document.querySelectorAll(".line"));
+
+    circles.forEach((circle) => circle.classList.remove("completed"));
+    lines.forEach((line) => line.classList.remove("completed"));
+
+    circles.forEach((circle, index) => {
+        if (index + 1 <= step) circle.classList.add("completed");
+    });
+    lines.forEach((line, index) => {
+        if (index + 1 < step) line.classList.add("completed");
+    });
+}
+
+document.getElementById("prevButton").addEventListener("click", () => prevStep(currentStep - 1));
+
+// Prefill Hostel Details
+function prefillHostelDetails() {
+    const storedData = localStorage.getItem("hosteldetailsAdmin");
+    if (storedData) {
+        const hostelData = JSON.parse(storedData);
+        document.getElementById("hostelname").value = hostelData[0] || "";
+        document.getElementById("hosteltype").value = hostelData[1] || "";
+        document.getElementById("hosteladd1").value = hostelData[2] || "";
+        document.getElementById("hosteladd2").value = hostelData[3] || "";
+        document.getElementById("hostelcity").value = hostelData[4] || "";
+        document.getElementById("hostelstate").value = hostelData[5] || "";
+        document.getElementById("hostelphone").value = hostelData[6] || "";
+        document.getElementById("hostelemail").value = hostelData[7] || "";
+        document.getElementById("hostelpin").value = hostelData[8] || "";
+        document.getElementById("hostelfloorsDB").value = hostelData[9] || "";
+
+        displayHostelImages(hostelData[0]);
+    } else {
+        console.log("No hostel data found in localStorage.");
+    }
+}
 document.getElementById("files").addEventListener("change", function (e) {
     files = e.target.files;
     for (let i = 0; i < files.length; i++) {
     }
 });
-
 document.getElementById("uploadImage").addEventListener("click", async function () {
 
     var hostelName = document.getElementById("hostelname").value;
-
-    //checks if files are selected
-    if (files.length != 0) {
-        //Loops through all the selected files
+    if (files.length != 0) {     //checks if files are selected
         for (let i = 0; i < files.length; i++) {
             const storageRef = ref2(storage, 'images/' + hostelName + '/hostelImg/' + files[i].name);
             const upload = await uploadBytes(storageRef, files[i]);
             const imageUrl = await getDownloadURL(storageRef);
             imagelink.push(imageUrl);
         }
-
         const imageRef = ref(db, 'Hostel details/' + hostelName + '/ImageData/' + '/');
         set(imageRef, imagelink)
             .then(() => {
@@ -71,9 +106,595 @@ document.getElementById("uploadImage").addEventListener("click", async function 
     }
 });
 
-/* Start of adding room details using dynamic form handling*/
+/* start of weekly menu data storing in firebase db*/
+function addStyles1() {
+    const styles1 = `
+        .food-selector {
+                    font-family: Arial, sans-serif;
+                    border: 1px solid #ddd;
+                    border-radius: 8px;
+                    overflow: hidden;
+                    max-width: 1200px;
+                    margin: 1rem auto;
+                    padding: 1rem;
+                    
+                }
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            background: linear-gradient(to right, #f2a93e, #f07054);
+            color: white;
+        }
+        .tabs button {
+            flex: 1;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            text-align: center;
+            cursor: pointer;
+        }
+        .tabs button.active {
+            background-color: #444;
+            border-bottom: 2px solid #4CAF50;
+        }
+        .container {
+            padding: 1rem;
+        }
+        .day-container {
+            display: none;
+        }
+        .day-container.active {
+            display: block;
+        }
+        .session-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        .meal-card {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            padding: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        .meal-options {
+            width: 100%;
+        }
+        .meal-item {
+            display: flex;
+            margin-bottom: 0.5rem;
+        }
+        .meal-item img {
+            width: 70px;
+            height: 70px;
+            margin-right: 0.5rem;
+            border-radius: 4px;
+        }
+        .actions {
+            text-align: center;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        .actions button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .actions button:hover {
+            background-color: #45a049;
+        }
+        .actions button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+  `;
+
+    const styleSheet = document.createElement("style");
+    styleSheet.type = "text/css";
+    styleSheet.innerText = styles1;
+    document.head.appendChild(styleSheet);
+}
+
+addStyles1();
+function createTimeRangeInput(startId, endId) {
+    const colElem = document.createElement('div');
+    colElem.classList.add('col-xl-6');
+
+    const inputBoxElem = document.createElement('div');
+    inputBoxElem.classList.add('input-box');
+
+    const timeInputContainer = document.createElement('div');
+    timeInputContainer.classList.add('d-flex', 'gap-2');
+
+    const startLabelElem = document.createElement('label');
+    startLabelElem.innerText = 'From:';
+    const startInputElem = document.createElement('input');
+    startInputElem.type = 'time';
+    startInputElem.id = startId;
+    startInputElem.name = startId;
+
+    const endLabelElem = document.createElement('label');
+    endLabelElem.innerText = 'To:';
+    const endInputElem = document.createElement('input');
+    endInputElem.type = 'time';
+    endInputElem.id = endId;
+    endInputElem.name = endId;
+
+    timeInputContainer.appendChild(startLabelElem);
+    timeInputContainer.appendChild(startInputElem);
+    timeInputContainer.appendChild(endLabelElem);
+    timeInputContainer.appendChild(endInputElem);
+
+    inputBoxElem.appendChild(timeInputContainer);
+    colElem.appendChild(inputBoxElem);
+
+    return colElem;
+}
+
+
+const morningTimeContainer = document.getElementById("morningTimeContainer");
+const afternoonTimeContainer = document.getElementById("afternoonTimeContainer");
+const eveningTimeContainer = document.getElementById("eveningTimeContainer");
+const nightTimeContainer = document.getElementById("nightTimeContainer");
+
+morningTimeContainer.appendChild(createTimeRangeInput('morningStart', 'morningEnd'));
+afternoonTimeContainer.appendChild(createTimeRangeInput('afternoonStart', 'afternoonEnd'));
+eveningTimeContainer.appendChild(createTimeRangeInput('eveningStart', 'eveningEnd'));
+nightTimeContainer.appendChild(createTimeRangeInput('nightStart', 'nightEnd'));
+
+/*async function updateDishTimingsForWeek() {
+    const hostelName = document.getElementById("hostelname").value;
+
+    const morningStart = document.getElementById("morningStart").value;
+    const morningEnd = document.getElementById("morningEnd").value;
+    const afternoonStart = document.getElementById("afternoonStart").value;
+    const afternoonEnd = document.getElementById("afternoonEnd").value;
+    const eveningStart = document.getElementById("eveningStart").value;
+    const eveningEnd = document.getElementById("eveningEnd").value;
+    const nightStart = document.getElementById("nightStart").value;
+    const nightEnd = document.getElementById("nightEnd").value;
+
+    const timings = {
+        "Breakfast": { "dishTimings": `${morningStart} - ${morningEnd}` },
+        "Lunch": { "dishTimings": `${afternoonStart} - ${afternoonEnd}` },
+        "Snacks": { "dishTimings": `${eveningStart} - ${eveningEnd}` },
+        "Dinner": { "dishTimings": `${nightStart} - ${nightEnd}` }
+    };
+
+    // Update dish timings for all weeks globally
+    const weeksRef = ref(db, `Hostel details/${hostelName}/weeks`);
+    const snapshot = await get(weeksRef);
+    
+    if (snapshot.exists()) {
+        const weeksData = snapshot.val();
+        for (const weekKey in weeksData) {
+            // For each week, update dish timings
+            for (const dayKey in weeksData[weekKey]) {
+                for (const sessionKey in timings) {
+                    weeksData[weekKey][dayKey][sessionKey].dishTimings = timings[sessionKey].dishTimings;
+                }
+            }
+        }
+
+        // Save the updated data back to Firebase
+        await set(weeksRef, weeksData);
+
+        console.log("Dish timings updated globally across all weeks.");
+    } else {
+        console.error("No weeks data found.");
+    }
+}*/
+
+async function prefillDishTimings() {
+
+    // Fetch week1 data from Firebase
+    const weekData = await getWeekDataFromFirebase(1); // Assuming week1 holds the timings
+
+    if (!weekData) {
+        console.error("No data found for week1");
+        return;
+    }
+
+    // Define mapping for sessions to container IDs
+    const sessionToInputMap = {
+        Breakfast: {
+            start: "morningStart",
+            end: "morningEnd"
+        },
+        Lunch: {
+            start: "afternoonStart",
+            end: "afternoonEnd"
+        },
+        Snacks: {
+            start: "eveningStart",
+            end: "eveningEnd"
+        },
+        Dinner: {
+            start: "nightStart",
+            end: "nightEnd"
+        }
+    };
+
+    // Iterate through each session in week1
+    for (const [day, dayData] of Object.entries(weekData)) {
+        for (const [session, sessionData] of Object.entries(dayData)) {
+            const timings = sessionData.dishTimings; // Get dishTimings for this session
+            if (timings && sessionToInputMap[session]) {
+                const { start, end } = sessionToInputMap[session];
+                const [startTime, endTime] = timings.split(" - "); // Assuming "9:00 AM - 10:00 AM" format
+                document.getElementById(start).value = convertTo24Hour(startTime);
+                document.getElementById(end).value = convertTo24Hour(endTime);
+            }
+        }
+    }
+    function convertTo24Hour(time12h) {
+        if (!time12h) return '';
+
+        const [time, modifier] = time12h.split(' ');
+        let [hours, minutes] = time.split(':');
+
+        if (modifier === 'AM' && hours === '12') {
+            hours = '00'; // Convert 12 AM to 00 hours
+        } else if (modifier === 'PM' && hours !== '12') {
+            hours = (parseInt(hours, 10) + 12).toString(); // Convert PM hours
+        }
+
+        // Ensure two digits for hours and minutes
+        hours = hours.padStart(2, '0');
+        minutes = minutes.padStart(2, '0');
+
+        return `${hours}:${minutes}`; // Returns in "HH:mm" format
+    }
+}
+
+async function getWeekDataFromFirebase(weekCounter) {
+    const hostelName = document.getElementById("hostelname").value;
+    const weekRef = ref(db, `Hostel details/${hostelName}/weeks/week${weekCounter}`);
+    const snapshot = await get(weekRef);
+    if (snapshot.exists()) {
+        return snapshot.val();
+    } else {
+        return null;
+    }
+}
+
+async function fetchFoodData() {
+    const foodMenuRef = ref(db, "Food Menu");
+    const snapshot = await get(foodMenuRef);
+    if (snapshot.exists()) {
+        return snapshot.val();
+    } else {
+        console.error("No data found at 'Food Menu' path");
+        return null;
+    }
+}
+
+async function setupWeekContainer() {
+    const foodData = await fetchFoodData();  // Fetch the full food menu data
+    const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const getMenuButton = document.getElementById("getMenuDetails");
+
+    getMenuButton.onclick = null;
+
+    getMenuButton.onclick = async () => {
+        const existingWeeks = await getExistingWeeks();
+
+        if (existingWeeks.length === 0) {
+            alert("No weeks found in the database.");
+            return;
+        }
+        existingWeeks.forEach(week => {
+            const weekNumber = parseInt(week.replace('week', ''), 10);
+            addWeek(weekNumber);
+        });
+    };
+
+    async function addWeek(weekCounter) {
+        const foodSelectorDiv = document.createElement("div");
+        foodSelectorDiv.classList.add("food-selector");
+        foodSelectorDiv.id = `food-selector-${weekCounter}`;
+
+        const weekHeaderDiv = document.createElement("div");
+        weekHeaderDiv.innerHTML = `<center><h2>Week ${weekCounter}</h2></center><br>`;
+        foodSelectorDiv.appendChild(weekHeaderDiv);
+
+        const tabsDiv = document.createElement("div");
+        tabsDiv.classList.add("tabs");
+        tabsDiv.innerHTML = daysOfWeek
+            .map((day, index) => `<button data-day="${day}" class="${index === 0 ? "active" : ""}">${day}</button>`)
+            .join("");
+        foodSelectorDiv.appendChild(tabsDiv);
+
+        const dayDetailsDiv = document.createElement("div");
+        dayDetailsDiv.classList.add("day-details");
+        dayDetailsDiv.innerHTML = daysOfWeek
+            .map(
+                (day, index) => `
+            <div class="day-container ${index === 0 ? "active" : ""}" id="details-${day}-${weekCounter}">
+              <center><h3>${day}</h3></center>
+              <div class="session-grid">
+                ${["Breakfast", "Lunch", "Snacks", "Dinner"]
+                        .map(session => createMealCard(session, day, weekCounter, foodData))
+                        .join("")}
+              </div>
+            </div>`
+            )
+            .join("");
+        foodSelectorDiv.appendChild(dayDetailsDiv);
+
+        const actionsDiv = document.createElement("div");
+        actionsDiv.classList.add("actions");
+        foodSelectorDiv.appendChild(actionsDiv);
+
+        const backButton = document.createElement("button");
+        backButton.id = `back-btn-${weekCounter}`;
+        backButton.disabled = true;
+        backButton.innerText = "Back";
+        actionsDiv.appendChild(backButton);
+
+        const nextButton = document.createElement("button");
+        nextButton.id = `next-btn-${weekCounter}`;
+        nextButton.innerText = "Next";
+        actionsDiv.appendChild(nextButton);
+
+        const errorMessageDiv = document.createElement("div");
+        errorMessageDiv.id = `error-message-${weekCounter}`;
+        errorMessageDiv.classList.add("error");
+        errorMessageDiv.style.display = "none";
+        foodSelectorDiv.appendChild(errorMessageDiv);
+        document.getElementById("foodSelectorsContainer").appendChild(foodSelectorDiv);
+
+        // Prefill the week data from Firebase
+        await prefillWeekData(weekCounter, foodData);
+
+        setupTabs(tabsDiv, dayDetailsDiv, weekCounter);
+        setupNavigation(actionsDiv, dayDetailsDiv, weekCounter);
+    }
+    async function prefillWeekData(weekCounter, foodData) {
+        const weekData = await getWeekDataFromFirebase(weekCounter);
+
+        if (!weekData) {
+            console.error(`No data found for week ${weekCounter}`);
+            return;
+        }
+
+        daysOfWeek.forEach((day) => {
+            const dayContainer = document.getElementById(`details-${day}-${weekCounter}`);
+            if (!dayContainer) {
+                console.warn(`No container found for ${day} in week ${weekCounter}`);
+                return;
+            }
+
+            // For each meal card (Breakfast, Lunch, etc.), prefill the checkboxes based on Firebase data
+            const sessionCards = dayContainer.querySelectorAll(".meal-card");
+
+            sessionCards.forEach(card => {
+                const sessionName = card.dataset.session;
+                const sessionData = weekData[day]?.[sessionName]?.dishes || [];
+
+                if (!Array.isArray(sessionData)) {
+                    console.error(`Session data for ${day} - ${sessionName} is not an array`, sessionData);
+                    return;
+                }
+
+                const mealOptions = card.querySelector(".meal-options");
+
+                // Prefill the checkboxes based on sessionData from Firebase
+                sessionData.forEach(dish => {
+                    const checkBox = mealOptions.querySelector(`input[data-name="${dish.name}"]`);
+                    if (checkBox) {
+                        checkBox.checked = true; // Precheck the boxes for matching dishes
+                    }
+                });
+            });
+        });
+    }
+
+    async function getWeekDataFromFirebase(weekCounter) {
+        let hostelName = document.getElementById("hostelname").value;
+        const weekRef = ref(db, `Hostel details/${hostelName}/weeks/week${weekCounter}`);
+        const snapshot = await get(weekRef);
+        if (snapshot.exists()) {
+            return snapshot.val();
+        } else {
+            return null;
+        }
+    }
+
+    function createMealCard(session, day, weekCounter, foodData) {
+        const sessionData = foodData[session]?.dishes || [];
+        const options = sessionData
+            .map(
+                dish => `
+            <div class="meal-item">
+                <img src="${dish.image}" alt="${dish.mainDish}" />
+                <label>
+                    <input type="checkbox" value="${dish.id}" data-name="${dish.mainDish}" data-beverage="${dish.beverages}" data-special_dish="${dish.specialDish}">
+                    ${dish.mainDish}
+                    ${dish.sideDish ? `<br><small><b>Side Dish:</b> ${dish.sideDish}</small>` : ""}
+                    ${dish.beverages ? `<br><small><b>Beverage:</b> ${dish.beverages}</small>` : ""}
+                    ${dish.specialDish ? `<br><small><b>Special Dish:</b> ${dish.specialDish}</small>` : ""}
+                </label>
+            </div>`
+            )
+            .join("");
+
+        return `
+        <div class="meal-card" data-session="${session}">
+            <h3>${session}</h3>
+            <div class="meal-options">${options}</div>
+        </div>`;
+    }
+
+    function setupTabs(tabsDiv, dayDetailsDiv, weekCounter) {
+        const tabs = tabsDiv.querySelectorAll("button");
+        const dayContainers = dayDetailsDiv.querySelectorAll(".day-container");
+
+        tabs.forEach(tab => {
+            tab.addEventListener("click", () => {
+                const day = tab.dataset.day;
+
+                tabs.forEach(t => t.classList.remove("active"));
+                tab.classList.add("active");
+
+                dayContainers.forEach(container => {
+                    if (container.id.includes(day)) {
+                        container.classList.add("active");
+                    } else {
+                        container.classList.remove("active");
+                    }
+                });
+            });
+        });
+    }
+
+    function setupNavigation(actionsDiv, dayDetailsDiv, weekCounter) {
+        const backButton = actionsDiv.querySelector(`#back-btn-${weekCounter}`);
+        const nextButton = actionsDiv.querySelector(`#next-btn-${weekCounter}`);
+        const errorMessage = document.getElementById(`error-message-${weekCounter}`);
+
+        const dayContainers = dayDetailsDiv.querySelectorAll(".day-container");
+        let currentDayIndex = 0;
+
+        backButton.addEventListener("click", () => {
+            if (currentDayIndex > 0) {
+                dayContainers[currentDayIndex].classList.remove("active");
+                currentDayIndex--;
+                dayContainers[currentDayIndex].classList.add("active");
+                backButton.disabled = currentDayIndex === 0;
+                nextButton.textContent = "Next";
+            }
+        });
+
+        nextButton.addEventListener("click", async () => {
+            errorMessage.style.display = "none";
+
+            if (currentDayIndex < daysOfWeek.length - 1) {
+                // Navigate to the next day
+                dayContainers[currentDayIndex].classList.remove("active");
+                currentDayIndex++;
+                dayContainers[currentDayIndex].classList.add("active");
+                backButton.disabled = false;
+                nextButton.textContent = currentDayIndex === daysOfWeek.length - 1 ? "Submit" : "Next";
+            } else if (nextButton.textContent === "Submit") {
+                // Save the data only when the button is labeled "Submit"
+                await saveWeekDataToFirebase(weekCounter);
+                alert(`Week ${weekCounter} selections saved!`);
+            }
+        });
+    }
+    async function saveWeekDataToFirebase(weekCounter) {
+        const hostelName = document.getElementById("hostelname").value;
+
+        // Fetch existing week data to preserve the dish timings
+        const weekRef = ref(db, `Hostel details/${hostelName}/weeks/week${weekCounter}`);
+        const snapshot = await get(weekRef);
+        let existingWeekData = snapshot.exists() ? snapshot.val() : {};
+
+        // Prepare new week data
+        const weekData = {};
+        daysOfWeek.forEach(day => {
+            const dayContainer = document.getElementById(`details-${day}-${weekCounter}`);
+            if (!dayContainer) return;
+
+            weekData[day] = {};
+
+            const sessionCards = dayContainer.querySelectorAll(".meal-card");
+            sessionCards.forEach(card => {
+                const sessionName = card.dataset.session;
+                const selectedDishes = [];
+                const checkboxes = card.querySelectorAll("input[type='checkbox']:checked");
+
+                checkboxes.forEach(checkbox => {
+                    const dishName = checkbox.dataset.name;
+                    const beverage = checkbox.dataset.beverage;
+                    const specialDish = checkbox.dataset.special_dish;
+
+                    selectedDishes.push({
+                        name: dishName,
+                        beverage: beverage || null,
+                        specialDish: specialDish || null,
+                    });
+                });
+
+                if (selectedDishes.length > 0) {
+                    // Ensure that dish timings are preserved and only dishes are updated
+                    if (!weekData[day]) weekData[day] = {};
+                    if (!weekData[day][sessionName]) {
+                        weekData[day][sessionName] = { dishes: selectedDishes };
+                    } else {
+                        // Keep existing dish timings and update only dishes
+                        weekData[day][sessionName].dishes = selectedDishes;
+                    }
+
+                    // Preserve the existing dish timings for each session
+                    if (existingWeekData[day] && existingWeekData[day][sessionName]) {
+                        weekData[day][sessionName].dishTimings = existingWeekData[day][sessionName].dishTimings;
+                    }
+                }
+            });
+        });
+
+        // Save the modified week data to Firebase
+        try {
+            await set(weekRef, weekData);
+            console.log(`Week ${weekCounter} data successfully updated.`);
+        } catch (error) {
+            console.error(`Error updating week ${weekCounter} data:`, error);
+        }
+    }
+    async function getExistingWeeks() {
+        const hname = document.getElementById("hostelname").value;
+        const snapshot = await get(ref(db, `Hostel details/${hname}/weeks`));
+        return snapshot.exists() ? Object.keys(snapshot.val()) : [];
+    }
+}
+
+// Display Hostel Images
+async function displayHostelImages(hostelName) {
+    const imageRef = ref(db, `Hostel details/${hostelName}/ImageData/`);
+    try {
+        const snapshot = await get(imageRef);
+        if (snapshot.exists()) {
+            const imageUrls = snapshot.val();
+            const imageContainer = document.getElementById("hostelImageContainer");
+            imageContainer.innerHTML = ""; // Clear existing images
+
+            imageUrls.forEach((url) => {
+                const img = document.createElement("img");
+                img.src = url;
+                img.alt = "Hostel Image";
+                img.style.width = "100px";
+                img.style.height = "100px";
+                img.style.margin = "5px";
+                imageContainer.appendChild(img);
+            });
+        } else {
+            console.log("No images found for this hostel.");
+        }
+    } catch (error) {
+        console.error("Error fetching images:", error);
+    }
+}
+/*End of weekly menu data storing in firebase db*/
 
 document.addEventListener('DOMContentLoaded', function () {
+
     const addRoomButton = document.getElementById("addroom");
     const roomContainer = document.getElementById("additional-room-container");
 
@@ -84,14 +705,14 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function addRoomForm() {
-        roomCount++;  // Increment room count every time a new room is added
+        roomCount++;
 
         const mainParentElem = document.createElement('div');
         mainParentElem.classList.add('col-12');
 
         const roomElem = document.createElement("div");
         roomElem.classList.add("card", "mb-3", "additional-room-container");
-        roomElem.id = `room-${roomCount}`; // Ensure `.card` gets a unique ID
+        roomElem.id = `room-${roomCount}`;
 
         const roomHeader = document.createElement("div");
         roomHeader.classList.add("card-header", "d-flex", "justify-content-between", "align-items-center");
@@ -125,7 +746,6 @@ document.addEventListener('DOMContentLoaded', function () {
             { value: '4 sharing', text: '4 sharing' }
         ]));
         rowElem.appendChild(createInputBox("Room Count", `roomCount-${roomCount}`, "number", true));
-        rowElem.appendChild(createInputBox("Room Number", `roomNumber-${roomCount}`, "text", false, "e.g.,101, 102 .."));
         rowElem.appendChild(createInputBox("Amenities", `amenities-${roomCount}`, "text", false, "e.g., WiFi, Laundry"));
         rowElem.appendChild(createInputBox("Price", `price-${roomCount}`, "number", true));
         rowElem.appendChild(createInputBox("Upload Room Images", `roomImage-${roomCount}`, "file", false, "", true));
@@ -175,7 +795,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return colElem;
     }
-
     function createSelectBox(labelText, selectId, required, options) {
         const colElem = document.createElement("div");
         colElem.classList.add("col-xl-6");
@@ -197,7 +816,6 @@ document.addEventListener('DOMContentLoaded', function () {
             optElem.text = option.text;
             selectElem.appendChild(optElem);
         });
-
         inputBoxElem.appendChild(labelElem);
         inputBoxElem.appendChild(selectElem);
         colElem.appendChild(inputBoxElem);
@@ -207,7 +825,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 /* End of adding room details using dynamic form handling*/
 
-/*start of Get Menu and Get Room details from firebase DB*/
+/*start of Get Room details from firebase DB*/
 document.addEventListener('DOMContentLoaded', function () {
 
     function addStyles() {
@@ -260,353 +878,7 @@ document.addEventListener('DOMContentLoaded', function () {
     addStyles();
     const getRoomButton = document.getElementById("getroom");
     const floorsContainer = document.getElementById("floorsContainer");
-    const getMenuDetailsButton = document.getElementById("getMenuDetails");
 
-    const morningTimeContainer = document.getElementById("morningTimeContainer");
-    const afternoonTimeContainer = document.getElementById("afternoonTimeContainer");
-    const nightTimeContainer = document.getElementById("nightTimeContainer");
-
-    // Append time range inputs for morning, afternoon, and night
-    morningTimeContainer.appendChild(createTimeRangeInput('morningStart', 'morningEnd'));
-    afternoonTimeContainer.appendChild(createTimeRangeInput('afternoonStart', 'afternoonEnd'));
-    nightTimeContainer.appendChild(createTimeRangeInput('nightStart', 'nightEnd'));
-    const weekDropdown = document.createElement('select');
-    weekDropdown.id = 'weekDropdown';
-    weekDropdown.style.marginLeft = '10px';
-
-    const weekContainer = document.getElementById('weekContainer');
-
-    // Add options to the week dropdown
-    const weekOptions = ['week1', 'week2', 'week3', 'week4', 'week5'];
-    weekOptions.forEach(week => {
-        const option = document.createElement('option');
-        option.value = week;
-        option.innerText = week;
-        weekDropdown.appendChild(option);
-    });
-
-    const labelText = document.createElement('span');
-    labelText.innerText = 'Select Week:';
-    labelText.style.marginRight = '10px';
-
-    // Add dropdown to the UI
-    const dropdownContainer = document.createElement('div');
-    dropdownContainer.style.marginTop = '20px';
-    dropdownContainer.style.marginLeft = '820px';
-    dropdownContainer.appendChild(labelText);
-    dropdownContainer.appendChild(weekDropdown);
-    document.getElementById('mealTimeContainer').appendChild(dropdownContainer);
-
-    // Ensure the dropdown is available when you try to access it
-    getMenuDetailsButton.addEventListener('click', async () => {
-        const hostelName = document.getElementById("hostelname").value;
-        const weeksRef = ref(db, `Hostel details/${hostelName}/weeks`);
-
-        try {
-            const snapshot = await get(weeksRef);
-            if (snapshot.exists()) {
-                const weeksData = snapshot.val();
-                console.log(weeksData);
-
-                // Clear existing week containers before creating forms
-                weekContainer.innerHTML = '';
-
-                // Initialize dropdown with the first week selected
-                weekDropdown.value = 'week1';
-                await displayWeekDetails('week1'); // Display week 1 details by default
-
-                // Optionally, you can loop here if you want to keep the dropdown in sync with the week data
-            } else {
-                alert('No week details found for this hostel.');
-            }
-        } catch (error) {
-            console.error('Error fetching week details:', error);
-        }
-    });
-
-    // Fetch and display week details on dropdown change
-    weekDropdown.addEventListener('change', async () => {
-        const selectedWeek = weekDropdown.value; // Make sure weekDropdown exists before this line
-        if (selectedWeek) { // Check if selectedWeek is defined
-            await displayWeekDetails(selectedWeek);
-        }
-    });
-
-    // Function to display week details in the week container
-    async function displayWeekDetails(weekNum) {
-        const hostelName = document.getElementById("hostelname").value;
-        const weekRef = ref(db, `Hostel details/${hostelName}/weeks/${weekNum}`);
-
-        try {
-            const snapshot = await get(weekRef);
-            if (snapshot.exists()) {
-                const weekData = snapshot.val();
-                console.log(weekData);
-
-                // Clear existing week containers
-                weekContainer.innerHTML = '';
-
-                // Create week form for the selected week
-                createWeekForm(weekNum.replace('week', ''), weekData); // Remove 'week' prefix for numbering
-
-                // Fill in the meal timings (morning, afternoon, night)
-                const mondayData = weekData['Monday'];
-                const morningTiming = mondayData['morning'].timing.split(' - ');
-                const afternoonTiming = mondayData['afternoon'].timing.split(' - ');
-                const nightTiming = mondayData['night'].timing.split(' - ');
-
-                document.getElementById('morningStart').value = convertTo24Hour(morningTiming[0]);
-                document.getElementById('morningEnd').value = convertTo24Hour(morningTiming[1]);
-                document.getElementById('afternoonStart').value = convertTo24Hour(afternoonTiming[0]);
-                document.getElementById('afternoonEnd').value = convertTo24Hour(afternoonTiming[1]);
-                document.getElementById('nightStart').value = convertTo24Hour(nightTiming[0]);
-                document.getElementById('nightEnd').value = convertTo24Hour(nightTiming[1]);
-            } else {
-                alert(`No details found for ${weekNum}.`);
-            }
-        } catch (error) {
-            console.error('Error fetching week details:', error);
-        }
-    }
-
-    // Create week forms and populate dish dropdowns
-    function createWeekForm(weekNum, weekData) {
-        const mainParentElem = document.createElement('div');
-        mainParentElem.classList.add('col-12');
-
-        const cardElem = document.createElement('div');
-        cardElem.classList.add('card');
-        cardElem.id = `week-${weekNum}`;
-
-        const cardHeaderElem = document.createElement('div');
-        cardHeaderElem.classList.add('card-header', 'd-flex', 'justify-content-between', 'align-items-center');
-
-        const headerContent = document.createElement('div');
-        headerContent.classList.add('d-flex', 'align-items-center');
-        headerContent.innerHTML = `<h5 class="mb-0">Week ${weekNum}</h5>`;
-
-        const dropdownArrow = document.createElement('span');
-        dropdownArrow.classList.add('dropdown-arrow', 'ri-arrow-down-s-line');
-        dropdownArrow.style.fontSize = '27px';
-        dropdownArrow.style.marginLeft = '10px';
-
-        dropdownArrow.addEventListener('click', () => {
-            const collapseElem = document.getElementById(`collapseWeek${weekNum}`);
-            collapseElem.classList.toggle('show');
-            dropdownArrow.classList.toggle('ri-arrow-down-s-line');
-            dropdownArrow.classList.toggle('ri-arrow-right-s-line');
-        });
-
-        cardHeaderElem.appendChild(headerContent);
-        headerContent.appendChild(dropdownArrow);
-
-        const collapseElem = document.createElement('div');
-        collapseElem.id = `collapseWeek${weekNum}`;
-        collapseElem.classList.add('collapse', 'show');
-
-        const cardBodyElem = document.createElement('div');
-        cardBodyElem.classList.add('card-body');
-
-        // Container for vertical days and dish inputs
-        const weekLayout = document.createElement('div');
-        weekLayout.classList.add('d-flex');
-
-        // Create vertical days list
-        const navTabs = document.createElement('ul');
-        navTabs.classList.add('nav', 'flex-column', 'nav-pills'); // Vertical layout
-        navTabs.role = 'tablist';
-
-        // Container for tab contents (right side)
-        const tabContent = document.createElement('div');
-        tabContent.classList.add('tab-content', 'flex-grow-1', 'ps-3'); // Right side content
-
-        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
-        days.forEach((day, index) => {
-            const navItem = document.createElement('li');
-            navItem.classList.add('nav-item');
-
-            const navLink = document.createElement('a');
-            navLink.classList.add('nav-link');
-            if (index === 0) navLink.classList.add('active');
-            navLink.id = `week${weekNum}-${day}-tab`;
-            navLink.dataset.bsToggle = 'tab';
-            navLink.href = `#week${weekNum}-${day}`;
-            navLink.role = 'tab';
-            navLink.innerText = day;
-
-            navItem.appendChild(navLink);
-            navTabs.appendChild(navItem);
-
-            const tabPane = document.createElement('div');
-            tabPane.classList.add('tab-pane', 'fade');
-            if (index === 0) tabPane.classList.add('show', 'active');
-            tabPane.id = `week${weekNum}-${day}`;
-            tabPane.role = 'tabpanel';
-
-            // Create meal cards
-            const mealTimes = ['morning', 'afternoon', 'night'];
-
-            mealTimes.forEach(mealTime => {
-
-                const mainDishValue = weekData[day]?.[mealTime]?.mainDish || '';  // Retrieve mainDish
-                const sideDishValue = weekData[day]?.[mealTime]?.sideDish || '';  // Retrieve sideDish            
-
-                console.log(`Main Dish for ${day}, ${mealTime}:`, mainDishValue);
-                console.log(`Side Dish for ${day}, ${mealTime}:`, sideDishValue);
-
-                const mealCard = document.createElement('div');
-                mealCard.classList.add('card', 'mb-3', 'mt-3');
-
-                const mealCardBodyElem = document.createElement('div');
-                mealCardBodyElem.classList.add('card-body', 'bg-light', 'input-items');
-                mealCard.style.marginBottom = '5px'; // Reduce or remove the bottom margin of the meal card
-                mealCardBodyElem.style.padding = '10px'; // Keep reduced padding
-                mealCardBodyElem.style.marginLeft = '0'; // No negative margin
-                mealCardBodyElem.style.marginBottom = '-20px'; // Remove bottom margin inside the card body
-                mealCardBodyElem.style.marginTop = '-10px'; // Keep top margin minimal
-
-                const headerWrapper = document.createElement('div');
-                headerWrapper.style.display = 'flex';
-                headerWrapper.style.justifyContent = 'center';
-                headerWrapper.style.marginBottom = '10px'; // Optional margin
-
-                const mealTimeHeader = document.createElement('h5');
-                mealTimeHeader.innerText = mealTime;
-                mealTimeHeader.style.textDecoration = 'underline';
-                mealTimeHeader.style.color = 'orange'; // Set underline color
-
-                headerWrapper.appendChild(mealTimeHeader);
-                tabPane.appendChild(headerWrapper); // Append to the tabPane before the meal card
-
-                const rowElem = document.createElement('div');
-                rowElem.classList.add('row', 'gy-3');
-
-                // Create Main Dish Dropdown
-                const mainDishOptions = ['select main dish', 'Idly', 'Poori', 'Iddiyappam', 'Dosa', 'Pongal', 'Chapathi', 'Upma', 'Parotta',
-                    'Sambar rice', 'Tomato rice', 'Veg meals', 'Curd rice', 'Lemon rice', 'Veg briyani', 'Paneer fried rice', 'Gobi rice', 'Rasam rice'];
-                rowElem.appendChild(createSelectBox1('Main Dish', `mainDish-${weekNum}-${day}-${mealTime}`, true, mainDishOptions, mainDishValue));
-
-
-                // Create Side Dish Dropdown
-                const sideDishOptions = ['select side dish', 'Chutney', 'Sambar', 'Masala vada', 'Butter masala', 'Betroot poriyal', 'Potato fry',
-                    'Kootu', 'Appalam', 'Paneer butter masala', 'Gobi 65', 'Channa Masala', 'Daal', 'Cabbage poriyal', 'Raita', 'Kurma'];
-                rowElem.appendChild(createSelectBox1('Side Dish', `sideDish-${weekNum}-${day}-${mealTime}`, true, sideDishOptions, sideDishValue));
-
-                mealCardBodyElem.appendChild(rowElem);
-                mealCard.appendChild(mealCardBodyElem);
-                tabPane.appendChild(mealCard);
-            });
-
-            tabContent.appendChild(tabPane);
-        });
-
-        // Append vertical tabs and right content to layout container
-        weekLayout.appendChild(navTabs); // Left side (days)
-        weekLayout.appendChild(tabContent); // Right side (meal inputs)
-
-        cardBodyElem.appendChild(weekLayout); // Add layout to card body
-        collapseElem.appendChild(cardBodyElem);
-        cardElem.appendChild(cardHeaderElem);
-        cardElem.appendChild(collapseElem);
-        mainParentElem.appendChild(cardElem);
-        weekContainer.appendChild(mainParentElem);
-    }
-
-
-    // Helper function to create select boxes
-    function createSelectBox1(labelText, selectId, required, options, selectedValue = '') {
-        const colElem = document.createElement('div');
-        colElem.classList.add('col-xl-6');
-
-        const inputBoxElem = document.createElement('div');
-        inputBoxElem.classList.add('input-box');
-
-        const labelElem = document.createElement('h6');
-        labelElem.innerText = labelText;
-
-        const selectElem = document.createElement('select');
-        selectElem.id = selectId;
-        selectElem.name = selectId;
-        selectElem.classList.add('form-control');
-        if (required) selectElem.required = true;
-
-        // Ensure options is an array before using forEach
-        const optionArray = Array.isArray(options) ? options : [];
-
-        optionArray.forEach(option => {
-            const optElem = document.createElement('option');
-            optElem.value = option;
-            optElem.innerText = option;
-
-            if (option === selectedValue) {
-                optElem.selected = true;
-            }
-
-            selectElem.appendChild(optElem);
-        });
-
-        inputBoxElem.appendChild(labelElem);
-        inputBoxElem.appendChild(selectElem);
-        colElem.appendChild(inputBoxElem);
-
-        return colElem;
-    }
-    function createTimeRangeInput(startId, endId) {
-        const colElem = document.createElement('div');
-        colElem.classList.add('col-xl-6');
-
-        const inputBoxElem = document.createElement('div');
-        inputBoxElem.classList.add('input-box');
-
-        const timeInputContainer = document.createElement('div');
-        timeInputContainer.classList.add('d-flex', 'gap-2');
-
-        const startLabelElem = document.createElement('label');
-        startLabelElem.innerText = 'From:';
-        const startInputElem = document.createElement('input');
-        startInputElem.type = 'time';
-        startInputElem.id = startId;
-        startInputElem.name = startId;
-
-        const endLabelElem = document.createElement('label');
-        endLabelElem.innerText = 'To:';
-        const endInputElem = document.createElement('input');
-        endInputElem.type = 'time';
-        endInputElem.id = endId;
-        endInputElem.name = endId;
-
-        timeInputContainer.appendChild(startLabelElem);
-        timeInputContainer.appendChild(startInputElem);
-        timeInputContainer.appendChild(endLabelElem);
-        timeInputContainer.appendChild(endInputElem);
-
-        inputBoxElem.appendChild(timeInputContainer);
-        colElem.appendChild(inputBoxElem);
-
-        return colElem;
-    }
-
-    function convertTo24Hour(time12h) {
-        if (!time12h) return '';
-
-        const [time, modifier] = time12h.split(' ');
-        let [hours, minutes] = time.split(':');
-
-        if (modifier === 'AM' && hours === '12') {
-            hours = '00'; // Convert 12 AM to 00 hours
-        } else if (modifier === 'PM' && hours !== '12') {
-            hours = (parseInt(hours, 10) + 12).toString(); // Convert PM hours
-        }
-
-        // Ensure two digits for hours and minutes
-        hours = hours.padStart(2, '0');
-        minutes = minutes.padStart(2, '0');
-
-        return `${hours}:${minutes}`; // Returns in "HH:mm" format
-    }
-    // Prefill hostel details on page load
-    window.addEventListener('load', prefillHostelDetails);
 
     // Fetch and prefill room details when "Get Room" button is clicked 
     getRoomButton.addEventListener('click', async () => {
@@ -633,6 +905,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error fetching rooms:', error);
         }
     });
+
 
     // Function to create a floor container with grouped rooms
     function createFloorContainer(floorNumber, floorData) {
@@ -688,7 +961,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Add the data-floor attribute
         roomElem.setAttribute("data-floor", floorNumber);
-        roomElem.id = `room-${roomKey}`; // Add an ID to the room container for image functionality
+        roomElem.id = `room-${roomKey}`;
 
         const roomHeader = document.createElement("div");
         roomHeader.classList.add("card-header", "d-flex", "justify-content-between", "align-items-center");
@@ -713,7 +986,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     console.log('Deleting from Firebase path:', roomPath);
                     await remove(ref(db, roomPath));
-                    // Remove the room from the DOM
+
                     const roomElement = document.getElementById(`room-${roomKey}`);
                     if (roomElement) {
                         roomElement.remove();
@@ -738,7 +1011,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Prefill room data
         rowElem.appendChild(createSelectBox('Room Type', `roomType-${floorNumber}-${roomKey}`, true, ['1 sharing', '2 sharing', '3 sharing', '4 sharing'], roomDetails.roomType));
         rowElem.appendChild(createInputBox('Room Count', `roomCount-${floorNumber}-${roomKey}`, 'number', true, '', true, roomDetails.roomCount));
-        rowElem.appendChild(createInputBox('Room Number', `roomNumber-${floorNumber}-${roomKey}`, 'number', true, '', true, roomDetails.roomNumber));
+        rowElem.appendChild(createInputBox('Room Number', `roomNumber-${floorNumber}-${roomKey}`, 'text', false, '', true, roomDetails.roomNumber));
         rowElem.appendChild(createInputBox('Amenities', `amenities-${floorNumber}-${roomKey}`, 'text', false, 'e.g. WiFi, Laundry', false, roomDetails.amenities));
         rowElem.appendChild(createSelectBox('Air Conditioning', `acType-${floorNumber}-${roomKey}`, true, ['ac', 'non-ac'], roomDetails.ac));
         rowElem.appendChild(createSelectBox('Bathroom', `bathroom-${floorNumber}-${roomKey}`, true, ['attached', 'common'], roomDetails.bathroom));
@@ -780,7 +1053,7 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 console.warn(`No images available for room ${roomKey}`);
             }
-        }, 0); // Using a timeout to ensure DOM rendering is complete
+        }, 0);
     }
 
     function displayRoomImages(roomKey, images) {
@@ -791,7 +1064,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.warn(`Image container not found for room ${roomKey}.`);
                 return;
             }
-            // Clear any existing images or messages
+
             imageContainer.innerHTML = '';
             if (images.length > 0) {
                 images.forEach((imageUrl) => {
@@ -891,312 +1164,278 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return colElem;
     }
-    // Prefill hostel details from localStorage
-    function prefillHostelDetails() {
-        const storedData = localStorage.getItem('hosteldetailsAdmin');
-        if (storedData) {
-            const hostelData = JSON.parse(storedData);
-
-            document.getElementById("hostelname").value = hostelData[0] || "";
-            document.getElementById("hosteltype").value = hostelData[1] || "";
-            document.getElementById("hosteladd1").value = hostelData[2] || "";
-            document.getElementById("hosteladd2").value = hostelData[3] || "";
-            document.getElementById("hostelcity").value = hostelData[4] || "";
-            document.getElementById("hostelstate").value = hostelData[5] || "";
-            document.getElementById("hostelphone").value = hostelData[6] || "";
-            document.getElementById("hostelemail").value = hostelData[7] || "";
-            document.getElementById("hostelpin").value = hostelData[8] || "";
-            document.getElementById("hostelfloorsDB").value = hostelData[9] || "";
-
-            displayHostelImages(hostelData[0]);
-
-        } else {
-            console.log("No hostel data found in localStorage.");
-        }
-    }
-
 });
 
-// Fetch and update hostel details
-updateHostel.addEventListener('click', async (e) => {
+// Step 1: Save Hostel Details
+document.getElementById("nextButtonStep1").addEventListener("click", async () => {
+    const hostelName = document.getElementById("hostelname").value;
+    const hostelType = document.getElementById("hosteltype").value;
+    const hostelPhone = document.getElementById("hostelphone").value;
+    const hostelEmail = document.getElementById("hostelemail").value;
+    const hostelAdd1 = document.getElementById("hosteladd1").value;
+    const hostelAdd2 = document.getElementById("hosteladd2").value;
+    const hostelCity = document.getElementById("hostelcity").value;
+    const hostelState = document.getElementById("hostelstate").value;
+    const hostelPin = document.getElementById("hostelpin").value;
 
-    let hostelName = document.getElementById("hostelname").value;
-    let htype = document.getElementById("hosteltype").value;
-    let hphone = document.getElementById("hostelphone").value;
-    let hemail = document.getElementById("hostelemail").value;
-    let hadd1 = document.getElementById("hosteladd1").value;
-    let hadd2 = document.getElementById("hosteladd2").value;
-    let hcity = document.getElementById("hostelcity").value;
-    let hstate = document.getElementById("hostelstate").value;
-    let hpin = document.getElementById("hostelpin").value;
-    let hfloorsDB = document.getElementById("hostelfloorsDB").value;
+    const modifiedDetails = {
+        hostelName,
+        hostelType,
+        hostelPhone,
+        hostelEmail,
+        hostelAdd1,
+        hostelAdd2,
+        hostelCity,
+        hostelState,
+        hostelPin,
+    };
 
-    // Fetch existing hostel details
-    let existingHostelRef = ref(db, `Hostel details/${hostelName}`);
-    let existingHostelSnapshot = await get(existingHostelRef);
-    let existingHostelDetails = existingHostelSnapshot.exists() ? existingHostelSnapshot.val() : {};
+    const storedData = JSON.parse(localStorage.getItem("hosteldetailsAdmin")) || [];
+    const isModified = Object.keys(modifiedDetails).some(
+        (key) => modifiedDetails[key] !== storedData[Object.keys(modifiedDetails).indexOf(key)]
+    );
 
-    let floorContainers = document.querySelectorAll('.floorsContainer');
+    if (isModified) {
+        const db = getDatabase(); // Ensure Firebase is initialized
+        try {
+            await update(ref(db, `Hostel details/${hostelName}/`), modifiedDetails);
+            alert("Hostel details updated successfully!");
+        } catch (error) {
+            console.error("Error updating hostel details:", error);
+            alert("Failed to update hostel details.");
+            return;
+        }
+    } else {
+        alert("Hostel details are not modified, moving to Step 2.");
+    }
 
-    for (let floorElem of floorContainers) {
-        let roomElements = floorElem.querySelectorAll('.room-container');
+    nextStep(2);
+});
 
-        for (let roomElem of roomElements) {
-            let floorKey = roomElem.getAttribute('data-floor');
-            let roomKey = roomElem.id.split('-')[1];
-            let roomType = document.getElementById(`roomType-${floorKey}-${roomKey}`).value;
-            let roomCount = parseInt(document.getElementById(`roomCount-${floorKey}-${roomKey}`).value, 10);
-            let amenities = document.getElementById(`amenities-${floorKey}-${roomKey}`).value;
-            let ac = document.getElementById(`acType-${floorKey}-${roomKey}`).value;
-            let bathroom = document.getElementById(`bathroom-${floorKey}-${roomKey}`).value;
-            let price = (document.getElementById(`price-${floorKey}-${roomKey}`).value); // Ensure price is a float
-            let remarks = document.getElementById(`remarks-${floorKey}-${roomKey}`).value;
+// Step 2: Save Floor and Room Details
+document.getElementById("nextButtonStep2").addEventListener("click", async () => {
+    try {
 
-            let imageInput = document.getElementById(`roomImage-${roomKey}`);
+        let hname = document.getElementById("hostelname").value;
+        // Fetch existing hostel details
+        let existingHostelRef = ref(db, `Hostel details/${hname}`);
+        let existingHostelSnapshot = await get(existingHostelRef);
+        let existingHostelDetails = existingHostelSnapshot.exists() ? existingHostelSnapshot.val() : {};
+        let roomNumberCounter = 1;
+
+        let floorContainers = document.querySelectorAll('.floorsContainer');
+
+        for (let floorElem of floorContainers) {
+            let roomElements = floorElem.querySelectorAll('.room-container');
+
+            for (let roomElem of roomElements) {
+                let floorKey = roomElem.getAttribute('data-floor');
+                let roomKey = roomElem.id.split('-')[1];
+                let roomType = document.getElementById(`roomType-${floorKey}-${roomKey}`).value;
+                let roomCount = parseInt(document.getElementById(`roomCount-${floorKey}-${roomKey}`).value, 10);
+                let amenities = document.getElementById(`amenities-${floorKey}-${roomKey}`).value;
+                let ac = document.getElementById(`acType-${floorKey}-${roomKey}`).value;
+                let bathroom = document.getElementById(`bathroom-${floorKey}-${roomKey}`).value;
+                let price = (document.getElementById(`price-${floorKey}-${roomKey}`).value);
+                let remarks = document.getElementById(`remarks-${floorKey}-${roomKey}`).value;
+
+                let imageInput = document.getElementById(`roomImage-${roomKey}`);
+                let files = imageInput.files;
+                let imagelink1 = [];
+
+                if (files.length !== 0) {
+                    for (let j = 0; j < files.length; j++) {
+                        let storageRef = ref2(storage, `images/${hostelName}/room-${roomKey}/${files[j].name}`);
+                        await uploadBytes(storageRef, files[j]);
+                        let imageUrl = await getDownloadURL(storageRef);
+                        imagelink1.push(imageUrl);
+                    }
+                }
+
+                //console.log(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/room${roomKey}`);
+                // Fetch existing roomType level
+                let existingRoomTypeRef = ref(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}`);
+                let existingRoomTypeSnapshot = await get(existingRoomTypeRef);
+                let existingRoomTypeData = existingRoomTypeSnapshot.exists() ? existingRoomTypeSnapshot.val() : {};
+
+                let existingRoomTypeBedsAvailable = existingRoomTypeData.bedsAvailable || 0;
+
+                // Update roomType-level
+                await update(
+                    ref(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}`),
+                    {
+                        floor: floorKey,
+                        roomCount: roomCount,
+                        roomType: roomType,
+                        bedsAvailable: existingRoomTypeBedsAvailable,
+                    }
+                ).catch((error) => {
+                    console.error(`Error updating roomType details for ${roomType}:`, error);
+                    alert(`Error updating roomType details for ${roomType}: ${error}`);
+                });
+
+                // Fetch existing room-level data
+                let existingRoomRef = ref(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/${roomKey}`);
+                let existingRoomSnapshot = await get(existingRoomRef);
+                let existingRoomData = existingRoomSnapshot.exists() ? existingRoomSnapshot.val() : {};
+                let existingBeds = existingRoomData.beds || {};
+                let existingBedsAvailable = existingRoomData.bedsAvailable;
+                // Update room-level details 
+                let roomnum = roomKey.match(/\d+/)[0];
+                let existingImages = existingRoomData.imagesLink || []; // Fetch existing images
+                let updatedImages = imagelink1.length > 0 ? [...existingImages, ...imagelink1] : existingImages;
+
+                await update(
+                    ref(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/${roomKey}`),
+                    {
+                        roomNumber: roomnum,
+                        floor: floorKey,
+                        ac: ac,
+                        roomCount: roomCount,
+                        roomType: roomType,
+                        bathroom: bathroom,
+                        price: price,
+                        amenities: amenities,
+                        remarks: remarks,
+                        imagesLink: updatedImages, // Use updated images array
+                        bedsAvailable: existingBedsAvailable, // Retain existing bedsAvailable value
+                    }
+                ).catch((error) => {
+                    console.error(`Error updating room details for Room ${roomKey}:`, error);
+                    alert(`Error updating room details for Room ${roomKey}: ${error}`);
+                });
+
+                await update(
+                    ref(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/${roomKey}/beds`),
+                    {
+                        beds: existingBeds, // Retain existing beds data
+                    }
+                ).catch((error) => {
+                    console.error(`Error updating bed details for Room ${roomKey}:`, error);
+                    alert(`Error updating room details for Room ${roomKey}: ${error}`);
+                });
+            }
+        }
+
+        // `.additional-room-container`
+        let additionalRoomContainers = document.querySelectorAll('.additional-room-container');
+        let hostelfloorsDB = document.getElementById("hostelfloorsDB").value
+
+        for (let roomElem of additionalRoomContainers) {
+            let uniqueId = roomElem.id.split('-')[1]; // Extract unique ID for each room container
+
+            // Fetch the room data for this container
+            let floor = document.getElementById(`floorNumber-${uniqueId}`).value;
+            let roomType = document.getElementById(`roomType-${uniqueId}`).value;
+            let roomCount = parseInt(document.getElementById(`roomCount-${uniqueId}`).value, 10);
+            let amenities = document.getElementById(`amenities-${uniqueId}`).value;
+            let price = document.getElementById(`price-${uniqueId}`).value;
+            let bathroom = document.getElementById(`bathroom-${uniqueId}`).value;
+            let ac = document.getElementById(`acType-${uniqueId}`).value;
+            let remarks = document.getElementById(`remarks-${uniqueId}`).value;
+
+            if (floor > hostelfloorsDB) {
+                hostelfloorsDB = floor; // Update hfloorsDB if needed
+            }
+            const db = getDatabase();
+            const floorRef = ref(db, `Hostel details/${hname}`);
+
+            // Update the Firebase key with an object
+            await update(floorRef, { hostelFloors: hostelfloorsDB });
+            // Calculate beds available based on roomType and roomCount
+            const roomTypeBedsAvailable = parseInt(roomType.match(/\d+/)[0]) * roomCount;
+
+            let imageInput = document.getElementById(`roomImage-${uniqueId}`);
             let files = imageInput.files;
-            let imagelink1 = [];
+            let imageLinks = [];
 
             if (files.length !== 0) {
-                for (let j = 0; j < files.length; j++) {
-                    let storageRef = ref2(storage, `images/${hostelName}/room-${roomKey}/${files[j].name}`);
-                    await uploadBytes(storageRef, files[j]);
+                for (let file of files) {
+                    let storageRef = ref2(storage, `images/${hname}/room-${roomNumbers[0]}/${file.name}`);
+                    await uploadBytes(storageRef, file);
                     let imageUrl = await getDownloadURL(storageRef);
-                    imagelink1.push(imageUrl);
+                    imageLinks.push(imageUrl);
                 }
             }
 
-            console.log(db, `Hostel details/${hostelName}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/room${roomKey}`);
-            // Fetch existing roomType level
-            let existingRoomTypeRef = ref(db, `Hostel details/${hostelName}/rooms/floor${floorKey}/${roomType}`);
-            let existingRoomTypeSnapshot = await get(existingRoomTypeRef);
-            let existingRoomTypeData = existingRoomTypeSnapshot.exists() ? existingRoomTypeSnapshot.val() : {};
+            // Update roomType-level details
+            await update(ref(db, `Hostel details/${hname}/rooms/floor${floor}/${roomType}`), {
+                roomType: roomType,
+                roomCount: roomCount,
+                bedsAvailable: roomTypeBedsAvailable,
+            }).catch((error) => console.error(`Error updating roomType details for ${roomType}:`, error));
 
-            let existingRoomTypeBedsAvailable = existingRoomTypeData.bedsAvailable || 0;
 
-            // Update roomType-level
-            await update(
-                ref(db, `Hostel details/${hostelName}/rooms/floor${floorKey}/${roomType}`),
-                {
-                    floor: floorKey,
-                    price: price,
-                    roomCount: roomCount,
+            for (let roomSubIndex = 1; roomSubIndex <= roomCount; roomSubIndex++) {
+                const roomNumber = `F${floor}_R${roomNumberCounter++}`; // Incrementing the room number counter
+                const bedsAvailableForRoom = parseInt(roomType.match(/\d+/)[0]);
+
+                // Update the room-level details for each room number
+                await update(ref(db, `Hostel details/${hname}/rooms/floor${floor}/${roomType}/rooms/${ac}/room${roomNumber}`), {
+                    floor: floor,
                     roomType: roomType,
-                    bedsAvailable: existingRoomTypeBedsAvailable,
-                }
-            ).catch((error) => {
-                console.error(`Error updating roomType details for ${roomType}:`, error);
-                alert(`Error updating roomType details for ${roomType}: ${error}`);
-            });
-
-            // Fetch existing room-level data
-            let existingRoomRef = ref(db, `Hostel details/${hostelName}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/${roomKey}`);
-            let existingRoomSnapshot = await get(existingRoomRef);
-            let existingRoomData = existingRoomSnapshot.exists() ? existingRoomSnapshot.val() : {};
-            let existingBeds = existingRoomData.beds || {};
-            let existingBedsAvailable = existingRoomData.bedsAvailable;
-            // Update room-level details 
-            let roomnum = roomKey.match(/\d+/)[0];
-            let existingImages = existingRoomData.imagesLink || []; // Fetch existing images
-            let updatedImages = imagelink1.length > 0 ? [...existingImages, ...imagelink1] : existingImages;
-
-            await update(
-                ref(db, `Hostel details/${hostelName}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/${roomKey}`),
-                {
-                    roomNumber: roomnum,
-                    floor: floorKey,
+                    roomNumber: roomNumber,
+                    roomCount: roomCount,
+                    amenities: amenities,
                     ac: ac,
-                    roomCount: roomCount,
-                    roomType: roomType,
                     bathroom: bathroom,
                     price: price,
-                    amenities: amenities,
                     remarks: remarks,
-                    imagesLink: updatedImages, // Use updated images array
-                    bedsAvailable: existingBedsAvailable, // Retain existing bedsAvailable value
-                }
-            ).catch((error) => {
-                console.error(`Error updating room details for Room ${roomKey}:`, error);
-                alert(`Error updating room details for Room ${roomKey}: ${error}`);
-            });
-
-            await update(
-                ref(db, `Hostel details/${hostelName}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/${roomKey}/beds`),
-                {
-                    beds: existingBeds, // Retain existing beds data
-                }
-            ).catch((error) => {
-                console.error(`Error updating bed details for Room ${roomKey}:`, error);
-                alert(`Error updating room details for Room ${roomKey}: ${error}`);
-            });
-        }
-    }
-
-    // `.additional-room-container`
-    let additionalRoomContainers = document.querySelectorAll('.additional-room-container');
-    debugger;
-
-    for (let roomElem of additionalRoomContainers) {
-        let uniqueId = roomElem.id.split('-')[1]; // Extract unique ID for each room container
-
-        // Fetch the room data for this container
-        let floor = document.getElementById(`floorNumber-${uniqueId}`).value;
-        let roomType = document.getElementById(`roomType-${uniqueId}`).value;
-        let roomCount = parseInt(document.getElementById(`roomCount-${uniqueId}`).value, 10);
-        let roomNumbers = document.getElementById(`roomNumber-${uniqueId}`).value.split(',').map(num => num.trim()); // Parse room numbers from comma-separated input
-        let amenities = document.getElementById(`amenities-${uniqueId}`).value;
-        let price = document.getElementById(`price-${uniqueId}`).value;
-        let bathroom = document.getElementById(`bathroom-${uniqueId}`).value;
-        let ac = document.getElementById(`acType-${uniqueId}`).value;
-        let remarks = document.getElementById(`remarks-${uniqueId}`).value;
-
-        if (floor > hfloorsDB) {
-            hfloorsDB = floor; // Update hfloorsDB if needed
-        }
-
-        // Calculate beds available based on roomType and roomCount
-        const roomTypeBedsAvailable = parseInt(roomType.match(/\d+/)[0]) * roomCount;
-
-        // Beds available per room.
-        const bedsAvailableForRoom = parseInt(roomType.match(/\d+/)[0]);
-
-        let imageInput = document.getElementById(`roomImage-${uniqueId}`);
-        let files = imageInput.files;
-        let imageLinks = [];
-
-        if (files.length !== 0) {
-            for (let file of files) {
-                let storageRef = ref2(storage, `images/${hostelName}/room-${roomNumbers[0]}/${file.name}`);
-                await uploadBytes(storageRef, file);
-                let imageUrl = await getDownloadURL(storageRef);
-                imageLinks.push(imageUrl);
-            }
-        }
-
-        // Update roomType-level details
-        await update(ref(db, `Hostel details/${hostelName}/rooms/floor${floor}/${roomType}`), {
-            roomType: roomType,
-            roomCount: roomCount,
-            bedsAvailable: roomTypeBedsAvailable,
-        }).catch((error) => console.error(`Error updating roomType details for ${roomType}:`, error));
-
-        // Loop through each room number from the comma-separated list
-        for (let roomNumber of roomNumbers) {
-            // Update the room-level details for each room number
-            await update(ref(db, `Hostel details/${hostelName}/rooms/floor${floor}/${roomType}/rooms/${ac}/room${roomNumber}`), {
-                floor: floor,
-                roomType: roomType,
-                roomNumber: roomNumber,
-                roomCount: roomCount,
-                amenities: amenities,
-                ac: ac,
-                bathroom: bathroom,
-                price: price,
-                remarks: remarks,
-                bedsAvailable: bedsAvailableForRoom,
-                imagesLink: imageLinks,
-                beds: {} // Empty object to represent initial bed status
-            });
-
-            // Insert bed data for the current room (e.g., "bed 1", "bed 2", etc.)
-            for (let bedIndex = 1; bedIndex <= bedsAvailableForRoom; bedIndex++) {
-                const bedKey = `bed ${bedIndex}`;
-                await update(ref(db, `Hostel details/${hostelName}/rooms/floor${floor}/${roomType}/rooms/${ac}/room${roomNumber}/beds`), {
-                    [bedKey]: 'not booked', // Initial status of the bed
-                }).catch((error) => {
-                    alert(`Error updating bed ${bedKey}: ${error}`);
+                    bedsAvailable: bedsAvailableForRoom,
+                    imagesLink: imageLinks,
+                    beds: {} // Empty object to represent initial bed status
                 });
+
+                // Insert bed data for the current room (e.g., "bed 1", "bed 2", etc.)
+                for (let bedIndex = 1; bedIndex <= bedsAvailableForRoom; bedIndex++) {
+                    const bedKey = `bed ${bedIndex}`;
+                    await update(ref(db, `Hostel details/${hname}/rooms/floor${floor}/${roomType}/rooms/${ac}/room${roomNumber}/beds`), {
+                        [bedKey]: 'not booked', // Initial status of the bed
+                    }).catch((error) => {
+                        alert(`Error updating bed ${bedKey}: ${error}`);
+                    });
+                }
             }
         }
-    }
 
-    // Update hostel-level details (generic hostel info)
-    await update(ref(db, `Hostel details/${hostelName}/`), {
-        hostelName: hostelName,
-        hostelType: htype,
-        hostelPhone: hphone,
-        hostelEmail: hemail,
-        hostelAddress1: hadd1,
-        hostelAddress2: hadd2,
-        hostelCity: hcity,
-        hostelState: hstate,
-        hostelPin: hpin,
-        hostelFloors: hfloorsDB,
-        extras: existingHostelDetails.extras || {}, // Retain extras
-    });
-
-
-    let weeks = {}; // Collect week details
-    let weekCount = document.querySelectorAll('.card[id^="week-"]').length;
-    let weekDropdown = document.getElementById('weekDropdown');
-
-    let selectedWeeks = weekDropdown ? Array.from(weekDropdown.selectedOptions).map(option => option.value) : [];
-
-    if (weekCount > 0 && selectedWeeks.length > 0) { // Ensure there are weeks to process
-        let days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
-        let weeksRef = ref(db, `Hostel details/${hostelName}/weeks`);
-        let snapshot = await get(weeksRef);
-        let existingWeeks = snapshot.exists() ? snapshot.val() : {};
-
-        selectedWeeks.forEach(selectedWeek => {
-            let weekData = {};
-            days.forEach(day => {
-                weekData[day] = {};
-                let mealTimes = ['morning', 'afternoon', 'night'];
-                mealTimes.forEach(mealTime => {
-                    let mainDishElement = document.getElementById(`mainDish-1-${day}-${mealTime}`);
-                    let sideDishElement = document.getElementById(`sideDish-1-${day}-${mealTime}`);
-
-                    let dishName = mainDishElement ? mainDishElement.value : '';
-                    let sideDishName = sideDishElement ? sideDishElement.value : '';
-
-                    console.log(`Processing Day: ${day}, Meal Time: ${mealTime}, Main Dish: ${dishName}, Side Dish: ${sideDishName}`);
-
-                    if (dishName !== 'select main dish' && sideDishName !== 'select side dish') {
-                        let timing = getMealTimings(mealTime);
-                        weekData[day][mealTime.toLowerCase()] = {
-                            mainDish: dishName,
-                            sideDish: sideDishName,
-                            timing: `${convertTo12Hour(timing.start)} - ${convertTo12Hour(timing.end)}`
-                        };
-                    }
-                });
-            });
-
-            existingWeeks[selectedWeek] = weekData;
-        });
-
-        await update(ref(db, `Hostel details/${hostelName}/weeks`), existingWeeks);
-    }
-
-    alert("Hostel details updated successfully");
-    window.location.href = "././hostel-list.html";
-
-    // Function to get global meal timings
-    function getMealTimings(mealTime) {
-        return {
-            morning: {
-                start: document.getElementById('morningStart').value,
-                end: document.getElementById('morningEnd').value
-            },
-            afternoon: {
-                start: document.getElementById('afternoonStart').value,
-                end: document.getElementById('afternoonEnd').value
-            },
-            night: {
-                start: document.getElementById('nightStart').value,
-                end: document.getElementById('nightEnd').value
-            }
-        }[mealTime.toLowerCase()];
-    }
-
-    // Function to convert timings to 12-hour format
-    function convertTo12Hour(time24) {
-        if (!time24) return '';
-        let [hours, minutes] = time24.split(':');
-        let ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12;
-        return `${hours}:${minutes} ${ampm}`;
+        alert("Room details saved successfully!");
+        nextStep(3);
+    } catch (error) {
+        console.error("Error saving room details:", error);
+        alert("Error saving room details: " + error.message);
     }
 });
+
+// Step 4: Weekly menu
+document.getElementById("nextButtonStep3").addEventListener("click", async () => {
+    try {
+        //await updateDishTimingsForWeek();
+        nextStep(4); // Step 4 is the dummy Submit page
+    } catch (error) {
+        console.error("Error saving extras data:", error);
+        alert("Error saving extras data: " + error.message);
+    }
+});
+
+// Step 4: Final Submit
+document.getElementById("submitButton").addEventListener("click", async () => {
+    const hname = document.getElementById("hostelname").value;
+    if (!hname) {
+        alert("Hostel name is missing. Please complete the earlier steps.");
+        return;
+    }
+
+    const db = getDatabase(); // Ensure Firebase is initialized
+    await set(ref(db, `Hostel details/${hname}/status`), { completed: true });
+
+    alert("Your form has been successfully submitted!");
+    redirectToHome();
+});
+
+// Redirect to home or any desired page
+function redirectToHome() {
+    window.location.href = "hostel-list.html";
+}
+
+// Prefill details on load
+document.addEventListener("DOMContentLoaded", prefillHostelDetails);

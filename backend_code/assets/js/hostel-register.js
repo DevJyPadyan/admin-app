@@ -7,543 +7,177 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 const storage = getStorage(app);
 
-const extrasContainer = document.getElementById('extras-container');
-const addItemButton = document.getElementById('addItemButton');
-const removeItemButton = document.getElementById('removeItemButton');
+let files = [];
+let imagelink = [];
+let currentStep = 1; // Initialize the current step
 
-// Track the number of extra items added
-let extraItemCount = 0;
+// Step-based navigation
+function nextStep(step) {
 
-// Event listener to add new food input fields dynamically
-addItemButton.addEventListener('click', () => {
+  document.getElementById(`step${currentStep}`).classList.remove("active");
+  document.getElementById(`step${step}`).classList.add("active");
+
+  // Update progress bar and indicators
+  updateProgressBar(step);
+  updateProgressIndicators(step);
+
+  // Update the current step
+  currentStep = step;
+  if (step === 3) {
+    setupWeekContainer();
+  }
+}
+
+function prevStep(step) {
+
+  document.getElementById(`step${currentStep}`).classList.remove("active");
+  document.getElementById(`step${step}`).classList.add("active");
+
+  // Update progress bar and indicators
+  updateProgressBar(step);
+  updateProgressIndicators(step);
+
+  // Update the current step
+  currentStep = step;
+}
+
+function updateProgressBar(step) {
+  const progressBar = document.getElementById("progressBar");
+
+  const progressPercentage = (step / 4) * 100;
+
+  progressBar.style.width = `${progressPercentage}%`;
+  progressBar.innerText = `Step ${step} of 4`;
+}
+
+function updateProgressIndicators(step) {
+
+  const circle1 = document.getElementById("circle1");
+  const circle2 = document.getElementById("circle2");
+  const circle3 = document.getElementById("circle3");
+  const circle4 = document.getElementById("circle4");
+  const line1 = document.getElementById("line1");
+  const line2 = document.getElementById("line2");
+  const line3 = document.getElementById("line3");
+
+
+  circle1.classList.remove("completed");
+  circle2.classList.remove("completed");
+  circle3.classList.remove("completed");
+  circle4.classList.remove("completed");
+  line1.classList.remove("completed");
+  line2.classList.remove("completed");
+  line3.classList.remove("completed");
+
+  // Update progress indicators based on the current step
+  if (step >= 1) circle1.classList.add("completed");
+  if (step >= 2) {
+    circle2.classList.add("completed");
+    line1.classList.add("completed");
+  }
+  if (step >= 3) {
+    circle3.classList.add("completed");
+    line2.classList.add("completed");
+  }
+  if (step === 4) {
+    circle4.classList.add("completed");
+    line3.classList.add("completed");
+  }
+
+  // Update active step text
+  document.querySelectorAll(".step-text").forEach((text, index) => {
+    if (index + 1 === step) {
+      text.classList.add("active");
+    } else {
+      text.classList.remove("active");
+    }
+  });
+}
+
+const extrasContainer = document.getElementById("extras-container");
+const addItemButton = document.getElementById("addItemButton");
+const removeItemButton = document.getElementById("removeItemButton");
+
+let extraItemCount = 0; //Track the number of extra items added
+
+addItemButton.addEventListener("click", () => {
   extraItemCount++;
 
-  const newRow = document.createElement('div');
-  newRow.classList.add('extra-row', 'mt-2');
+  const newRow = document.createElement("div");
+  newRow.classList.add("extra-row", "mt-2");
 
   newRow.innerHTML = `
-                                        <div class="input-items">
-                                            <div class="row gy-3">
-                                                <div class="col-xl-6">
-                                                    <div class="input-box">
-                                                        <h6>Food Name</h6>
-                                                        <input type="text" class="food-name"
-                                                            placeholder="Enter Food Name">
-                                                    </div>
-                                                </div>
-                                                <div class="col-xl-6">
-                                                    <div class="input-box">
-                                                        <h6>Food Price</h6>
-                                                        <input type="text" class="food-price"
-                                                            placeholder="Enter Food Price (in Rs)">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                    <div class="input-items">
+                        <div class="row gy-3">
+                            <div class="col-xl-6">
+                                <div class="input-box">
+                                    <h6>Food Name</h6>
+                                    <input type="text" class="food-name"
+                                        placeholder="Enter Food Name">
+                                </div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="input-box">
+                                    <h6>Food Price</h6>
+                                    <input type="text" class="food-price"
+                                        placeholder="Enter Food Price (in Rs)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
   `;
 
   extrasContainer.appendChild(newRow);
 });
 
-// Event listener to remove the last added food input fields
-removeItemButton.addEventListener('click', () => {
-  const rows = extrasContainer.querySelectorAll('.extra-row'); // Select all rows with 'extra-row' class
+// Event listener for removing the food item
+removeItemButton.addEventListener("click", () => {
+  const rows = extrasContainer.querySelectorAll(".extra-row");
 
   if (rows.length > 0) {
     const lastRow = rows[rows.length - 1]; // Get the last row
     extrasContainer.removeChild(lastRow); // Remove the last row
     extraItemCount--;
   } else {
-    alert('No more items to remove!'); // Alert if no rows are left
+    alert("No more items to remove!");
   }
 });
-
-const addWeekButton = document.getElementById("addWeekButton");
-const weekContainer = document.getElementById("weekContainer");
-
-const morningTimeContainer = document.getElementById("morningTimeContainer");
-const afternoonTimeContainer = document.getElementById("afternoonTimeContainer");
-const nightTimeContainer = document.getElementById("nightTimeContainer");
-
-// Append time range inputs for meals at the initial level
-morningTimeContainer.appendChild(createTimeRangeInput('morningStart', 'morningEnd'));
-afternoonTimeContainer.appendChild(createTimeRangeInput('afternoonStart', 'afternoonEnd'));
-nightTimeContainer.appendChild(createTimeRangeInput('nightStart', 'nightEnd'));
-
-let existingWeeks = [];   // Declare globally to store existing weeks from Firebase
-let existingNumericWeeks = [];  // Store numeric week values for internal comparison
-
-document.addEventListener('DOMContentLoaded', async () => {
-  const hostelName = document.getElementById('hostelname').value;
-
-  // Fetch existing weeks from Firebase and set the global variables
-  existingWeeks = await getExistingWeeks(hostelName);
-
-  // Convert Firebase weeks (like 'week1', 'week2') into numeric values for internal comparison
-  existingNumericWeeks = existingWeeks.map(week => parseInt(week.replace('week', '')));
-
-  // Initialize the week count for display purposes
-  let weekCount = 1;
-
-  // Create Week 1 container on load
-  createWeekForm(weekCount);
-
-  // Add checkboxes for Week 2 to Week 5 after Week 1 container
-  addWeekCheckboxes(weekCount, existingNumericWeeks);
-
-  // Add event listener for the Add Menu button to find and display the next missing week
-  document.getElementById('addWeekButton').addEventListener('click', async () => {
-    const nextWeek = await findNextAvailableWeek(existingNumericWeeks);
-    console.log(`Next available week: ${nextWeek !== null ? nextWeek : 'None'}`);
-
-    if (!nextWeek) {
-      alert('All weeks are already added!');
-      return;
-    }
-
-    // Create the next missing week form
-    createWeekForm(nextWeek);
-    addWeekCheckboxes(nextWeek, existingNumericWeeks);
-
-    // Update the existing numeric weeks after adding a new week
-    existingNumericWeeks.push(nextWeek);
-    existingWeeks.push(`week${nextWeek}`);  // Also update the original array with the 'week' prefix
-  });
-});
-
-async function getExistingWeeks(hostelName) {
-  const snapshot = await get(ref(db, `Hostel details/${hostelName}/weeks`));
-  return snapshot.exists() ? Object.keys(snapshot.val()) : [];
-}
-
-// Function to add checkboxes for copying Week 1 data to Week 2 to Week 5
-async function addWeekCheckboxes(currentWeekNum, existingNumericWeeks) {
-  const container = document.createElement('div');
-  container.classList.add('mt-3');
-
-  const labelElem = document.createElement('h6');
-  labelElem.innerText = "Choose the below checkboxes to copy week data";
-  labelElem.style.marginBottom = '10px';
-  container.appendChild(labelElem);
-
-  const checkboxContainer = document.createElement('div');
-  checkboxContainer.classList.add('d-flex', 'gap-3');
-
-  // Define the weeks for checkboxes (2 to 5, as per your requirement)
-  const weeks = [2, 3, 4, 5];
-
-  // Iterate through the weeks to create checkboxes
-  weeks.forEach(week => {
-    const checkboxElem = document.createElement('div');
-    checkboxElem.classList.add('form-check', 'form-check-inline');
-
-    const inputElem = document.createElement('input');
-    inputElem.type = 'checkbox';
-    inputElem.id = `week${week}`;
-    inputElem.classList.add('form-check-input');
-
-    const weekLabelElem = document.createElement('label');
-    weekLabelElem.htmlFor = `week${week}`;
-    weekLabelElem.innerText = `Week ${week}`;
-    weekLabelElem.classList.add('form-check-label');
-
-    // Check if the numeric week is present in existing weeks (strip the 'week' prefix for comparison)
-    const weekExists = existingNumericWeeks.includes(week); // Check using numeric comparison
-    inputElem.disabled = weekExists; // Disable checkbox if week exists
-    if (weekExists) {
-      weekLabelElem.style.color = 'gray'; // Indicate the week is already added
-    }
-
-    checkboxElem.appendChild(inputElem);
-    checkboxElem.appendChild(weekLabelElem);
-    checkboxContainer.appendChild(checkboxElem);
-
-    // Add event listener to handle the checkbox selection for copying data
-    inputElem.addEventListener('change', async (event) => {
-      if (event.target.checked) {
-        await copyWeekData(currentWeekNum, week);  // Copy from Week 1 to the selected week
-      }
-    });
-  });
-
-  container.appendChild(checkboxContainer);
-  document.getElementById('weekContainer').appendChild(container);
-}
-
-// Function to copy Week 1 data to the selected week in Firebase
-async function copyWeekData(sourceWeek, targetWeek) {
-  const weekData = {};
-
-  // Fetch global meal timings
-  const mealTimesData = {
-    morning: {
-      start: document.getElementById('morningStart').value,
-      end: document.getElementById('morningEnd').value
-    },
-    afternoon: {
-      start: document.getElementById('afternoonStart').value,
-      end: document.getElementById('afternoonEnd').value
-    },
-    night: {
-      start: document.getElementById('nightStart').value,
-      end: document.getElementById('nightEnd').value
-    }
-  };
-
-  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  days.forEach(day => {
-    weekData[day] = {};
-    const mealTimes = ['morning', 'afternoon', 'night'];
-
-    mealTimes.forEach(mealTime => {
-      const dishName = document.getElementById(`mainDish-${sourceWeek}-${day}-${mealTime}`).value;
-      const sideDishName = document.getElementById(`sideDish-${sourceWeek}-${day}-${mealTime}`).value;
-
-      if (dishName !== 'select main dish' && sideDishName !== 'select side dish') {
-        const timing = mealTimesData[mealTime.toLowerCase()]; // Get timing for the current meal
-        weekData[day][mealTime.toLowerCase()] = {
-          mainDish: dishName,
-          sideDish: sideDishName,
-          timing: `${convertTo12Hour(timing.start)} - ${convertTo12Hour(timing.end)}`
-        };
-      }
-    });
-  });
-
-  const hostelName = document.getElementById('hostelname').value;
-
-  // Save the copied data for the selected week in Firebase (add 'week' prefix when saving)
-  await set(ref(db, `Hostel details/${hostelName}/weeks/week${targetWeek}`), weekData)
-    .then(() => {
-      alert(`Week ${sourceWeek} data copied to Week ${targetWeek}!`);
-
-      // Update existingWeeks and existingNumericWeeks to include the newly copied week
-      if (!existingWeeks.includes(`week${targetWeek}`)) {
-        existingWeeks.push(`week${targetWeek}`);  // Add 'week' prefix for Firebase
-        existingNumericWeeks.push(targetWeek);    // Numeric value for internal comparison
-      }
-    })
-    .catch((error) => alert(`Error copying data: ${error.message}`));
-}
-
-// Helper function to find the next available week number
-async function findNextAvailableWeek(existingNumericWeeks) {
-  const availableWeeks = [2, 3, 4, 5].filter(week => !existingNumericWeeks.includes(week));
-  return availableWeeks.length > 0 ? availableWeeks[0] : null;
-}
-
-//function to create week containers
-function createWeekForm(weekNum) {
-  const mainParentElem = document.createElement('div');
-  mainParentElem.classList.add('col-12');
-
-  const cardElem = document.createElement('div');
-  cardElem.classList.add('card');
-  cardElem.id = `week-${weekNum}`;
-
-  const cardHeaderElem = document.createElement('div');
-  cardHeaderElem.classList.add('card-header', 'd-flex', 'justify-content-between', 'align-items-center');
-
-  const headerContent = document.createElement('div');
-  headerContent.classList.add('d-flex', 'align-items-center');
-  headerContent.innerHTML = `<h5 class="mb-0">Week ${weekNum}</h5>`;
-
-  const dropdownArrow = document.createElement('span');
-  dropdownArrow.classList.add('dropdown-arrow', 'ri-arrow-down-s-line');
-  dropdownArrow.style.fontSize = '27px';
-  dropdownArrow.style.marginLeft = '10px';
-
-  dropdownArrow.addEventListener('click', () => {
-    const collapseElem = document.getElementById(`collapseWeek${weekNum}`);
-    collapseElem.classList.toggle('show');
-    dropdownArrow.classList.toggle('ri-arrow-down-s-line');
-    dropdownArrow.classList.toggle('ri-arrow-right-s-line');
-  });
-
-  cardHeaderElem.appendChild(headerContent);
-  headerContent.appendChild(dropdownArrow);
-
-  const headerButtonsContainer = document.createElement('div');
-  headerButtonsContainer.classList.add('d-flex', 'gap-2');
-
-  const saveWeekBtn = document.createElement('button');
-  saveWeekBtn.className = 'btn restaurant-button';
-  saveWeekBtn.innerHTML = `Save Week ${weekNum}`;
-  saveWeekBtn.onclick = () => saveWeek(weekNum);
-
-  headerButtonsContainer.appendChild(saveWeekBtn);
-  cardHeaderElem.appendChild(headerButtonsContainer);
-
-  const collapseElem = document.createElement('div');
-  collapseElem.id = `collapseWeek${weekNum}`;
-  collapseElem.classList.add('collapse', 'show');
-
-  const cardBodyElem = document.createElement('div');
-  cardBodyElem.classList.add('card-body');
-
-  // Container for vertical days and dish inputs
-  const weekLayout = document.createElement('div');
-  weekLayout.classList.add('d-flex');
-
-  // Create vertical days list
-  const navTabs = document.createElement('ul');
-  navTabs.classList.add('nav', 'flex-column', 'nav-pills'); // Vertical layout
-  navTabs.role = 'tablist';
-
-  // Container for tab contents (right side)
-  const tabContent = document.createElement('div');
-  tabContent.classList.add('tab-content', 'flex-grow-1', 'ps-3'); // Right side content
-
-  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-
-  days.forEach((day, index) => {
-    const navItem = document.createElement('li');
-    navItem.classList.add('nav-item');
-
-    const navLink = document.createElement('a');
-    navLink.classList.add('nav-link');
-    if (index === 0) navLink.classList.add('active');
-    navLink.id = `week${weekNum}-${day}-tab`;
-    navLink.dataset.bsToggle = 'tab';
-    navLink.href = `#week${weekNum}-${day}`;
-    navLink.role = 'tab';
-    navLink.innerText = day;
-
-    navItem.appendChild(navLink);
-    navTabs.appendChild(navItem);
-
-    const tabPane = document.createElement('div');
-    tabPane.classList.add('tab-pane', 'fade');
-    if (index === 0) tabPane.classList.add('show', 'active');
-    tabPane.id = `week${weekNum}-${day}`;
-    tabPane.role = 'tabpanel';
-
-    // Create meal cards
-    const mealTimes = ['morning', 'afternoon', 'night'];
-
-    mealTimes.forEach(mealTime => {
-      const mealCard = document.createElement('div');
-      mealCard.classList.add('card', 'mb-3', 'mt-3');
-
-      const mealCardBodyElem = document.createElement('div');
-      mealCardBodyElem.classList.add('card-body', 'bg-light', 'input-items');
-      mealCard.style.marginBottom = '5px'; // Reduce or remove the bottom margin of the meal card
-      mealCardBodyElem.style.padding = '10px'; // Keep reduced padding
-      mealCardBodyElem.style.marginLeft = '0'; // No negative margin
-      mealCardBodyElem.style.marginBottom = '-20px'; // Remove bottom margin inside the card body
-      mealCardBodyElem.style.marginTop = '-10px'; // Keep top margin minimal
-
-      const headerWrapper = document.createElement('div');
-      headerWrapper.style.display = 'flex';
-      headerWrapper.style.justifyContent = 'center';
-      headerWrapper.style.marginBottom = '10px'; // Optional margin
-
-      const mealTimeHeader = document.createElement('h5');
-      mealTimeHeader.innerText = mealTime;
-      mealTimeHeader.style.textDecoration = 'underline';
-      mealTimeHeader.style.color = 'orange'; // Set underline color
-
-      headerWrapper.appendChild(mealTimeHeader);
-      tabPane.appendChild(headerWrapper); // Append to the tabPane before the meal card
-
-
-      const rowElem = document.createElement('div');
-      rowElem.classList.add('row', 'gy-3');
-
-      // Main Dish Dropdown
-      const mainDishOptions = ['select main dish', 'Idly', 'Poori', 'Iddiyappam', 'Dosa', 'Pongal', 'Chapathi', 'Upma', 'Parotta',
-        'Sambar rice', 'Tomato rice', 'Veg meals', 'Curd rice', 'Lemon rice', 'Veg briyani', 'Paneer fried rice', 'Gobi rice', 'Rasam rice'];
-      rowElem.appendChild(createSelectBox1('Main Dish', `mainDish-${weekNum}-${day}-${mealTime}`, mainDishOptions));
-
-      // Side Dish Dropdown
-      const sideDishOptions = ['select side dish', 'Chutney', 'Sambar', 'Masala vada', 'Butter masala', 'Betroot poriyal', 'Potato fry',
-        'Kootu', 'Appalam', 'Paneer butter masala', 'Gobi 65', 'Channa Masala', 'Daal', 'Cabbage poriyal', 'Raita', 'Kurma'];
-      rowElem.appendChild(createSelectBox1('Side Dish', `sideDish-${weekNum}-${day}-${mealTime}`, sideDishOptions));
-
-      mealCardBodyElem.appendChild(rowElem);
-      mealCard.appendChild(mealCardBodyElem);
-      tabPane.appendChild(mealCard);
-    });
-
-    tabContent.appendChild(tabPane);
-  });
-
-  // Append vertical tabs and right content to layout container
-  weekLayout.appendChild(navTabs); // Left side (days)
-  weekLayout.appendChild(tabContent); // Right side (meal inputs)
-
-  cardBodyElem.appendChild(weekLayout); // Add layout to card body
-  collapseElem.appendChild(cardBodyElem);
-  cardElem.appendChild(cardHeaderElem);
-  cardElem.appendChild(collapseElem);
-  mainParentElem.appendChild(cardElem);
-  weekContainer.appendChild(mainParentElem);
-}
-
-// Create a select box for dishes
-function createSelectBox1(labelText, selectId, options) {
-  const colElem = document.createElement('div');
-  colElem.classList.add('col-xl-6');
-
-  const inputBoxElem = document.createElement('div');
-  inputBoxElem.classList.add('input-box');
-
-  const labelElem = document.createElement('h6');
-  labelElem.innerText = labelText;
-
-  const selectElem = document.createElement('select');
-  selectElem.id = selectId;
-  selectElem.name = selectId;
-  selectElem.classList.add('form-control');
-
-  options.forEach(option => {
-    const optElem = document.createElement('option');
-    optElem.value = option;
-    optElem.innerText = option;
-    selectElem.appendChild(optElem);
-  });
-
-  inputBoxElem.appendChild(labelElem);
-  inputBoxElem.appendChild(selectElem);
-  colElem.appendChild(inputBoxElem);
-
-  return colElem;
-}
-
-
-// Save week function
-function saveWeek(weekNumber) {
-  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  const hostelName = document.getElementById('hostelname').value;
-  const weekData = {};
-
-  // Fetch global meal timings
-  const mealTimesData = {
-    morning: {
-      start: document.getElementById('morningStart').value,
-      end: document.getElementById('morningEnd').value
-    },
-    afternoon: {
-      start: document.getElementById('afternoonStart').value,
-      end: document.getElementById('afternoonEnd').value
-    },
-    night: {
-      start: document.getElementById('nightStart').value,
-      end: document.getElementById('nightEnd').value
-    }
-  };
-
-  days.forEach(day => {
-    weekData[day] = {};
-    const mealTimes = ['morning', 'afternoon', 'night'];
-    mealTimes.forEach(mealTime => {
-      const dishName = document.getElementById(`mainDish-${weekNumber}-${day}-${mealTime}`).value;
-      const sideDishName = document.getElementById(`sideDish-${weekNumber}-${day}-${mealTime}`).value;
-
-      if (dishName !== 'select main dish' && sideDishName !== 'select side dish') {
-        const timing = mealTimesData[mealTime.toLowerCase()];
-        weekData[day][mealTime.toLowerCase()] = {
-          mainDish: dishName,
-          sideDish: sideDishName,
-          timing: `${convertTo12Hour(timing.start)} - ${convertTo12Hour(timing.end)}`
-        };
-      }
-    });
-  });
-
-  set(ref(db, `Hostel details/${hostelName}/weeks/week${weekNumber}`), weekData)
-    .then(() => alert(`Week ${weekNumber} saved successfully!`))
-    .catch((error) => alert(`Error saving Week ${weekNumber}: ${error.message}`));
-}
-// Helper functions
-function createTimeRangeInput(startId, endId) {
-  const colElem = document.createElement('div');
-  colElem.classList.add('col-xl-6');
-
-  const inputBoxElem = document.createElement('div');
-  inputBoxElem.classList.add('input-box');
-
-  const timeInputContainer = document.createElement('div');
-  timeInputContainer.classList.add('d-flex', 'gap-2');
-
-  const startLabelElem = document.createElement('label');
-  startLabelElem.innerText = 'From:';
-  const startInputElem = document.createElement('input');
-  startInputElem.type = 'time';
-  startInputElem.id = startId;
-  startInputElem.name = startId;
-
-  const endLabelElem = document.createElement('label');
-  endLabelElem.innerText = 'To:';
-  const endInputElem = document.createElement('input');
-  endInputElem.type = 'time';
-  endInputElem.id = endId;
-  endInputElem.name = endId;
-
-  timeInputContainer.appendChild(startLabelElem);
-  timeInputContainer.appendChild(startInputElem);
-  timeInputContainer.appendChild(endLabelElem);
-  timeInputContainer.appendChild(endInputElem);
-
-  inputBoxElem.appendChild(timeInputContainer);
-  colElem.appendChild(inputBoxElem);
-
-  return colElem;
-}
-function convertTo12Hour(time24) {
-  const [hours, minutes] = time24.split(':');
-  const period = +hours >= 12 ? 'PM' : 'AM';
-  const hours12 = (+hours % 12 || 12).toString().padStart(2, '0');
-  return `${hours12}:${minutes} ${period}`;
-}
-/* End of Storing menu details*/
-
-/* Start of Multiple image upload for hostel images*/
-
-var files = [];
-let imagelink = [];
 document.getElementById("files").addEventListener("change", function (e) {
   files = e.target.files;
   for (let i = 0; i < files.length; i++) {
   }
 });
-
 document.getElementById("uploadImage").addEventListener("click", async function () {
+  const hname = document.getElementById("hostelname").value;
 
-  var hname = document.getElementById("hostelname").value;
-  var htype = document.getElementById("hosteltype").value;
-  var hphone = document.getElementById("hostelphone").value;
-  var hemail = document.getElementById("hostelemail").value;
-  var hadd1 = document.getElementById("hosteladd1").value;
-  var hadd2 = document.getElementById("hosteladd2").value;
-  var hcity = document.getElementById("hostelcity").value;
-  var hstate = document.getElementById("hostelstate").value;
-  var hpin = document.getElementById("hostelpin").value;
-
-  //checks if files are selected
-  if (files.length != 0) {
-    //Loops through all the selected files
-    for (let i = 0; i < files.length; i++) {
-      const storageRef = ref2(storage, 'images/' + hname + '/hostelImg/' + files[i].name);
-      const upload = await uploadBytes(storageRef, files[i]);
-      const imageUrl = await getDownloadURL(storageRef);
-      imagelink.push(imageUrl);
-    }
-
-    const imageRef = ref(db, 'Hostel details/' + hname + '/ImageData/' + '/');
-    set(imageRef, imagelink)
-      .then(() => {
-        alert("To start uploading, please click OK");
-        alert("Image is uploading, please click OK");
-        alert("Image is uploaded");
-        console.log('Image URLs have been successfully stored!');
-      })
-
-  } else {
+  if (files.length === 0) { // Check if files are selected
     alert("No file chosen");
+    return;
   }
+
+  // Upload each file
+  for (let i = 0; i < files.length; i++) {
+    const storageRef = ref2(storage, 'images/' + hname + '/hostelImg/' + files[i].name);
+    const upload = await uploadBytes(storageRef, files[i]);
+    const imageUrl = await getDownloadURL(storageRef);
+    imagelink.push(imageUrl);
+  }
+
+  // Store image URLs in Firebase Database
+  const imageRef = ref(db, 'Hostel details/' + hname + '/ImageData/' + '/');
+  set(imageRef, imagelink)
+    .then(() => {
+      alert("To start uploading, please click OK");
+      alert("Image is uploading, please click OK");
+      alert("Image is uploaded");
+      //console.log("Image URLs have been successfully stored!");
+    })
+    .catch((error) => {
+      console.error("Error uploading images: ", error.message);
+      alert("Error uploading images. Please try again.");
+    });
 });
-/* End of Multiple image upload for hostel images*/
+
 
 /* Start of adding room details using dynamic form handling */
 document.addEventListener('DOMContentLoaded', function () {
@@ -585,6 +219,7 @@ document.addEventListener('DOMContentLoaded', function () {
         outline: none;
         box-shadow: 0 0 5px rgba(102, 175, 233, 0.6);
       }
+        
     `;
 
     const styleSheet = document.createElement("style");
@@ -596,6 +231,38 @@ document.addEventListener('DOMContentLoaded', function () {
   // Call this function to inject the CSS when the script loads
   addStyles();
 
+  /* Hostel Image Upload
+  const filesInput = document.getElementById("files");
+  filesInput.addEventListener("change", function (e) {
+    files = e.target.files;
+  });
+
+  const uploadImageButton = document.getElementById("uploadImage");
+  uploadImageButton.addEventListener("click", async function () {
+    const hname = document.getElementById("hostelname").value;
+    if (!hname || files.length === 0) {
+      alert("Please provide hostel name and select images.");
+      return;
+    }
+
+    for (let i = 0; i < files.length; i++) {
+      const storageRef = ref2(storage, `images/${hname}/hostelImg/${files[i].name}`);
+      const upload = await uploadBytes(storageRef, files[i]);
+      const imageUrl = await getDownloadURL(storageRef);
+      imagelink.push(imageUrl);
+    }
+
+    const imageRef = ref(db, `Hostel details/${hname}/ImageData/`);
+    set(imageRef, imagelink)
+      .then(() => {
+        alert("Images uploaded successfully.");
+      })
+      .catch((error) => {
+        alert("Error uploading images: " + error.message);
+      });
+  });*/
+
+  // Dynamic Floor and Room Management
   const addFloorsButton = document.getElementById("addfloors");
   const floorsContainer = document.getElementById("floors-container");
 
@@ -609,13 +276,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     floorsContainer.innerHTML = "";
-
     for (let i = 1; i <= numFloors; i++) {
       createFloorContainer(i);
     }
   });
 
-  // Function to create a floor container
   function createFloorContainer(floorNumber) {
     const floorElem = document.createElement("div");
     floorElem.classList.add("col-12", "mb-4");
@@ -648,7 +313,6 @@ document.addEventListener('DOMContentLoaded', function () {
     floorsContainer.appendChild(floorElem);
   }
 
-  // Function to create a room container
   function createRoomContainer(parentElem, floorNumber) {
     const roomCount = parentElem.querySelectorAll(".room-container").length + 1;
 
@@ -665,7 +329,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const roomElem = document.createElement("div");
     roomElem.classList.add("card", "mb-3", "room-container");
 
-    // Add the data-floor attribute here
     roomElem.setAttribute("data-floor", floorNumber);
 
     const roomHeader = document.createElement("div");
@@ -697,7 +360,6 @@ document.addEventListener('DOMContentLoaded', function () {
     ]));
     rowElem.appendChild(createInputBox("Room Count", `roomCount-${floorNumber}-${roomCount}`, "number", true));
     rowElem.appendChild(createInputBox("Amenities", `amenities-${floorNumber}-${roomCount}`, "text", false, "e.g., WiFi, Laundry"));
-    rowElem.appendChild(createInputBox("Room Number", `roomNumber-${floorNumber}-${roomCount}`, "text", false, "e.g.,101, 102 .."));
     rowElem.appendChild(createInputBox("Price", `price-${floorNumber}-${roomCount}`, "number", true));
     rowElem.appendChild(createInputBox("Upload Room Images", `roomImage-${floorNumber}-${roomCount}`, "file", false, "", true));
 
@@ -715,7 +377,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     roomBody.appendChild(rowElem);
 
-    // Append room details
     roomElem.appendChild(roomHeader);
     roomElem.appendChild(roomBody);
 
@@ -723,7 +384,6 @@ document.addEventListener('DOMContentLoaded', function () {
     roomWrapper.appendChild(mainParentElem);
   }
 
-  // Helper function to create input boxes
   function createInputBox(labelText, inputId, inputType, required, placeholder = "", multiple = false) {
     const colElem = document.createElement("div");
     colElem.classList.add("col-xl-6");
@@ -749,7 +409,6 @@ document.addEventListener('DOMContentLoaded', function () {
     return colElem;
   }
 
-  // Helper function to create select boxes
   function createSelectBox(labelText, selectId, required, options) {
     const colElem = document.createElement("div");
     colElem.classList.add("col-xl-6");
@@ -779,190 +438,828 @@ document.addEventListener('DOMContentLoaded', function () {
     return colElem;
   }
 });
-/* End of adding room details using dynamic form handling */
 
-/* Start of storing hostel details when register button is clicked */
-registerHostel.addEventListener('click', async (e) => {
-  var hname = document.getElementById("hostelname").value;
-  var htype = document.getElementById("hosteltype").value;
-  var hphone = document.getElementById("hostelphone").value;
-  var hemail = document.getElementById("hostelemail").value;
-  var hadd1 = document.getElementById("hosteladd1").value;
-  var hadd2 = document.getElementById("hosteladd2").value;
-  var hcity = document.getElementById("hostelcity").value;
-  var hstate = document.getElementById("hostelstate").value;
-  var hpin = document.getElementById("hostelpin").value;
-  var hfloors = document.getElementById("hostelfloors").value;
+// Helper function to format time to 12-hour format with AM/PM
+function formatTimeToAmPm(time24) {
+  const [hours, minutes] = time24.split(':');
+  const hoursInt = parseInt(hours);
+  const period = hoursInt >= 12 ? 'PM' : 'AM';
+  const hours12 = hoursInt % 12 || 12; // Convert 0 to 12 for midnight
+  return `${hours12}:${minutes} ${period}`;
+}
 
-  const extras = [];
-  const foodNameInputs = document.querySelectorAll('.food-name');
-  const foodPriceInputs = document.querySelectorAll('.food-price');
+// Function to create time range input elements for food menu timings
+function createTimeRangeInput(startId, endId) {
+  const colElem = document.createElement('div');
+  colElem.classList.add('col-xl-6');
 
-  foodNameInputs.forEach((input, index) => {
-    const foodName = input.value.trim();
-    const foodPrice = foodPriceInputs[index].value.trim();
+  const inputBoxElem = document.createElement('div');
+  inputBoxElem.classList.add('input-box');
 
-    if (foodName && foodPrice) {
-      extras.push({ foodName: foodName, foodPrice: foodPrice, available: 'yes' });
-    }
-  });
+  const timeInputContainer = document.createElement('div');
+  timeInputContainer.classList.add('d-flex', 'gap-2');
 
-  if (!hname || !htype || !hphone || !hemail || !hadd1 || !hcity || !hstate || !hpin) {
-    alert("Please fill in all required fields.");
-    return;
-  }
+  const startLabelElem = document.createElement('label');
+  startLabelElem.innerText = 'From:';
+  const startInputElem = document.createElement('input');
+  startInputElem.type = 'time';
+  startInputElem.id = startId;
+  startInputElem.name = startId;
 
-  // Validate email
-  const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
-  if (!hemail.match(emailPattern)) {
-    alert("Please enter a valid email address.");
-    return;
-  }
+  const endLabelElem = document.createElement('label');
+  endLabelElem.innerText = 'To:';
+  const endInputElem = document.createElement('input');
+  endInputElem.type = 'time';
+  endInputElem.id = endId;
+  endInputElem.name = endId;
 
-  // Validate phone number (should be exactly 10 digits)
-  if (hphone.length !== 10 || isNaN(hphone)) {
-    alert("Phone number should be exactly 10 digits.");
-    return;
-  }
+  timeInputContainer.appendChild(startLabelElem);
+  timeInputContainer.appendChild(startInputElem);
+  timeInputContainer.appendChild(endLabelElem);
+  timeInputContainer.appendChild(endInputElem);
 
-  // Validate if at least one image is uploaded
-  const imageInputs = document.querySelectorAll("input[type='file']");
-  let files = [];
-  imageInputs.forEach(input => {
-    files.push(...input.files);
-  });
-  if (files.length === 0) {
-    alert("Please upload at least one image.");
-    return;
-  }
+  inputBoxElem.appendChild(timeInputContainer);
+  colElem.appendChild(inputBoxElem);
 
-  // Loop through each floor and its rooms
-  const floorCount = document.querySelectorAll('.card-header h5').length; // Counting the number of floors
-  for (let floorIndex = 1; floorIndex <= floorCount; floorIndex++) {
-    const floorNumber = floorIndex;
+  return colElem;
+}
+const morningTimeContainer = document.getElementById("morningTimeContainer");
+const afternoonTimeContainer = document.getElementById("afternoonTimeContainer");
+const eveningTimeContainer = document.getElementById("eveningTimeContainer");
+const nightTimeContainer = document.getElementById("nightTimeContainer");
 
-    // Get all room containers for the current floor
-    const roomContainers = document.querySelectorAll(`.room-container[data-floor="${floorNumber}"]`);
+morningTimeContainer.appendChild(createTimeRangeInput('morningStart', 'morningEnd'));
+afternoonTimeContainer.appendChild(createTimeRangeInput('afternoonStart', 'afternoonEnd'));
+eveningTimeContainer.appendChild(createTimeRangeInput('eveningStart', 'eveningEnd'));
+nightTimeContainer.appendChild(createTimeRangeInput('nightStart', 'nightEnd'));
 
-    // Loop through room containers and add room data
-    for (let roomIndex = 0; roomIndex < roomContainers.length; roomIndex++) {
-      const roomElem = roomContainers[roomIndex];
-      const roomNumbersVal = roomElem.querySelector(`#roomNumber-${floorNumber}-${roomIndex + 1}`).value.split(",").map((num) => num.trim());
-      const roomCountVal = parseInt(roomElem.querySelector(`#roomCount-${floorNumber}-${roomIndex + 1}`).value);
-      const roomType = roomElem.querySelector(`#roomType-${floorNumber}-${roomIndex + 1}`).value;
-      const amenities = roomElem.querySelector(`#amenities-${floorNumber}-${roomIndex + 1}`).value;
-      const ac = roomElem.querySelector(`#acType-${floorNumber}-${roomIndex + 1}`).value;
-      const bathroom = roomElem.querySelector(`#bathroom-${floorNumber}-${roomIndex + 1}`).value;
-      const price = roomElem.querySelector(`#price-${floorNumber}-${roomIndex + 1}`).value;
-      const remarks = roomElem.querySelector(`#remarks-${floorNumber}-${roomIndex + 1}`).value;
-      const imageInput = roomElem.querySelector(`#roomImage-${floorNumber}-${roomIndex + 1}`);
-      const files = imageInput.files;
-      let imagelink1 = [];
 
-      // Upload images and generate image links
-      if (files.length !== 0) {
-        for (let j = 0; j < files.length; j++) {
-          const storageRef = ref2(storage, `Roomimages/${hname}/room-${roomNumbersVal[0]}/${files[j].name}`);
-          await uploadBytes(storageRef, files[j]);
-          const imageUrl = await getDownloadURL(storageRef);
-          imagelink1.push(imageUrl);
+//style CSS for food selector container
+function addStyles1() {
+  const styles1 = `
+.food-selector {
+            font-family: Arial, sans-serif;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            max-width: 1200px;
+            margin: 1rem auto;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            background: linear-gradient(to right, #f2a93e, #f07054);
+            color: white;
+        }
+        .tabs button {
+            flex: 1;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            text-align: center;
+            cursor: pointer;
+        }
+        .tabs button.active {
+            background-color: #444;
+            border-bottom: 2px solid #4CAF50;
+        }
+        .container {
+            padding: 1rem;
+        }
+        .day-container {
+            display: none;
+        }
+        .day-container.active {
+            display: block;
+        }
+        .session-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        .meal-card {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+            padding: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        .meal-options {
+            width: 100%;
+        }
+        .meal-item {
+            display: flex;
+            margin-bottom: 0.5rem;
+        }
+        .meal-item img {
+            width: 70px;
+            height: 70px;
+            margin-right: 0.5rem;
+            border-radius: 4px;
+        }
+        .actions {
+            text-align: center;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        .actions button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .actions button:hover {
+            background-color: #45a049;
+        }
+        .actions button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+  `;
+
+  const styleSheet = document.createElement("style");
+  styleSheet.type = "text/css";
+  styleSheet.innerText = styles1;
+  document.head.appendChild(styleSheet);
+}
+
+// Call this function to inject the CSS when the script loads
+addStyles1();
+
+async function fetchFoodData() {
+  const foodMenuRef = ref(db, "Food Menu");
+  const snapshot = await get(foodMenuRef);
+  if (snapshot.exists()) {
+    return snapshot.val();
+  } else {
+    console.error("No data found at 'Food Menu' path");
+    return null;
+  }
+}
+
+async function setupWeekContainer() {
+  const foodData = await fetchFoodData();
+
+  const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  let weekCounter = 0;
+
+  const addWeekButton = document.getElementById("addWeekButton");
+  console.log(addWeekButton);
+
+  // Clear any existing event listener on the button
+  addWeekButton.onclick = null;
+
+
+  addWeekButton.onclick = async () => {
+    const existingWeeks = await getExistingWeeks();
+    if (existingWeeks.length === 0) {
+      addWeek(1); // Create Week 1 if no weeks exist
+    } else {
+      const nextWeek = findNextMissingWeek(existingWeeks);
+      addWeek(nextWeek); // Create the next missing week
+    }
+  };
+
+  // Helper function to find the next missing week from firebase db.
+  function findNextMissingWeek(existingWeeks) {
+    const numericWeeks = existingWeeks.map(week => parseInt(week.replace('week', ''), 10));
+    for (let i = 1; i <= numericWeeks.length + 1; i++) {
+      if (!numericWeeks.includes(i)) {
+        return i;
+      }
+    }
+  }
+
+  async function addWeek(weekCounter) {
+    const foodSelectorDiv = document.createElement("div");
+    foodSelectorDiv.classList.add("food-selector");
+    foodSelectorDiv.id = `food-selector-${weekCounter}`;
+
+    const weekHeaderDiv = document.createElement("div");
+    weekHeaderDiv.innerHTML = `<center><h2>Week ${weekCounter}</h2></center><br>`;
+    foodSelectorDiv.appendChild(weekHeaderDiv);
+
+    const tabsDiv = document.createElement("div");
+    tabsDiv.classList.add("tabs");
+    tabsDiv.innerHTML = daysOfWeek
+      .map((day, index) => `<button data-day="${day}" class="${index === 0 ? "active" : ""}">${day}</button>`)
+      .join("");
+    foodSelectorDiv.appendChild(tabsDiv);
+
+    const dayDetailsDiv = document.createElement("div");
+    dayDetailsDiv.classList.add("day-details");
+    dayDetailsDiv.innerHTML = daysOfWeek
+      .map(
+        (day, index) => `
+          <div class="day-container ${index === 0 ? "active" : ""}" id="details-${day}-${weekCounter}">
+            <center><h3>${day}</h3></center>
+            <div class="session-grid">
+              ${["Breakfast", "Lunch", "Snacks", "Dinner"]
+            .map(session => createMealCard(session, day, weekCounter, foodData))
+            .join("")}
+            </div>
+          </div>`
+      )
+      .join("");
+    foodSelectorDiv.appendChild(dayDetailsDiv);
+
+    const actionsDiv = document.createElement("div");
+    actionsDiv.classList.add("actions");
+    foodSelectorDiv.appendChild(actionsDiv);
+
+    const backButton = document.createElement("button");
+    backButton.id = `back-btn-${weekCounter}`;
+    backButton.disabled = true;
+    backButton.innerText = "Back";
+    actionsDiv.appendChild(backButton);
+
+    const nextButton = document.createElement("button");
+    nextButton.id = `next-btn-${weekCounter}`;
+    nextButton.innerText = "Next";
+    actionsDiv.appendChild(nextButton);
+
+    const errorMessageDiv = document.createElement("div");
+    errorMessageDiv.id = `error-message-${weekCounter}`;
+    errorMessageDiv.classList.add("error");
+    errorMessageDiv.style.display = "none";
+    foodSelectorDiv.appendChild(errorMessageDiv);
+
+    document.getElementById("foodSelectorsContainer").appendChild(foodSelectorDiv);
+
+    const existingWeeks = await getExistingWeeks();
+    addWeekCheckboxes(weekCounter, existingWeeks); //week checkboxes
+
+    setupTabs(tabsDiv, dayDetailsDiv, weekCounter);
+    setupNavigation(actionsDiv, dayDetailsDiv, weekCounter);
+  }
+
+  function addWeekCheckboxes(currentWeekNum, existingWeeks) {
+    const container = document.createElement("div");
+    container.classList.add("mt-3");
+
+    const labelElem = document.createElement("h6");
+    labelElem.innerText = "Choose the below checkboxes to copy week data";
+    labelElem.style.marginBottom = "10px";
+    container.appendChild(labelElem);
+
+    const checkboxContainer = document.createElement("div");
+    checkboxContainer.classList.add("d-flex", "gap-3");
+
+    [2, 3, 4, 5].forEach(week => {
+      const checkboxElem = document.createElement("div");
+      checkboxElem.classList.add("form-check", "form-check-inline");
+
+      const inputElem = document.createElement("input");
+      inputElem.type = "checkbox";
+      inputElem.id = `week${week}`;
+      inputElem.classList.add("form-check-input");
+
+      const weekLabelElem = document.createElement("label");
+      weekLabelElem.htmlFor = `week${week}`;
+      weekLabelElem.innerText = `Week ${week}`;
+      weekLabelElem.classList.add("form-check-label");
+
+      checkboxElem.appendChild(inputElem);
+      checkboxElem.appendChild(weekLabelElem);
+      checkboxContainer.appendChild(checkboxElem);
+
+      const weekExists = existingWeeks.includes(`week${week}`);
+      inputElem.disabled = weekExists; // Disable checkbox if week exists
+      if (weekExists) {
+        weekLabelElem.style.color = 'gray'; // Indicate the week is already added
       }
 
-      // Check if roomCount matches the number of roomNumbers provided
-      if (roomNumbersVal.length !== roomCountVal) {
-        alert(`Please provide exactly ${roomCountVal} room numbers for floor ${floorNumber}.`);
+      inputElem.addEventListener("change", async (event) => {
+        if (event.target.checked) {
+          await copyWeekData(currentWeekNum, week);
+        }
+      });
+    });
+
+    container.appendChild(checkboxContainer);
+    document.getElementById(`food-selector-${currentWeekNum}`).appendChild(container);
+  }
+
+  function createMealCard(session, day, weekCounter, foodData) {
+    const sessionData = foodData[session]?.dishes || [];
+    const options = sessionData
+      .map(
+        dish => ` 
+          <div class="meal-item">
+            <img src="${dish.image}" alt="${dish.name}" />
+            <label>
+              <input type="checkbox" value="${dish.id}" data-name="${dish.mainDish}" data-beverage="${dish.beverages}" data-special_dish="${dish.specialDish}">
+              ${dish.mainDish}
+              ${dish.sideDish}
+              ${dish.beverages ? `<br><small><b>Beverages:</b> ${dish.beverages}</small>` : ""}
+              ${dish.specialDish ? `<br><small><b>Special Dish:</b> ${dish.specialDish}</small>` : ""}
+            </label>
+          </div>`
+      )
+      .join("");
+
+    return `
+      <div class="meal-card" data-session="${session}">
+        <h3>${session}</h3>
+        <div class="meal-options">${options}</div>
+      </div>`;
+  }
+
+  function setupTabs(tabsDiv, dayDetailsDiv, weekCounter) {
+    const tabs = tabsDiv.querySelectorAll("button");
+    const dayContainers = dayDetailsDiv.querySelectorAll(".day-container");
+
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        const day = tab.dataset.day;
+
+        tabs.forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+
+        dayContainers.forEach(container => {
+          if (container.id.includes(day)) {
+            container.classList.add("active");
+          } else {
+            container.classList.remove("active");
+          }
+        });
+      });
+    });
+  }
+
+  function setupNavigation(actionsDiv, dayDetailsDiv, weekCounter) {
+    const backButton = actionsDiv.querySelector(`#back-btn-${weekCounter}`);
+    const nextButton = actionsDiv.querySelector(`#next-btn-${weekCounter}`);
+    const errorMessage = document.getElementById(`error-message-${weekCounter}`);
+
+    const dayContainers = dayDetailsDiv.querySelectorAll(".day-container");
+    let currentDayIndex = 0;
+
+    backButton.addEventListener("click", () => {
+      if (currentDayIndex > 0) {
+        dayContainers[currentDayIndex].classList.remove("active");
+        currentDayIndex--;
+        dayContainers[currentDayIndex].classList.add("active");
+        backButton.disabled = currentDayIndex === 0;
+        nextButton.textContent = "Next";
+      }
+    });
+
+    nextButton.addEventListener("click", async () => {
+      if (!validateDaySelection(daysOfWeek[currentDayIndex], weekCounter)) {
+        errorMessage.textContent = `Please select at least one option for each session on ${daysOfWeek[currentDayIndex]}.`;
+        errorMessage.style.display = "block";
         return;
       }
 
-      // Loop through each roomNumber and store its data
-      for (let roomNumberVal of roomNumbersVal) {
-        // Calculate the 'bedsAvailable' for the roomType at the floor level (roomCount * roomType)
-        const roomTypeBedsAvailable = parseInt(roomType.match(/\d+/)[0]) * roomCountVal; // bedsAvailable for roomType
+      errorMessage.style.display = "none";
 
-        // Update the floor-level roomType details (e.g., "2 sharing")
-        await update(
-          ref(
-            db,
-            `Hostel details/${hname}/rooms/floor${floorNumber}/${roomType}`
-          ),
-          {
-            floor: floorNumber,
-            price: price,
-            roomCount: roomCountVal,
-            roomType: roomType,
-            bedsAvailable: roomTypeBedsAvailable, // bedsAvailable for roomType (calculated)
-          }
-        )
-          .then(async () => {
-            // Calculate the 'bedsAvailable' for this room based on the sharing configuration
-            const bedsAvailableForRoom = parseInt(roomType.match(/\d+/)[0]); // E.g., 2 for "2 sharing"
-
-            // Update the room-level details (beds, amenities, price)
-            await update(
-              ref(
-                db,
-                `Hostel details/${hname}/rooms/floor${floorNumber}/${roomType}/rooms/${ac}/room${roomNumberVal}`
-              ),
-              {
-                ac: ac,
-                bathroom: bathroom,
-                bedsAvailable: bedsAvailableForRoom, // bedsAvailable for this specific room
-                price: price,
-                amenities: amenities,
-                remarks: remarks,
-                roomNumber: roomNumberVal,
-                roomCount: roomCountVal,
-                floor: floorNumber,
-                roomType: roomType,
-                imagelink1: imagelink1,
-                beds: {} // Assuming you want to initialize it as empty (you can add beds here based on your logic)
-              }
-            );
-
-            // Add the individual beds for the room (based on sharing configuration)
-            for (let bedIndex = 1; bedIndex <= bedsAvailableForRoom; bedIndex++) {
-              const bedKey = `bed ${bedIndex}`;
-              await update(
-                ref(
-                  db,
-                  `Hostel details/${hname}/rooms/floor${floorNumber}/${roomType}/rooms/${ac}/room${roomNumberVal}/beds/`
-                ),
-                {
-                  [bedKey]: 'not booked', // Initial status of the bed
-                }
-              ).catch((error) => {
-                alert(`Error updating bed ${bedKey}: ${error}`);
-              });
-            }
-          })
-          .catch((error) => {
-            alert(`Error updating room details for Room ${roomNumberVal}: ${error}`);
-          });
+      if (currentDayIndex < daysOfWeek.length - 1) {
+        dayContainers[currentDayIndex].classList.remove("active");
+        currentDayIndex++;
+        dayContainers[currentDayIndex].classList.add("active");
+        backButton.disabled = false;
+        if (currentDayIndex === daysOfWeek.length - 1) nextButton.textContent = "Submit";
+      } else {
+        await logSelections(weekCounter);
+        alert(`Week ${weekCounter} selections saved!`);
       }
-    }
+    });
   }
 
-  // Save hostel details to Firebase
-  await update(ref(db, `Hostel details/${hname}/`), {
-    hostelName: hname,
-    hostelType: htype,
-    hostelPhone: hphone,
-    hostelEmail: hemail,
-    hostelAddress1: hadd1,
-    hostelAddress2: hadd2,
-    hostelCity: hcity,
-    hostelState: hstate,
-    hostelPin: hpin,
-    hostelFloors: hfloors,
-    extras: extras,
-  })
-    .then(() => {
-      alert('Hostel details added successfully');
-      window.location.href = "././hostel-list.html";
-    })
-    .catch((error) => {
-      alert(`Error saving hostel details: ${error}`);
+  function validateDaySelection(day, weekCounter) {
+    const checkboxes = document.querySelectorAll(`#details-${day}-${weekCounter} input[type="checkbox"]`);
+    return Array.from(checkboxes).some(checkbox => checkbox.checked);
+  }
+  async function logSelections(weekCounter) {
+    const selections = {};
+    const breakfastStart = document.getElementById("morningStart").value;
+    const breakfastEnd = document.getElementById("morningEnd").value;
+    const lunchStart = document.getElementById("afternoonStart").value;
+    const lunchEnd = document.getElementById("afternoonEnd").value;
+    const snacksStart = document.getElementById("eveningStart").value;
+    const snacksEnd = document.getElementById("eveningEnd").value;
+    const dinnerStart = document.getElementById("nightStart").value;
+    const dinnerEnd = document.getElementById("nightEnd").value;
+
+    const timings = {
+      Breakfast: `${formatTimeToAmPm(breakfastStart)} - ${formatTimeToAmPm(breakfastEnd)}`,
+      Lunch: `${formatTimeToAmPm(lunchStart)} - ${formatTimeToAmPm(lunchEnd)}`,
+      Snacks: `${formatTimeToAmPm(snacksStart)} - ${formatTimeToAmPm(snacksEnd)}`,
+      Dinner: `${formatTimeToAmPm(dinnerStart)} - ${formatTimeToAmPm(dinnerEnd)}`
+    };
+
+    // Loop through days of the week and capture the selected data
+    const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    daysOfWeek.forEach(day => {
+      const daySelections = {};
+      const checkboxes = document.querySelectorAll(`#details-${day}-${weekCounter} input[type="checkbox"]:checked`);
+      checkboxes.forEach(checkbox => {
+        const session = checkbox.closest(".meal-card").dataset.session;
+
+        if (!daySelections[session]) {
+          daySelections[session] = {
+            dishes: [],
+            dishTimings: timings[session]
+          };
+        }
+
+        daySelections[session].dishes.push({
+          name: checkbox.dataset.name,
+          beverages: checkbox.dataset.beverage,
+          specialDish: checkbox.dataset.special_dish
+        });
+      });
+
+      selections[day] = daySelections;
     });
+
+    const hname = document.getElementById("hostelname").value;
+
+    // Check if at least one checkbox is selected (for current week)
+    if (Object.keys(selections).length === 0) {
+      alert("Please select at least one dish for the week.");
+      return; // Don't proceed if no selections
+    }
+
+    // Store the Week data in Firebase
+    await update(ref(db, `Hostel details/${hname}/weeks/week${weekCounter}`), selections);
+    console.log(`Selections for Week ${weekCounter} saved to Firebase!`);
+
+    // Now check for week checkboxes and copy the data to selected weeks
+    await copyWeekData(weekCounter);
+  }
+
+  // Function to copy data to selected weeks
+  async function copyWeekData(currentWeekNum) {
+    const hname = document.getElementById("hostelname").value;
+
+    // Step 1: Get the current week data
+    const snapshot = await get(ref(db, `Hostel details/${hname}/weeks/week${currentWeekNum}`));
+    if (!snapshot.exists()) {
+      console.log(`No data for Week ${currentWeekNum} found!`);
+      return;
+    }
+
+    const currentWeekData = snapshot.val();
+
+
+    // Step 2: Get all checked week checkboxes (week2, week3, week4, week5)
+    const checkedWeeks = [2, 3, 4, 5].filter(week => {
+      const checkbox = document.getElementById(`week${week}`);
+      return checkbox && checkbox.checked;
+    });
+
+    // Step 3: Iterate over the selected weeks and copy the data
+    for (const selectedWeek of checkedWeeks) {
+      if (selectedWeek !== currentWeekNum) { // Skip copying the data to the same week
+        try {
+          await update(ref(db, `Hostel details/${hname}/weeks/week${selectedWeek}`), currentWeekData);
+          alert(`Week ${currentWeekNum} data copied to Week ${selectedWeek} successfully!`);
+          //console.log(`Week ${currentWeekNum} data copied to Week ${selectedWeek} successfully!`);
+        } catch (error) {
+          console.error(`Error copying data to Week ${selectedWeek}:`, error);
+        }
+      }
+    }
+
+    // Step 4: Reset checkboxes only after operation
+    checkedWeeks.forEach(week => {
+      const checkbox = document.getElementById(`week${week}`);
+      if (checkbox) checkbox.checked = false; // Reset checkbox state
+    });
+
+    //console.log("All checkboxes reset after operation.");
+  }
+
+  // Function to get existing weeks from Firebase
+  async function getExistingWeeks() {
+    const hname = document.getElementById("hostelname").value;
+    const snapshot = await get(ref(db, `Hostel details/${hname}/weeks`));
+    return snapshot.exists() ? Object.keys(snapshot.val()) : [];
+  }
+}
+
+
+// Next step 1: Save Hostel Details
+document.getElementById("nextButtonStep1").addEventListener("click", async () => {
+  try {
+    const hostelDetails = {
+      hostelName: document.getElementById("hostelname").value,
+      hostelType: document.getElementById("hosteltype").value,
+      hostelPhone: document.getElementById("hostelphone").value,
+      hostelEmail: document.getElementById("hostelemail").value,
+      hostelAddress1: document.getElementById("hosteladd1").value,
+      hostelAddress2: document.getElementById("hosteladd2").value,
+      hostelCity: document.getElementById("hostelcity").value,
+      hostelState: document.getElementById("hostelstate").value,
+      hostelPin: document.getElementById("hostelpin").value,
+    };
+
+    // Validate required fields
+    if (Object.values(hostelDetails).some((value) => !value)) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    await update(ref(db, `Hostel details/${hostelDetails.hostelName}`), hostelDetails);
+    alert("Hostel details saved successfully!");
+    nextStep(2);
+  } catch (error) {
+    console.error("Error saving hostel details:", error);
+    alert("Error saving hostel details: " + error.message);
+  }
 });
-/* End of storing hostel details when register button is clicked */
+
+// Next step 2: Save Floor and Room Details
+document.getElementById("nextButtonStep2").addEventListener("click", async () => {
+  try {
+    const floorCount = document.querySelectorAll('.card-header h5').length; // Counting the number of floors
+    const hname = document.getElementById("hostelname").value;
+    const hostelFloors = document.getElementById("hostelfloors").value;
+
+    for (let floorIndex = 1; floorIndex <= floorCount; floorIndex++) {
+      const floorNumber = floorIndex;
+      let roomNumberCounter = 1; // Counter to keep track of room numbers for the floor
+
+      // Get all room containers for the current floor
+      const roomContainers = document.querySelectorAll(`.room-container[data-floor="${floorNumber}"]`);
+
+      // Loop through room containers and process each room
+      for (let roomIndex = 0; roomIndex < roomContainers.length; roomIndex++) {
+        const roomElem = roomContainers[roomIndex];
+        const roomCount = parseInt(roomElem.querySelector(`#roomCount-${floorNumber}-${roomIndex + 1}`).value);
+        const roomType = roomElem.querySelector(`#roomType-${floorNumber}-${roomIndex + 1}`).value;
+        const amenities = roomElem.querySelector(`#amenities-${floorNumber}-${roomIndex + 1}`).value;
+        const ac = roomElem.querySelector(`#acType-${floorNumber}-${roomIndex + 1}`).value;
+        const bathroom = roomElem.querySelector(`#bathroom-${floorNumber}-${roomIndex + 1}`).value;
+        const price = roomElem.querySelector(`#price-${floorNumber}-${roomIndex + 1}`).value;
+        const remarks = roomElem.querySelector(`#remarks-${floorNumber}-${roomIndex + 1}`).value;
+        const imageInput = roomElem.querySelector(`#roomImage-${floorNumber}-${roomIndex + 1}`);
+        const files = imageInput.files;
+        let roomImages = [];
+
+        // Calculate roomTypeBedsAvailable at the room type level
+        const roomTypeBedsAvailable = parseInt(roomType.match(/\d+/)[0]) * roomCount;
+
+        for (let i = 0; i < files.length; i++) {
+          const storageRef = ref2(storage, `Roomimages/${hname}/floor${floorNumber}/room-${roomIndex + 1}/${files[i].name}`);
+          await uploadBytes(storageRef, files[i]);
+          const imageUrl = await getDownloadURL(storageRef);
+          roomImages.push(imageUrl);
+          //console.log(`Uploaded Image ${i + 1}: ${imageUrl}`);
+        }
+
+        // Save room type data
+        await update(ref(db, `Hostel details/${hname}/rooms/floor${floorNumber}/${roomType}`), {
+          floor: floorNumber,
+          price: price,
+          roomCount: roomCount,
+          roomType: roomType,
+          bedsAvailable: roomTypeBedsAvailable,
+        });
+
+        const floorRef = ref(db, `Hostel details/${hname}`);
+        await update(floorRef, { hostelFloors: hostelFloors });
+
+        // Loop to handle each room based on roomCount
+        for (let roomSubIndex = 1; roomSubIndex <= roomCount; roomSubIndex++) {
+          const roomNumber = `F${floorNumber}_R${roomNumberCounter++}`;
+          const bedsAvailableForRoom = parseInt(roomType.match(/\d+/)[0]);
+
+          // Save individual room data
+          await update(ref(db, `Hostel details/${hname}/rooms/floor${floorNumber}/${roomType}/rooms/${ac}/room${roomNumber}`), {
+            ac: ac,
+            bathroom: bathroom,
+            amenities: amenities,
+            remarks: remarks,
+            roomNumber: roomNumber,
+            price: price,
+            roomType: roomType,
+            bedsAvailable: bedsAvailableForRoom,
+            roomCount:roomCount,
+            floor: floorNumber,
+            imagesLink: roomImages,
+            beds: {}
+          });
+
+          // Save bed data for each room
+          for (let bedIndex = 1; bedIndex <= bedsAvailableForRoom; bedIndex++) {
+            const bedKey = `bed ${bedIndex}`;
+            await update(ref(db, `Hostel details/${hname}/rooms/floor${floorNumber}/${roomType}/rooms/${ac}/room${roomNumber}/beds/${bedKey}`), {
+              status: "not booked",
+            });
+          }
+        }
+      }
+    }
+
+    alert("Room details saved successfully!");
+    nextStep(3);
+  } catch (error) {
+    console.error("Error saving room details:", error);
+    alert("Error saving room details: " + error.message);
+  }
+});
+
+// Next step 3: Weekly Menu
+document.getElementById("nextButtonStep3").addEventListener("click", async () => {
+  try {
+
+    const extrasContainer = document.getElementById("extras-container");
+    const foodNameInputs = extrasContainer.querySelectorAll(".food-name");
+    const foodPriceInputs = extrasContainer.querySelectorAll(".food-price");
+
+    const extras = {};
+    foodNameInputs.forEach((input, index) => {
+      const foodName = input.value.trim();
+      const foodPrice = foodPriceInputs[index].value.trim();
+
+      if (foodName && foodPrice) {
+        extras[index] = {
+          foodName: foodName,
+          foodPrice: foodPrice,
+          available: 'yes'
+        };
+      }
+    });
+
+    if (extras.length === 0) {
+      alert("No extras have been added. Please add at least one item before proceeding.");
+      return;
+    }
+
+    const hname = document.getElementById("hostelname").value;
+    await update(ref(db, `Hostel details/${hname}/extras`), extras)
+
+    alert("Food Menu data updated successfully!")
+    nextStep(4); // Step 4 is the dummy Submit page
+  } catch (error) {
+    console.error("Error saving extras data:", error);
+    alert("Error saving extras data: " + error.message);
+  }
+});
+
+// Handle "Submit" button click on Step 4
+document.getElementById("submitButton").addEventListener("click", async () => {
+  try {
+    const hname = document.getElementById("hostelname").value;
+    if (!hname) {
+      alert("Hostel name is missing. Please complete the earlier steps.");
+      return;
+    }
+
+    await set(ref(db, `Hostel details/${hname}/status`), { completed: true });
+
+    alert("Your form has been successfully submitted!");
+    redirectToHome(); // Redirect user after submission
+  } catch (error) {
+    console.error("Error during submission:", error);
+    alert("Error during submission: " + error.message);
+  }
+});
+
+function redirectToHome() {
+  window.location.href = "hostel-list.html"; // Replace with your desired home page URL
+}
+
+// Navigation Buttons
+document.getElementById("prevButton").addEventListener("click", () => prevStep(currentStep - 1));
+
+// Save Hostel Details, Floors, and Rooms
+/*document.getElementById("nextButton").addEventListener("click", async () => {
+  try {
+    const hname = document.getElementById("hostelname").value;
+    const htype = document.getElementById("hosteltype").value;
+    const hphone = document.getElementById("hostelphone").value;
+    const hemail = document.getElementById("hostelemail").value;
+    const hadd1 = document.getElementById("hosteladd1").value;
+    const hadd2 = document.getElementById("hosteladd2").value;
+    const hcity = document.getElementById("hostelcity").value;
+    const hstate = document.getElementById("hostelstate").value;
+    const hpin = document.getElementById("hostelpin").value;
+    const hfloors = document.getElementById("hostelfloors").value;
+
+    // Validate required fields
+    if (!hname || !htype || !hphone || !hemail || !hadd1 || !hcity || !hstate || !hpin || !hfloors) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    // Save hostel details
+    const hostelDetails = {
+      hostelName: hname,
+      hostelType: htype,
+      hostelPhone: hphone,
+      hostelEmail: hemail,
+      hostelAddress1: hadd1,
+      hostelAddress2: hadd2,
+      hostelCity: hcity,
+      hostelState: hstate,
+      hostelPin: hpin,
+      hostelFloors: hfloors,
+    };
+
+    await set(ref(db, `Hostel details/${hname}`), hostelDetails);
+
+    // Save Floor and Room Details
+    const floorCount = document.querySelectorAll('.card-header h5').length; // Counting the number of floors
+
+    for (let floorIndex = 1; floorIndex <= floorCount; floorIndex++) {
+      const floorNumber = floorIndex;
+      let roomNumberCounter = 1; // Counter to keep track of room numbers for the floor
+
+      // Get all room containers for the current floor
+      const roomContainers = document.querySelectorAll(`.room-container[data-floor="${floorNumber}"]`);
+
+      // Loop through room containers and process each room
+      for (let roomIndex = 0; roomIndex < roomContainers.length; roomIndex++) {
+        const roomElem = roomContainers[roomIndex];
+        const roomCount = parseInt(roomElem.querySelector(`#roomCount-${floorNumber}-${roomIndex + 1}`).value);
+        const roomType = roomElem.querySelector(`#roomType-${floorNumber}-${roomIndex + 1}`).value;
+        const amenities = roomElem.querySelector(`#amenities-${floorNumber}-${roomIndex + 1}`).value;
+        const ac = roomElem.querySelector(`#acType-${floorNumber}-${roomIndex + 1}`).value;
+        const bathroom = roomElem.querySelector(`#bathroom-${floorNumber}-${roomIndex + 1}`).value;
+        const price = roomElem.querySelector(`#price-${floorNumber}-${roomIndex + 1}`).value;
+        const remarks = roomElem.querySelector(`#remarks-${floorNumber}-${roomIndex + 1}`).value;
+        const imageInput = roomElem.querySelector(`#roomImage-${floorNumber}-${roomIndex + 1}`);
+        const files = imageInput.files;
+        let roomImages = [];
+
+        // Calculate roomTypeBedsAvailable at the room type level
+        const roomTypeBedsAvailable = parseInt(roomType.match(/\d+/)[0]) * roomCount;
+
+        // Upload Room Images and save links
+        for (let i = 0; i < files.length; i++) {
+          const storageRef = ref2(storage, `Roomimages/${hname}/floor${floorNumber}/room-${roomIndex + 1}/${files[i].name}`);
+          await uploadBytes(storageRef, files[i]);
+          const imageUrl = await getDownloadURL(storageRef);
+          roomImages.push(imageUrl);
+          console.log(`Uploaded Image ${i + 1}: ${imageUrl}`);
+        }
+
+        // Save room type data
+        await update(ref(db, `Hostel details/${hname}/rooms/floor${floorNumber}/${roomType}`), {
+          floor: floorNumber,
+          price: price,
+          roomCount: roomCount,
+          roomType: roomType,
+          bedsAvailable: roomTypeBedsAvailable,
+        });
+
+        // Loop to handle each room based on roomCount
+
+        // Loop to handle each room based on roomCount
+        for (let roomSubIndex = 1; roomSubIndex <= roomCount; roomSubIndex++) {
+          const roomNumber = `F${floorNumber}_R${roomNumberCounter++}`; // Incrementing the room number counter
+          const bedsAvailableForRoom = parseInt(roomType.match(/\d+/)[0]);
+
+          // Save individual room data
+          await update(ref(db, `Hostel details/${hname}/rooms/floor${floorNumber}/${roomType}/rooms/${ac}/room${roomNumber}`), {
+            ac: ac,
+            bathroom: bathroom,
+            amenities: amenities,
+            remarks: remarks,
+            roomNumber: roomNumber,
+            price: price,
+            roomType: roomType,
+            bedsAvailable: bedsAvailableForRoom,
+            floor: floorNumber,
+            imagesLink: roomImages,
+          });
+
+          // Save bed data for each room
+          for (let bedIndex = 1; bedIndex <= bedsAvailableForRoom; bedIndex++) {
+            const bedKey = `bed ${bedIndex}`;
+            await update(ref(db, `Hostel details/${hname}/rooms/floor${floorNumber}/${roomType}/rooms/${ac}/room${roomNumber}/beds/${bedKey}`), {
+              status: "not booked",
+            });
+          }
+        }
+      }
+    }
+
+    alert("Hostel, Floor, and Room Data Saved Successfully!");
+    nextStep(2); // Move to Step 2 only if everything is successful
+
+  } catch (error) {
+    console.error("Error saving data:", error);
+    alert("Error saving data: " + error.message);
+  }
+});
+*/
