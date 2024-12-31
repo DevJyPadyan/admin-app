@@ -11,6 +11,21 @@ let files = [];
 let imagelink = [];
 let currentStep = 1; // Initialize the current step
 
+function showLoader() {
+  const loader = document.getElementById("loader");
+  if (loader) {
+    loader.style.display = "flex";
+  }
+}
+
+// Hide loader
+function hideLoader() {
+  const loader = document.getElementById("loader");
+  if (loader) {
+    loader.style.display = "none";
+  }
+}
+
 // Step-based navigation
 function nextStep(step) {
 
@@ -230,37 +245,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Call this function to inject the CSS when the script loads
   addStyles();
-
-  /* Hostel Image Upload
-  const filesInput = document.getElementById("files");
-  filesInput.addEventListener("change", function (e) {
-    files = e.target.files;
-  });
-
-  const uploadImageButton = document.getElementById("uploadImage");
-  uploadImageButton.addEventListener("click", async function () {
-    const hname = document.getElementById("hostelname").value;
-    if (!hname || files.length === 0) {
-      alert("Please provide hostel name and select images.");
-      return;
-    }
-
-    for (let i = 0; i < files.length; i++) {
-      const storageRef = ref2(storage, `images/${hname}/hostelImg/${files[i].name}`);
-      const upload = await uploadBytes(storageRef, files[i]);
-      const imageUrl = await getDownloadURL(storageRef);
-      imagelink.push(imageUrl);
-    }
-
-    const imageRef = ref(db, `Hostel details/${hname}/ImageData/`);
-    set(imageRef, imagelink)
-      .then(() => {
-        alert("Images uploaded successfully.");
-      })
-      .catch((error) => {
-        alert("Error uploading images: " + error.message);
-      });
-  });*/
 
   // Dynamic Floor and Room Management
   const addFloorsButton = document.getElementById("addfloors");
@@ -611,19 +595,14 @@ async function fetchFoodData() {
     return null;
   }
 }
-
 async function setupWeekContainer() {
   const foodData = await fetchFoodData();
 
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   let weekCounter = 0;
 
-  const addWeekButton = document.getElementById("addWeekButton");
-  console.log(addWeekButton);
-
   // Clear any existing event listener on the button
   addWeekButton.onclick = null;
-
 
   addWeekButton.onclick = async () => {
     const existingWeeks = await getExistingWeeks();
@@ -635,7 +614,6 @@ async function setupWeekContainer() {
     }
   };
 
-  // Helper function to find the next missing week from firebase db.
   function findNextMissingWeek(existingWeeks) {
     const numericWeeks = existingWeeks.map(week => parseInt(week.replace('week', ''), 10));
     for (let i = 1; i <= numericWeeks.length + 1; i++) {
@@ -702,12 +680,13 @@ async function setupWeekContainer() {
     document.getElementById("foodSelectorsContainer").appendChild(foodSelectorDiv);
 
     const existingWeeks = await getExistingWeeks();
-    addWeekCheckboxes(weekCounter, existingWeeks); //week checkboxes
+    addWeekCheckboxes(weekCounter, existingWeeks);
 
     setupTabs(tabsDiv, dayDetailsDiv, weekCounter);
     setupNavigation(actionsDiv, dayDetailsDiv, weekCounter);
   }
 
+  // Function to create week checkboxes for week2, week3, week4, and week5
   function addWeekCheckboxes(currentWeekNum, existingWeeks) {
     const container = document.createElement("div");
     container.classList.add("mt-3");
@@ -739,11 +718,12 @@ async function setupWeekContainer() {
       checkboxContainer.appendChild(checkboxElem);
 
       const weekExists = existingWeeks.includes(`week${week}`);
-      inputElem.disabled = weekExists; // Disable checkbox if week exists
+      inputElem.disabled = weekExists;
       if (weekExists) {
-        weekLabelElem.style.color = 'gray'; // Indicate the week is already added
+        weekLabelElem.style.color = 'gray';
       }
 
+      // Event listener for checkbox change
       inputElem.addEventListener("change", async (event) => {
         if (event.target.checked) {
           await copyWeekData(currentWeekNum, week);
@@ -763,7 +743,7 @@ async function setupWeekContainer() {
           <div class="meal-item">
             <img src="${dish.image}" alt="${dish.name}" />
             <label>
-              <input type="checkbox" value="${dish.id}" data-name="${dish.mainDish}" data-beverage="${dish.beverages}" data-special_dish="${dish.specialDish}">
+              <input type="checkbox" value="${dish.id}" data-name="${dish.mainDish}" data-beverage="${dish.beverages}" data-special_dish="${dish.specialDish}" data-image="${dish.image}">
               ${dish.mainDish}
               ${dish.sideDish}
               ${dish.beverages ? `<br><small><b>Beverages:</b> ${dish.beverages}</small>` : ""}
@@ -846,7 +826,9 @@ async function setupWeekContainer() {
     const checkboxes = document.querySelectorAll(`#details-${day}-${weekCounter} input[type="checkbox"]`);
     return Array.from(checkboxes).some(checkbox => checkbox.checked);
   }
+
   async function logSelections(weekCounter) {
+    const hname = document.getElementById("hostelname").value;
     const selections = {};
     const breakfastStart = document.getElementById("morningStart").value;
     const breakfastEnd = document.getElementById("morningEnd").value;
@@ -864,7 +846,6 @@ async function setupWeekContainer() {
       Dinner: `${formatTimeToAmPm(dinnerStart)} - ${formatTimeToAmPm(dinnerEnd)}`
     };
 
-    // Loop through days of the week and capture the selected data
     const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     daysOfWeek.forEach(day => {
       const daySelections = {};
@@ -881,81 +862,69 @@ async function setupWeekContainer() {
 
         daySelections[session].dishes.push({
           name: checkbox.dataset.name,
-          beverages: checkbox.dataset.beverage,
-          specialDish: checkbox.dataset.special_dish
+          beverage: checkbox.dataset.beverage,
+          special_dish: checkbox.dataset.special_dish,
+          image: checkbox.dataset.image
         });
       });
 
       selections[day] = daySelections;
     });
 
-    const hname = document.getElementById("hostelname").value;
-
-    // Check if at least one checkbox is selected (for current week)
-    if (Object.keys(selections).length === 0) {
-      alert("Please select at least one dish for the week.");
-      return; // Don't proceed if no selections
+    try {
+      await update(ref(db, `Hostel details/${hname}/weeks/week${weekCounter}`), selections);
+      console.log(`Selections for week ${weekCounter} have been successfully updated.`);
+    } catch (error) {
+      console.error("Error updating selections:", error);
+      alert("Failed to update selections. Please try again.");
     }
-
-    // Store the Week data in Firebase
-    await update(ref(db, `Hostel details/${hname}/weeks/week${weekCounter}`), selections);
-    console.log(`Selections for Week ${weekCounter} saved to Firebase!`);
-
-    // Now check for week checkboxes and copy the data to selected weeks
-    await copyWeekData(weekCounter);
   }
 
-  // Function to copy data to selected weeks
-  async function copyWeekData(currentWeekNum) {
+  async function copyWeekData(sourceWeek, targetWeek) {
     const hname = document.getElementById("hostelname").value;
 
-    // Step 1: Get the current week data
-    const snapshot = await get(ref(db, `Hostel details/${hname}/weeks/week${currentWeekNum}`));
-    if (!snapshot.exists()) {
-      console.log(`No data for Week ${currentWeekNum} found!`);
+    // Retrieve the data of the source week
+    const sourceWeekRef = ref(db, `Hostel details/${hname}/weeks/week${sourceWeek}`);
+    let sourceWeekData;
+    try {
+      const snapshot = await get(sourceWeekRef);
+      if (snapshot.exists()) {
+        sourceWeekData = snapshot.val();
+      } else {
+        console.error("Source week data does not exist.");
+        alert(`No data found for week ${sourceWeek}.`);
+        return;
+      }
+    } catch (error) {
+      console.error("Error retrieving source week data:", error);
+      alert("Failed to retrieve source week data. Please try again.");
       return;
     }
 
-    const currentWeekData = snapshot.val();
-
-
-    // Step 2: Get all checked week checkboxes (week2, week3, week4, week5)
-    const checkedWeeks = [2, 3, 4, 5].filter(week => {
-      const checkbox = document.getElementById(`week${week}`);
-      return checkbox && checkbox.checked;
-    });
-
-    // Step 3: Iterate over the selected weeks and copy the data
-    for (const selectedWeek of checkedWeeks) {
-      if (selectedWeek !== currentWeekNum) { // Skip copying the data to the same week
-        try {
-          await update(ref(db, `Hostel details/${hname}/weeks/week${selectedWeek}`), currentWeekData);
-          alert(`Week ${currentWeekNum} data copied to Week ${selectedWeek} successfully!`);
-          //console.log(`Week ${currentWeekNum} data copied to Week ${selectedWeek} successfully!`);
-        } catch (error) {
-          console.error(`Error copying data to Week ${selectedWeek}:`, error);
-        }
-      }
+    // Copy data of sorece week
+    const targetWeekRef = ref(db, `Hostel details/${hname}/weeks/week${targetWeek}`);
+    try {
+      await update(targetWeekRef, sourceWeekData);
+      alert(`Data copied from week ${sourceWeek} to week ${targetWeek} successfully!`);
+    } catch (error) {
+      console.error(`Error copying data to week ${targetWeek}:`, error);
+      alert(`Failed to copy data to week ${targetWeek}. Please try again.`);
     }
-
-    // Step 4: Reset checkboxes only after operation
-    checkedWeeks.forEach(week => {
-      const checkbox = document.getElementById(`week${week}`);
-      if (checkbox) checkbox.checked = false; // Reset checkbox state
-    });
-
-    //console.log("All checkboxes reset after operation.");
   }
 
   // Function to get existing weeks from Firebase
   async function getExistingWeeks() {
     const hname = document.getElementById("hostelname").value;
-    const snapshot = await get(ref(db, `Hostel details/${hname}/weeks`));
-    return snapshot.exists() ? Object.keys(snapshot.val()) : [];
+    try {
+      const snapshot = await get(ref(db, `Hostel details/${hname}/weeks`));
+      return snapshot.exists() ? Object.keys(snapshot.val()) : [];
+    } catch (error) {
+      console.error("Error fetching existing weeks:", error);
+      alert("Failed to fetch existing weeks. Please try again.");
+      return [];
+    }
   }
 }
-
-
 // Next step 1: Save Hostel Details
 document.getElementById("nextButtonStep1").addEventListener("click", async () => {
   try {
@@ -988,25 +957,27 @@ document.getElementById("nextButtonStep1").addEventListener("click", async () =>
 
 // Next step 2: Save Floor and Room Details
 document.getElementById("nextButtonStep2").addEventListener("click", async () => {
+  alert("Started loading the hostel room details..");
+  showLoader();
   try {
-    const floorCount = document.querySelectorAll('.card-header h5').length; // Counting the number of floors
+    const floorCount = document.querySelectorAll('.card-header h5').length;
     const hname = document.getElementById("hostelname").value;
     const hostelFloors = document.getElementById("hostelfloors").value;
 
+    let roomsObject = {};
+
     for (let floorIndex = 1; floorIndex <= floorCount; floorIndex++) {
       const floorNumber = floorIndex;
-      let roomNumberCounter = 1; // Counter to keep track of room numbers for the floor
+      let roomNumberCounter = 1;
 
-      // Get all room containers for the current floor
       const roomContainers = document.querySelectorAll(`.room-container[data-floor="${floorNumber}"]`);
 
-      // Loop through room containers and process each room
       for (let roomIndex = 0; roomIndex < roomContainers.length; roomIndex++) {
         const roomElem = roomContainers[roomIndex];
         const roomCount = parseInt(roomElem.querySelector(`#roomCount-${floorNumber}-${roomIndex + 1}`).value);
         const roomType = roomElem.querySelector(`#roomType-${floorNumber}-${roomIndex + 1}`).value;
         const amenities = roomElem.querySelector(`#amenities-${floorNumber}-${roomIndex + 1}`).value;
-        const ac = roomElem.querySelector(`#acType-${floorNumber}-${roomIndex + 1}`).value;
+        const acType = roomElem.querySelector(`#acType-${floorNumber}-${roomIndex + 1}`).value; // AC type
         const bathroom = roomElem.querySelector(`#bathroom-${floorNumber}-${roomIndex + 1}`).value;
         const price = roomElem.querySelector(`#price-${floorNumber}-${roomIndex + 1}`).value;
         const remarks = roomElem.querySelector(`#remarks-${floorNumber}-${roomIndex + 1}`).value;
@@ -1014,37 +985,50 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
         const files = imageInput.files;
         let roomImages = [];
 
-        // Calculate roomTypeBedsAvailable at the room type level
         const roomTypeBedsAvailable = parseInt(roomType.match(/\d+/)[0]) * roomCount;
 
+        // Uploading images asynchronously
+        const uploadPromises = [];
         for (let i = 0; i < files.length; i++) {
           const storageRef = ref2(storage, `Roomimages/${hname}/floor${floorNumber}/room-${roomIndex + 1}/${files[i].name}`);
-          await uploadBytes(storageRef, files[i]);
-          const imageUrl = await getDownloadURL(storageRef);
-          roomImages.push(imageUrl);
-          //console.log(`Uploaded Image ${i + 1}: ${imageUrl}`);
+          const uploadPromise = uploadBytes(storageRef, files[i]).then(async () => {
+            const imageUrl = await getDownloadURL(storageRef);
+            roomImages.push(imageUrl);
+          });
+          uploadPromises.push(uploadPromise);
         }
 
-        // Save room type data
-        await update(ref(db, `Hostel details/${hname}/rooms/floor${floorNumber}/${roomType}`), {
-          floor: floorNumber,
-          price: price,
-          roomCount: roomCount,
-          roomType: roomType,
-          bedsAvailable: roomTypeBedsAvailable,
-        });
+        await Promise.all(uploadPromises);
 
-        const floorRef = ref(db, `Hostel details/${hname}`);
-        await update(floorRef, { hostelFloors: hostelFloors });
+        // Initialize floor if not already present
+        if (!roomsObject[`floor${floorNumber}`]) {
+          roomsObject[`floor${floorNumber}`] = {};
+        }
 
-        // Loop to handle each room based on roomCount
+        // Initialize room type under the floor if not already present
+        if (!roomsObject[`floor${floorNumber}`][roomType]) {
+          roomsObject[`floor${floorNumber}`][roomType] = {
+            floor: floorNumber,
+            price: price,
+            roomCount: roomCount,
+            roomType: roomType,
+            bedsAvailable: roomTypeBedsAvailable,
+            rooms: {}
+          };
+        }
+
+        // Add AC type to the rooms object
+        if (!roomsObject[`floor${floorNumber}`][roomType].rooms[acType]) {
+          roomsObject[`floor${floorNumber}`][roomType].rooms[acType] = {};
+        }
+
+        // Add rooms with the correct format
         for (let roomSubIndex = 1; roomSubIndex <= roomCount; roomSubIndex++) {
-          const roomNumber = `F${floorNumber}_R${roomNumberCounter++}`;
+          const roomNumber = `roomR${roomNumberCounter++}_F${floorNumber}`;
           const bedsAvailableForRoom = parseInt(roomType.match(/\d+/)[0]);
 
-          // Save individual room data
-          await update(ref(db, `Hostel details/${hname}/rooms/floor${floorNumber}/${roomType}/rooms/${ac}/room${roomNumber}`), {
-            ac: ac,
+          roomsObject[`floor${floorNumber}`][roomType].rooms[acType][roomNumber] = {
+            ac: acType,
             bathroom: bathroom,
             amenities: amenities,
             remarks: remarks,
@@ -1052,23 +1036,26 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
             price: price,
             roomType: roomType,
             bedsAvailable: bedsAvailableForRoom,
-            roomCount:roomCount,
+            roomCount: roomCount,
             floor: floorNumber,
             imagesLink: roomImages,
             beds: {}
-          });
+          };
 
-          // Save bed data for each room
+          // Add beds to the room
           for (let bedIndex = 1; bedIndex <= bedsAvailableForRoom; bedIndex++) {
             const bedKey = `bed ${bedIndex}`;
-            await update(ref(db, `Hostel details/${hname}/rooms/floor${floorNumber}/${roomType}/rooms/${ac}/room${roomNumber}/beds/${bedKey}`), {
-              status: "not booked",
-            });
+            roomsObject[`floor${floorNumber}`][roomType].rooms[acType][roomNumber].beds[bedKey] = "not booked";
           }
         }
       }
     }
 
+    // Save the entire roomsObject to Firebase
+    await update(ref(db, `Hostel details/${hname}/rooms`), roomsObject);
+    await update(ref(db, `Hostel details/${hname}`), { hostelFloors: hostelFloors });
+
+    hideLoader();
     alert("Room details saved successfully!");
     nextStep(3);
   } catch (error) {
