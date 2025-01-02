@@ -250,36 +250,38 @@ document.getElementById("saveButton").addEventListener("click", async () => {
         alert("Please select a hostel!");
         return;
     }
-    const frequency = document.getElementById("frequency").value;
 
-    let dateValue;
-    let dateKey;
+    const frequency = document.getElementById("frequency").value;
+    let dateValue, dateKey;
+
+    // Handle "daily" or "date range" inputs
     if (frequency === "daily") {
-        dateValue = document.getElementById("date").value;
-        if (!dateValue) {
+        const selectedDate = document.getElementById("date").value;
+        if (!selectedDate) {
             alert("Please select a date for daily frequency!");
             return;
         }
-        dateKey = dateValue;  // Use the actual date as the key for daily
+        dateValue = { from: selectedDate, to: selectedDate }; // Same date for "from" and "to"
+        dateKey = `${selectedDate}-${selectedDate}`; // Create the key as "2024-12-15-2024-12-15"
     } else {
         const fromDate = document.getElementById("fromdate")?.value;
         const toDate = document.getElementById("todate")?.value;
         if (!fromDate || !toDate) {
-            alert("Please fill out both From and To dates!");
+            alert("Please fill out both 'From' and 'To' dates!");
             return;
         }
-        dateValue = { from: fromDate, to: toDate };
-        dateKey = `${fromDate}-${toDate}`;  // Create a string key for the date range
+        dateValue = { from: fromDate, to: toDate }; // Use "from" and "to" dates
+        dateKey = `${fromDate}-${toDate}`; // Create the key as "2024-10-01-2024-12-15"
     }
 
-    const expensesData = {};  // Object to hold all the expense data for the hostel  
+    const expensesData = {}; // Object to hold all the expense data for the hostel
 
+    // Process each expense form
     const forms = document.querySelectorAll(".card-body.expense-form");
-
     for (const form of forms) {
         const categoryElement = form.querySelector(`[name="category"]`);
         const category = categoryElement?.value;
-        if (!category) continue;  // Skip if category is not selected
+        if (!category) continue; // Skip if category is not selected
 
         const subCategoryContainer = form.querySelectorAll(".card");
 
@@ -299,7 +301,7 @@ document.getElementById("saveButton").addEventListener("click", async () => {
 
             // Create an object for the subcategory data
             const subCategoryData = {
-                category,  // Store the selected category as part of the subcategory data
+                category,
                 subCategory: subCategoryName,
                 units,
                 measurementUnit,
@@ -307,34 +309,32 @@ document.getElementById("saveButton").addEventListener("click", async () => {
                 description,
                 remarks,
                 billImages,
-                ...(subCategoryName === "Electricity" && { roomNumber, floorNumber }),  // Only store room and floor number if subCategory is "Electricity"
+                ...(subCategoryName === "Electricity" && { roomNumber, floorNumber }),
             };
 
             // Using category as the key and subcategory as the child key
             if (!expensesData[category]) {
-                expensesData[category] = {};  // Initialize category if not already present
+                expensesData[category] = {}; // Initialize category if not already present
             }
-            expensesData[category][subCategoryName] = subCategoryData;  // Set subcategory data under category
+            expensesData[category][subCategoryName] = subCategoryData; // Set subcategory data under category
         }
     }
 
-    // Prepare the full data object to save
+    // Prepare the data object to save
     const data = {
+        entry_type: frequency === "daily" ? "daily" : "date_range",
         frequency,
-        date: dateValue,  // Directly store date as value
-        expenses: expensesData  // All categories and their subcategories
+        date: dateValue, // Store the structured date data
+        expenses: expensesData, // Store all categories and subcategories
     };
-    // Ensure data is not undefined
-    if (!data.date) {
-        alert("Date is required!");
-        return;
-    }
+
     try {
-        const expensesRef = ref(db, `Hostel expenses/${hostelName}/${frequency}/${dateKey}`);  // Use dateKey as the path
-        await set(expensesRef, data);  // Using set instead of push
+        // Save to Firebase
+        const expensesRef = ref(db, `Hostel expenses/${hostelName}/${dateKey}`);
+        await set(expensesRef, data);
         alert("Expenses saved successfully!");
 
-        location.reload();  // This will reload the page
+        location.reload(); // Reload the page after saving
     } catch (error) {
         console.error("Error saving data to Firebase:", error);
         alert("An error occurred while saving the data.");

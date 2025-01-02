@@ -394,7 +394,8 @@
                                                         <i class="ri-upload-2-fill me-1"></i>Export</a>
                                                 </li>-->
                                                 <li>
-                                                    <a id="export_table_btn" onclick="downloadExcel()" class="product-btn-1">
+                                                    <a id="export_table_btn" onclick="downloadExcel()"
+                                                        class="product-btn-1">
                                                         <i class="ri-upload-2-fill me-1"></i>Export</a>
                                                 </li>
                                                 <li>
@@ -420,15 +421,22 @@
                                                                 name="text"></th>
                                                         <!--<th>S. No</th>-->
                                                         <th onclick="sortTable(1)">Session<span
-                                                            class="sort-icon">⬍</span></th>
+                                                                class="sort-icon">⬍</span>
+                                                            <button id="filterButton"
+                                                                onclick="toggleFilter(event)">Filter</button>
+                                                            <!-- Dropdown container for filter options -->
+                                                            <div id="filterOptions" style="display:none; position:absolute;background:white; border: 1px solid #ccc; padding: 10px; 
+        width: 230px; box-sizing: border-box; max-height: 200px;" >
+                                                            </div>
+                                                        </th>
                                                         <th onclick="sortTable(2)">Main Dish<span
-                                                            class="sort-icon">⬍</span></th>
+                                                                class="sort-icon">⬍</span></th>
                                                         <th onclick="sortTable(3)">Side Dishes<span
-                                                            class="sort-icon">⬍</span></th>
+                                                                class="sort-icon">⬍</span></th>
                                                         <th onclick="sortTable(4)">Special dish<span
-                                                            class="sort-icon">⬍</span></th>
+                                                                class="sort-icon">⬍</span></th>
                                                         <th onclick="sortTable(5)">Beverages<span
-                                                            class="sort-icon">⬍</span></th>
+                                                                class="sort-icon">⬍</span></th>
                                                         <th>Images</th>
                                                     </tr>
                                                 </thead>
@@ -445,6 +453,7 @@
                         </div>
                     </div>
                 </div>
+
                 <!-- Container-fluid Ends-->
 
                 <div class="container-fluid">
@@ -639,36 +648,122 @@
             rows.forEach(row => tableBody.appendChild(row));
         }
     </script>
-     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-     <script>
-         function getFormattedDateTime() {
-             const now = new Date();
- 
-             // Format: YYYYMMDD_hhmmss
-             const formattedDate = now.getFullYear().toString().padStart(4, '0') +
-                 (now.getMonth() + 1).toString().padStart(2, '0') +
-                 now.getDate().toString().padStart(2, '0');
-             const formattedTime = now.getHours().toString().padStart(2, '0') +
-                 now.getMinutes().toString().padStart(2, '0') +
-                 now.getSeconds().toString().padStart(2, '0');
- 
-             return formattedDate+"_"+formattedTime;
-         }
- 
- 
-         const fileName = "hostels_list_"+getFormattedDateTime()+".xlsx";
-         function downloadExcel() {
- 
-             // Get the table element
-             const table = document.getElementById('table_id');
- 
-             // Convert the table to a workbook
-             const workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
- 
-             // Export to Excel file
-             XLSX.writeFile(workbook, fileName);
-         }
-     </script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script>
+        function getFormattedDateTime() {
+            const now = new Date();
+
+            // Format: YYYYMMDD_hhmmss
+            const formattedDate = now.getFullYear().toString().padStart(4, '0') +
+                (now.getMonth() + 1).toString().padStart(2, '0') +
+                now.getDate().toString().padStart(2, '0');
+            const formattedTime = now.getHours().toString().padStart(2, '0') +
+                now.getMinutes().toString().padStart(2, '0') +
+                now.getSeconds().toString().padStart(2, '0');
+
+            return formattedDate + "_" + formattedTime;
+        }
+
+
+        const fileName = "hostels_list_" + getFormattedDateTime() + ".xlsx";
+        function downloadExcel() {
+
+            // Get the table element
+            const table = document.getElementById('table_id');
+
+            // Convert the table to a workbook
+            const workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+
+            // Export to Excel file
+            XLSX.writeFile(workbook, fileName);
+        }
+        // Function to toggle the filter options visibility
+        function toggleFilter(event) {
+            const filterDiv = document.getElementById("filterOptions");
+
+            // Prevent the filter dropdown from closing if clicked inside
+            event.stopPropagation();
+
+            // Toggle dropdown visibility
+            filterDiv.style.display = filterDiv.style.display === "none" ? "block" : "none";
+
+            if (filterDiv.style.display === "block") {
+                populateFilterOptions();
+            }
+        }
+
+        // Function to populate filter checkboxes dynamically
+        function populateFilterOptions() {
+            const table = document.getElementById("table_id");
+            const sessionColumnIndex = 1; // Adjust index if necessary
+            const sessionValues = new Set();
+
+            // Loop through table rows and collect unique session values
+            for (let i = 1; i < table.rows.length; i++) { // Start from 1 to skip the header row
+                const sessionValue = table.rows[i].cells[sessionColumnIndex].textContent.trim();
+                sessionValues.add(sessionValue);
+            }
+
+            // Clear previous filter options and add new ones
+            const filterDiv = document.getElementById("filterOptions");
+            filterDiv.innerHTML = ""; // Clear any existing filter options
+
+            // Add each session value as a checkbox
+            sessionValues.forEach(session => {
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.value = session;
+                checkbox.classList.add("session-filter");
+                checkbox.addEventListener("change", applyFilter);
+
+                const label = document.createElement("label");
+                label.textContent = session;
+
+                filterDiv.appendChild(checkbox);
+                filterDiv.appendChild(label);
+                filterDiv.appendChild(document.createElement("br"));
+            });
+        }
+
+        // Function to apply the filter based on selected checkboxes
+        function applyFilter() {
+            const checkboxes = document.querySelectorAll(".session-filter");
+            const selectedSessions = new Set();
+
+            // Get selected session values
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    selectedSessions.add(checkbox.value);
+                }
+            });
+
+            const table = document.getElementById("table_id");
+
+            // Loop through all rows and filter based on selected sessions
+            for (let i = 1; i < table.rows.length; i++) { // Start from 1 to skip the header row
+                const sessionCell = table.rows[i].cells[1]; // Session column index
+                const sessionValue = sessionCell.textContent.trim();
+
+                if (selectedSessions.size === 0 || selectedSessions.has(sessionValue)) {
+                    table.rows[i].style.display = ""; // Show the row
+                } else {
+                    table.rows[i].style.display = "none"; // Hide the row
+                }
+            }
+        }
+
+        // Close the filter dropdown when clicking outside of it
+        document.addEventListener("click", function (event) {
+            const filterDiv = document.getElementById("filterOptions");
+            const filterButton = document.getElementById("filterButton");
+
+            // If the click is outside the filter button or dropdown, hide the filter options
+            if (!filterButton.contains(event.target) && !filterDiv.contains(event.target)) {
+                filterDiv.style.display = "none";
+            }
+        });
+
+    </script>
 </body>
 
 </html>
