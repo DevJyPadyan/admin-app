@@ -11,16 +11,23 @@ const storage = getStorage(app);
 let currentStep = 1;
 var files = [];
 let imagelink = [];
+let hostelfloorsDBval = 0; // Global variable to store the number of hostel floors
+let isWeekContainerSetup = false; // Flag to prevent duplicate setup
 
 function nextStep(step) {
     document.getElementById(`step${currentStep}`).classList.remove("active");
     document.getElementById(`step${step}`).classList.add("active");
     updateProgressBar(step);
     updateProgressIndicators(step);
+
     currentStep = step;
+
     if (step === 3) {
-        setupWeekContainer(); //call this function for weekly menu data
-        prefillDishTimings();
+        if (!isWeekContainerSetup) {
+            setupWeekContainer();
+            prefillDishTimings();
+            isWeekContainerSetup = true;
+        }
     }
 }
 
@@ -71,6 +78,7 @@ function prefillHostelDetails() {
         document.getElementById("hostelemail").value = hostelData[7] || "";
         document.getElementById("hostelpin").value = hostelData[8] || "";
         document.getElementById("hostelfloorsDB").value = hostelData[9] || "";
+        hostelfloorsDBval = Number(hostelData[9]);
 
         displayHostelImages(hostelData[0]);
     } else {
@@ -385,61 +393,89 @@ async function fetchFoodData() {
 }
 
 async function setupWeekContainer() {
-    const foodData = await fetchFoodData();  // Fetch the full food menu data
+    const foodData = await fetchFoodData(); // Fetch the full food menu data
     const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-    const getMenuButton = document.getElementById("getMenuDetails");
 
-    getMenuButton.onclick = null;
+    // Fetch existing weeks and create containers
+    const existingWeeks = await getExistingWeeks();
 
-    getMenuButton.onclick = async () => {
-        const existingWeeks = await getExistingWeeks();
+    if (existingWeeks.length === 0) {
+        alert("No weeks found in the database.");
+        return;
+    }
 
-        if (existingWeeks.length === 0) {
-            alert("No weeks found in the database.");
-            return;
-        }
-        existingWeeks.forEach(week => {
-            const weekNumber = parseInt(week.replace('week', ''), 10);
-            addWeek(weekNumber);
-        });
-    };
+    // Iterate through existing weeks and create containers
+    existingWeeks.forEach((week) => {
+        const weekNumber = parseInt(week.replace("week", ""), 10);
+        addWeekContainer(weekNumber, foodData);
+    });
 
-    async function addWeek(weekCounter) {
+
+    async function addWeekContainer(weekCounter, foodData) {
         const foodSelectorDiv = document.createElement("div");
         foodSelectorDiv.classList.add("food-selector");
         foodSelectorDiv.id = `food-selector-${weekCounter}`;
 
+        // Collapsible container header with text and a plus button
+        const collapsibleHeaderDiv = document.createElement("div");
+        collapsibleHeaderDiv.classList.add("collapsible-header");
+
+        // Creating the header content (week number and plus button)
+        const headerContentDiv = document.createElement("div");
+        headerContentDiv.style.display = "flex";
+        headerContentDiv.style.justifyContent = "space-between";
+        headerContentDiv.style.alignItems = "center"; // Ensures text and button are vertically centered
+
+        const weekTextDiv = document.createElement("div");
+        weekTextDiv.textContent = `Week ${weekCounter}`;
+        headerContentDiv.appendChild(weekTextDiv); // Add week text to the left
+
+        const plusButton = document.createElement("button");
+        plusButton.textContent = "+";
+        plusButton.classList.add("plus-button");
+        headerContentDiv.appendChild(plusButton); // Add plus button to the right
+
+        collapsibleHeaderDiv.appendChild(headerContentDiv);
+        foodSelectorDiv.appendChild(collapsibleHeaderDiv);
+
+        const collapsibleButton = collapsibleHeaderDiv.querySelector(".collapsible");
+
+        const contentDiv = document.createElement("div");
+        contentDiv.classList.add("content");
+        contentDiv.style.display = "none"; // Initially collapsed
+        foodSelectorDiv.appendChild(contentDiv);
+
         const weekHeaderDiv = document.createElement("div");
         weekHeaderDiv.innerHTML = `<center><h2>Week ${weekCounter}</h2></center><br>`;
-        foodSelectorDiv.appendChild(weekHeaderDiv);
+        contentDiv.appendChild(weekHeaderDiv);
 
         const tabsDiv = document.createElement("div");
         tabsDiv.classList.add("tabs");
         tabsDiv.innerHTML = daysOfWeek
             .map((day, index) => `<button data-day="${day}" class="${index === 0 ? "active" : ""}">${day}</button>`)
             .join("");
-        foodSelectorDiv.appendChild(tabsDiv);
+        contentDiv.appendChild(tabsDiv);
 
         const dayDetailsDiv = document.createElement("div");
         dayDetailsDiv.classList.add("day-details");
         dayDetailsDiv.innerHTML = daysOfWeek
             .map(
                 (day, index) => `
-            <div class="day-container ${index === 0 ? "active" : ""}" id="details-${day}-${weekCounter}">
-              <center><h3>${day}</h3></center>
-              <div class="session-grid">
+        <div class="day-container ${index === 0 ? "active" : ""}" id="details-${day}-${weekCounter}">
+            <center><h3>${day}</h3></center>
+            <div class="session-grid">
                 ${["Breakfast", "Lunch", "Snacks", "Dinner"]
-                        .map(session => createMealCard(session, day, weekCounter, foodData))
+                        .map((session) => createMealCard(session, day, weekCounter, foodData))
                         .join("")}
-              </div>
-            </div>`
+            </div>
+        </div>`
             )
             .join("");
-        foodSelectorDiv.appendChild(dayDetailsDiv);
+        contentDiv.appendChild(dayDetailsDiv);
 
         const actionsDiv = document.createElement("div");
         actionsDiv.classList.add("actions");
-        foodSelectorDiv.appendChild(actionsDiv);
+        contentDiv.appendChild(actionsDiv);
 
         const backButton = document.createElement("button");
         backButton.id = `back-btn-${weekCounter}`;
@@ -456,7 +492,8 @@ async function setupWeekContainer() {
         errorMessageDiv.id = `error-message-${weekCounter}`;
         errorMessageDiv.classList.add("error");
         errorMessageDiv.style.display = "none";
-        foodSelectorDiv.appendChild(errorMessageDiv);
+        contentDiv.appendChild(errorMessageDiv);
+
         document.getElementById("foodSelectorsContainer").appendChild(foodSelectorDiv);
 
         // Prefill the week data from Firebase
@@ -464,7 +501,17 @@ async function setupWeekContainer() {
 
         setupTabs(tabsDiv, dayDetailsDiv, weekCounter);
         setupNavigation(actionsDiv, dayDetailsDiv, weekCounter);
+
+        // Add event listener for collapsible button
+        if (plusButton) {
+            plusButton.addEventListener("click", () => {
+                contentDiv.style.display = contentDiv.style.display === "none" ? "block" : "none";
+            });
+        } else {
+            console.error("Collapsible button not found.");
+        }
     }
+
     async function prefillWeekData(weekCounter, foodData) {
         const weekData = await getWeekDataFromFirebase(weekCounter);
 
@@ -473,6 +520,7 @@ async function setupWeekContainer() {
             return;
         }
 
+        const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
         daysOfWeek.forEach((day) => {
             const dayContainer = document.getElementById(`details-${day}-${weekCounter}`);
             if (!dayContainer) {
@@ -480,23 +528,14 @@ async function setupWeekContainer() {
                 return;
             }
 
-            // For each meal card (Breakfast, Lunch, etc.), prefill the checkboxes based on Firebase data
+            // Prefill the checkboxes based on Firebase data
             const sessionCards = dayContainer.querySelectorAll(".meal-card");
-
-            sessionCards.forEach(card => {
+            sessionCards.forEach((card) => {
                 const sessionName = card.dataset.session;
                 const sessionData = weekData[day]?.[sessionName]?.dishes || [];
 
-                if (!Array.isArray(sessionData)) {
-                    console.error(`Session data for ${day} - ${sessionName} is not an array`, sessionData);
-                    return;
-                }
-
-                const mealOptions = card.querySelector(".meal-options");
-
-                // Prefill the checkboxes based on sessionData from Firebase
-                sessionData.forEach(dish => {
-                    const checkBox = mealOptions.querySelector(`input[data-name="${dish.name}"]`);
+                sessionData.forEach((dish) => {
+                    const checkBox = card.querySelector(`input[data-name="${dish.name}"]`);
                     if (checkBox) {
                         checkBox.checked = true; // Precheck the boxes for matching dishes
                     }
@@ -505,40 +544,26 @@ async function setupWeekContainer() {
         });
     }
 
-    async function getWeekDataFromFirebase(weekCounter) {
-        let hostelName = document.getElementById("hostelname").value;
-        const weekRef = ref(db, `Hostel details/${hostelName}/weeks/week${weekCounter}`);
-        const snapshot = await get(weekRef);
-        if (snapshot.exists()) {
-            return snapshot.val();
-        } else {
-            return null;
-        }
-    }
-
     function createMealCard(session, day, weekCounter, foodData) {
         const sessionData = foodData[session]?.dishes || [];
         const options = sessionData
             .map(
-                dish => `
-            <div class="meal-item">
-                <img src="${dish.image}" alt="${dish.mainDish}" />
-                <label>
-                    <input type="checkbox" value="${dish.id}" data-name="${dish.mainDish}" data-beverage="${dish.beverages}" data-special_dish="${dish.specialDish}">
-                    ${dish.mainDish}
-                    ${dish.sideDish ? `<br><small><b>Side Dish:</b> ${dish.sideDish}</small>` : ""}
-                    ${dish.beverages ? `<br><small><b>Beverage:</b> ${dish.beverages}</small>` : ""}
-                    ${dish.specialDish ? `<br><small><b>Special Dish:</b> ${dish.specialDish}</small>` : ""}
-                </label>
-            </div>`
+                (dish) => `
+        <div class="meal-item">
+            <img src="${dish.image}" alt="${dish.mainDish}" />
+            <label>
+                <input type="checkbox" value="${dish.id}" data-name="${dish.mainDish}" data-image="${dish.image}">
+                ${dish.mainDish}
+            </label>
+        </div>`
             )
             .join("");
 
         return `
-        <div class="meal-card" data-session="${session}">
-            <h3>${session}</h3>
-            <div class="meal-options">${options}</div>
-        </div>`;
+    <div class="meal-card" data-session="${session}">
+        <h3>${session}</h3>
+        <div class="meal-options">${options}</div>
+    </div>`;
     }
 
     function setupTabs(tabsDiv, dayDetailsDiv, weekCounter) {
@@ -621,11 +646,13 @@ async function setupWeekContainer() {
                 const checkboxes = card.querySelectorAll("input[type='checkbox']:checked");
 
                 checkboxes.forEach(checkbox => {
+                    const image = checkbox.dataset.image;
                     const dishName = checkbox.dataset.name;
                     const beverage = checkbox.dataset.beverage;
                     const specialDish = checkbox.dataset.special_dish;
 
                     selectedDishes.push({
+                        image: image,
                         name: dishName,
                         beverage: beverage || null,
                         specialDish: specialDish || null,
@@ -660,14 +687,29 @@ async function setupWeekContainer() {
     }
     async function getExistingWeeks() {
         const hname = document.getElementById("hostelname").value;
+
+        if (!hname) {
+            console.error("Hostel name is missing. Ensure the 'hostelname' input field has a value.");
+            return [];
+        }
+
         const snapshot = await get(ref(db, `Hostel details/${hname}/weeks`));
-        return snapshot.exists() ? Object.keys(snapshot.val()) : [];
+
+        if (snapshot.exists()) {
+            console.log("Existing weeks data:", Object.keys(snapshot.val())); // Debug log
+            return Object.keys(snapshot.val());
+        } else {
+            console.warn("No weeks data found in Firebase.");
+            return [];
+        }
     }
 }
+/*End of weekly menu data storing in firebase db*/
 
 // Display Hostel Images
 async function displayHostelImages(hostelName) {
     const imageRef = ref(db, `Hostel details/${hostelName}/ImageData/`);
+    console.log(imageRef);
     try {
         const snapshot = await get(imageRef);
         if (snapshot.exists()) {
@@ -691,9 +733,201 @@ async function displayHostelImages(hostelName) {
         console.error("Error fetching images:", error);
     }
 }
-/*End of weekly menu data storing in firebase db*/
-
+/* adding extra floors functionality*/
 document.addEventListener('DOMContentLoaded', function () {
+    prefillHostelDetails();
+
+    const existingFloorsInput = document.getElementById("hostelfloorsDB");
+    const existingFloors = parseInt(existingFloorsInput.value, 10);
+    console.log(`Existing floors: ${existingFloors}`);
+
+    if (isNaN(existingFloors)) {
+        console.error("Error: existingFloors is not a valid number.");
+        return;
+    }
+
+    const addFloorsButton = document.getElementById("addExtrafloors");
+    const extrafloorsContainer = document.getElementById("floors-container");
+
+    addFloorsButton.addEventListener("click", () => {
+        const floorInput = document.getElementById("hostelExtraFloors");
+        const numExtraFloors = parseInt(floorInput.value, 10);
+        console.log(`Number of extra floors: ${numExtraFloors}`);
+
+        if (numExtraFloors <= 0 || isNaN(numExtraFloors)) {
+            alert("Please enter a valid number of floors.");
+            return;
+        }
+
+        extrafloorsContainer.innerHTML = "";
+        const totalFloors = existingFloors + numExtraFloors;
+
+        for (let i = existingFloors + 1; i <= totalFloors; i++) {
+            console.log(`Creating floor container for floor ${i}`);
+            createExtraFloorContainer(i);
+        }
+    });
+
+    function createExtraFloorContainer(floorNumber) {
+        const floorElem = document.createElement("div");
+        floorElem.classList.add("col-12", "mb-4");
+
+        const cardElem = document.createElement("div");
+        cardElem.classList.add("card");
+
+        const cardHeaderElem = document.createElement("div");
+        cardHeaderElem.classList.add("card-header", "d-flex", "justify-content-between", "align-items-center");
+
+        const floorLabel = document.createElement("h5");
+        floorLabel.innerText = `Floor ${floorNumber}`;
+        cardHeaderElem.appendChild(floorLabel);
+
+        const cardBodyElem = document.createElement("div");
+        cardBodyElem.classList.add("card-body");
+
+        const addRoomButton = document.createElement("button");
+        addRoomButton.type = "button";
+        addRoomButton.classList.add("btn", "restaurant-button", "mb-3");
+        addRoomButton.innerText = "Add Room Info";
+        addRoomButton.addEventListener("click", () => {
+            createRoomContainerforExtra(cardBodyElem, floorNumber);
+        });
+
+        cardBodyElem.appendChild(addRoomButton);
+        cardElem.appendChild(cardHeaderElem);
+        cardElem.appendChild(cardBodyElem);
+        floorElem.appendChild(cardElem);
+        extrafloorsContainer.appendChild(floorElem);
+    }
+
+    function createRoomContainerforExtra(parentElem, floorNumber) {
+        const roomCount = parentElem.querySelectorAll(".room-container").length + 1;
+
+        let roomWrapper = parentElem.querySelector(".room-wrapper");
+        if (!roomWrapper) {
+            roomWrapper = document.createElement("div");
+            roomWrapper.classList.add("room-wrapper", "d-flex", "flex-column", "gap-3");
+            parentElem.appendChild(roomWrapper);
+        }
+
+        const mainParentElem = document.createElement('div');
+        mainParentElem.classList.add('col-12');
+
+        const roomElem = document.createElement("div");
+        roomElem.classList.add("card", "mb-3", "room-container");
+
+        roomElem.setAttribute("data-floor", floorNumber);
+
+        const roomHeader = document.createElement("div");
+        roomHeader.classList.add("card-header", "d-flex", "justify-content-between", "align-items-center");
+
+        const roomLabel = document.createElement("h6");
+        roomLabel.innerText = `Room ${roomCount} (Floor ${floorNumber})`;
+
+        const deleteIcon = document.createElement("a");
+        deleteIcon.className = "ri-delete-bin-line";
+        deleteIcon.style.fontSize = "24px";
+        deleteIcon.style.cursor = "pointer";
+        deleteIcon.onclick = () => mainParentElem.remove();
+
+        roomHeader.appendChild(roomLabel);
+        roomHeader.appendChild(deleteIcon);
+
+        const roomBody = document.createElement("div");
+        roomBody.classList.add("card-body");
+
+        const rowElem = document.createElement("div");
+        rowElem.classList.add("row", "gy-3");
+
+        rowElem.appendChild(createSelectBoxforExtra("Room Type", `roomType-${floorNumber}-${roomCount}`, true, [
+            { value: '1 sharing', text: '1 sharing' },
+            { value: '2 sharing', text: '2 sharing' },
+            { value: '3 sharing', text: '3 sharing' },
+            { value: '4 sharing', text: '4 sharing' }
+        ]));
+        rowElem.appendChild(createInputBoxforExtra("Room Count", `roomCount-${floorNumber}-${roomCount}`, "number", true));
+        rowElem.appendChild(createInputBoxforExtra("Amenities", `amenities-${floorNumber}-${roomCount}`, "text", false, "e.g., WiFi, Laundry"));
+        rowElem.appendChild(createInputBoxforExtra("Price", `price-${floorNumber}-${roomCount}`, "number", true));
+        rowElem.appendChild(createInputBoxforExtra("Upload Room Images", `roomImage-${floorNumber}-${roomCount}`, "file", false, "", true));
+
+        rowElem.appendChild(createSelectBoxforExtra("Bathroom Type", `bathroom-${floorNumber}-${roomCount}`, true, [
+            { value: "attached", text: "attached" },
+            { value: "common", text: "common" },
+        ]));
+
+        rowElem.appendChild(createSelectBoxforExtra("AC Type", `acType-${floorNumber}-${roomCount}`, true, [
+            { value: "ac", text: "ac" },
+            { value: "non_ac", text: "non-ac" },
+        ]));
+
+        rowElem.appendChild(createInputBoxforExtra("Remarks", `remarks-${floorNumber}-${roomCount}`, "text", false, "Additional comments"));
+
+        roomBody.appendChild(rowElem);
+
+        roomElem.appendChild(roomHeader);
+        roomElem.appendChild(roomBody);
+
+        mainParentElem.appendChild(roomElem);
+        roomWrapper.appendChild(mainParentElem);
+    }
+
+    function createInputBoxforExtra(labelText, inputId, inputType, required, placeholder = "", multiple = false) {
+        const colElem = document.createElement("div");
+        colElem.classList.add("col-xl-6");
+
+        const inputBoxElem = document.createElement("div");
+        inputBoxElem.classList.add("input-box");
+
+        const labelElem = document.createElement("h6");
+        labelElem.innerText = labelText;
+
+        const inputElem = document.createElement("input");
+        inputElem.type = inputType;
+        inputElem.id = inputId;
+        inputElem.name = inputId;
+        if (required) inputElem.required = true;
+        if (placeholder) inputElem.placeholder = placeholder;
+        if (multiple) inputElem.multiple = true;
+
+        inputBoxElem.appendChild(labelElem);
+        inputBoxElem.appendChild(inputElem);
+        colElem.appendChild(inputBoxElem);
+
+        return colElem;
+    }
+
+    function createSelectBoxforExtra(labelText, selectId, required, options) {
+        const colElem = document.createElement("div");
+        colElem.classList.add("col-xl-6");
+
+        const inputBoxElem = document.createElement("div");
+        inputBoxElem.classList.add("input-box");
+
+        const labelElem = document.createElement("h6");
+        labelElem.innerText = labelText;
+
+        const selectElem = document.createElement("select");
+        selectElem.id = selectId;
+        selectElem.name = selectId;
+        if (required) selectElem.required = true;
+
+        options.forEach(option => {
+            const optElem = document.createElement("option");
+            optElem.value = option.value;
+            optElem.text = option.text;
+            selectElem.appendChild(optElem);
+        });
+
+        inputBoxElem.appendChild(labelElem);
+        inputBoxElem.appendChild(selectElem);
+        colElem.appendChild(inputBoxElem);
+
+        return colElem;
+    }
+});
+/* End of adding room details using dynamic form handling*/
+document.addEventListener('DOMContentLoaded', function () {
+
 
     const addRoomButton = document.getElementById("addroom");
     const roomContainer = document.getElementById("additional-room-container");
@@ -735,8 +969,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const rowElem = document.createElement("div");
         rowElem.classList.add("row", "gy-3");
 
-        // Add floor number input field
-        rowElem.appendChild(createInputBox("Floor Number", `floorNumber-${roomCount}`, "number", true));
+        // Add floor number dropdown
+        const floorArr = numberToArray(hostelfloorsDBval);
+        rowElem.appendChild(createSelectBox('Floor', `floor-${roomCount}`, true, floorArr));
 
         // Add form fields (room type, amenities, price, etc.)
         rowElem.appendChild(createSelectBox("Room Type", `roomType-${roomCount}`, true, [
@@ -757,7 +992,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         rowElem.appendChild(createSelectBox("AC Type", `acType-${roomCount}`, true, [
             { value: "ac", text: "ac" },
-            { value: "non-ac", text: "non-ac" }
+            { value: "non_ac", text: "non-ac" }
         ]));
 
         rowElem.appendChild(createInputBox("Remarks", `remarks-${roomCount}`, "text", false, "Additional comments"));
@@ -795,6 +1030,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         return colElem;
     }
+
     function createSelectBox(labelText, selectId, required, options) {
         const colElem = document.createElement("div");
         colElem.classList.add("col-xl-6");
@@ -821,6 +1057,13 @@ document.addEventListener('DOMContentLoaded', function () {
         colElem.appendChild(inputBoxElem);
 
         return colElem;
+    }
+    function numberToArray(number) {
+        const result = [];
+        for (let i = 1; i <= number; i++) {
+            result.push({ value: i, text: `Floor ${i}` });
+        }
+        return result;
     }
 });
 /* End of adding room details using dynamic form handling*/
@@ -1013,7 +1256,7 @@ document.addEventListener('DOMContentLoaded', function () {
         rowElem.appendChild(createInputBox('Room Count', `roomCount-${floorNumber}-${roomKey}`, 'number', true, '', true, roomDetails.roomCount));
         rowElem.appendChild(createInputBox('Room Number', `roomNumber-${floorNumber}-${roomKey}`, 'text', false, '', true, roomDetails.roomNumber));
         rowElem.appendChild(createInputBox('Amenities', `amenities-${floorNumber}-${roomKey}`, 'text', false, 'e.g. WiFi, Laundry', false, roomDetails.amenities));
-        rowElem.appendChild(createSelectBox('Air Conditioning', `acType-${floorNumber}-${roomKey}`, true, ['ac', 'non-ac'], roomDetails.ac));
+        rowElem.appendChild(createSelectBox('Air Conditioning', `acType-${floorNumber}-${roomKey}`, true, ['ac', 'non_ac'], roomDetails.ac));
         rowElem.appendChild(createSelectBox('Bathroom', `bathroom-${floorNumber}-${roomKey}`, true, ['attached', 'common'], roomDetails.bathroom));
         rowElem.appendChild(createInputBox('Price', `price-${floorNumber}-${roomKey}`, 'number', true, '', false, roomDetails.price));
         rowElem.appendChild(createInputBox("Remarks", `remarks-${floorNumber}-${roomKey}`, "text", false, "Additional comments", false, roomDetails.remarks || ''));
@@ -1172,8 +1415,8 @@ document.getElementById("nextButtonStep1").addEventListener("click", async () =>
     const hostelType = document.getElementById("hosteltype").value;
     const hostelPhone = document.getElementById("hostelphone").value;
     const hostelEmail = document.getElementById("hostelemail").value;
-    const hostelAdd1 = document.getElementById("hosteladd1").value;
-    const hostelAdd2 = document.getElementById("hosteladd2").value;
+    const hostelAddress1 = document.getElementById("hosteladd1").value;
+    const hostelAddress2 = document.getElementById("hosteladd2").value;
     const hostelCity = document.getElementById("hostelcity").value;
     const hostelState = document.getElementById("hostelstate").value;
     const hostelPin = document.getElementById("hostelpin").value;
@@ -1183,8 +1426,8 @@ document.getElementById("nextButtonStep1").addEventListener("click", async () =>
         hostelType,
         hostelPhone,
         hostelEmail,
-        hostelAdd1,
-        hostelAdd2,
+        hostelAddress1,
+        hostelAddress2,
         hostelCity,
         hostelState,
         hostelPin,
@@ -1216,162 +1459,155 @@ document.getElementById("nextButtonStep1").addEventListener("click", async () =>
 document.getElementById("nextButtonStep2").addEventListener("click", async () => {
     try {
 
-        let hname = document.getElementById("hostelname").value;
-        // Fetch existing hostel details
-        let existingHostelRef = ref(db, `Hostel details/${hname}`);
-        let existingHostelSnapshot = await get(existingHostelRef);
-        let existingHostelDetails = existingHostelSnapshot.exists() ? existingHostelSnapshot.val() : {};
+        const hname = document.getElementById("hostelname").value;
+
+        // Initialize objects for separate updates
+        const roomTypeUpdates = {}; // For room type-level data (e.g., total beds, room count)
+        const roomLevelUpdates = {}; // For individual room-level data (e.g., specific room details)
+        const bedLevelUpdates = {}; // For bed-level data
         let roomNumberCounter = 1;
 
-        let floorContainers = document.querySelectorAll('.floorsContainer');
+        // Handle existing floors and rooms
+        const floorContainers = document.querySelectorAll('.floorsContainer');
 
         for (let floorElem of floorContainers) {
-            let roomElements = floorElem.querySelectorAll('.room-container');
+            const floorNumber = floorElem.getAttribute("data-floor"); // Get the floor number
+            const roomElements = floorElem.querySelectorAll('.room-container');
 
             for (let roomElem of roomElements) {
-                let floorKey = roomElem.getAttribute('data-floor');
-                let roomKey = roomElem.id.split('-')[1];
-                let roomType = document.getElementById(`roomType-${floorKey}-${roomKey}`).value;
-                let roomCount = parseInt(document.getElementById(`roomCount-${floorKey}-${roomKey}`).value, 10);
-                let amenities = document.getElementById(`amenities-${floorKey}-${roomKey}`).value;
-                let ac = document.getElementById(`acType-${floorKey}-${roomKey}`).value;
-                let bathroom = document.getElementById(`bathroom-${floorKey}-${roomKey}`).value;
-                let price = (document.getElementById(`price-${floorKey}-${roomKey}`).value);
-                let remarks = document.getElementById(`remarks-${floorKey}-${roomKey}`).value;
+                // Extract `roomKey` from room label (e.g., "Room R5_F2 (Floor 2)")
+                const roomLabel = roomElem.querySelector('.card-header h6');
+                const roomKeyMatch = roomLabel?.innerText.match(/Room\s+(\S+)\s+\(Floor/); // Match room key like "R5_F2"
+                const roomKey = roomKeyMatch ? roomKeyMatch[1] : null;
 
-                let imageInput = document.getElementById(`roomImage-${roomKey}`);
-                let files = imageInput.files;
-                let imagelink1 = [];
-
-                if (files.length !== 0) {
-                    for (let j = 0; j < files.length; j++) {
-                        let storageRef = ref2(storage, `images/${hostelName}/room-${roomKey}/${files[j].name}`);
-                        await uploadBytes(storageRef, files[j]);
-                        let imageUrl = await getDownloadURL(storageRef);
-                        imagelink1.push(imageUrl);
-                    }
+                if (!roomKey) {
+                    console.warn(`Unable to determine roomKey for room element:`, roomElem);
+                    continue; // Skip this room if `roomKey` cannot be determined
                 }
 
-                //console.log(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/room${roomKey}`);
-                // Fetch existing roomType level
-                let existingRoomTypeRef = ref(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}`);
-                let existingRoomTypeSnapshot = await get(existingRoomTypeRef);
-                let existingRoomTypeData = existingRoomTypeSnapshot.exists() ? existingRoomTypeSnapshot.val() : {};
+                // Extract room details from input fields
+                const roomType = document.getElementById(`roomType-${floorNumber}-${roomKey}`).value;
+                const roomCount = parseInt(document.getElementById(`roomCount-${floorNumber}-${roomKey}`).value, 10);
+                const amenities = document.getElementById(`amenities-${floorNumber}-${roomKey}`).value;
+                const ac = document.getElementById(`acType-${floorNumber}-${roomKey}`).value;
+                const bathroom = document.getElementById(`bathroom-${floorNumber}-${roomKey}`).value;
+                const price = document.getElementById(`price-${floorNumber}-${roomKey}`).value;
+                const remarks = document.getElementById(`remarks-${floorNumber}-${roomKey}`).value;
 
-                let existingRoomTypeBedsAvailable = existingRoomTypeData.bedsAvailable || 0;
+                // Handle image uploads
+                const imageInput = document.getElementById(`roomImage-${roomKey}`);
+                const files = imageInput ? imageInput.files : [];
+                let imageLinks = [];
 
-                // Update roomType-level
-                await update(
-                    ref(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}`),
-                    {
-                        floor: floorKey,
-                        roomCount: roomCount,
+                if (files.length > 0) {
+                    const uploadPromises = Array.from(files).map(async (file) => {
+                        const storageRef = ref2(storage, `images/${hname}/room-${roomKey}/${file.name}`);
+                        await uploadBytes(storageRef, file);
+                        return getDownloadURL(storageRef);
+                    });
+                    imageLinks = await Promise.all(uploadPromises); // Wait for all uploads
+                }
+
+                // Calculate beds available based on room type
+                const bedsAvailable = parseInt(roomType.match(/\d+/)[0]) * roomCount;
+
+                // Update roomType-level data
+                const roomTypePath = `Hostel details/${hname}/rooms/floor${floorNumber}/${roomType}`;
+                if (!roomTypeUpdates[roomTypePath]) {
+                    roomTypeUpdates[roomTypePath] = {
+                        floor: floorNumber,
+                        roomCount: 0,
+                        bedsAvailable: 0,
+                        imagesLink: [],
+                    };
+                }
+
+                roomTypeUpdates[roomTypePath].roomCount += roomCount;
+                roomTypeUpdates[roomTypePath].bedsAvailable += bedsAvailable;
+                roomTypeUpdates[roomTypePath].imagesLink = [
+                    ...new Set([...roomTypeUpdates[roomTypePath].imagesLink, ...imageLinks]), // Avoid duplicate image links
+                ];
+
+                // Update room-level data
+                for (let roomSubIndex = 1; roomSubIndex <= roomCount; roomSubIndex++) {
+                    const roomNumber = `R${roomNumberCounter++}_F${floorNumber}`;
+                    const roomPath = `Hostel details/${hname}/rooms/floor${floorNumber}/${roomType}/rooms/${ac}/room${roomNumber}`;
+
+                    roomLevelUpdates[roomPath] = {
+                        floor: floorNumber,
                         roomType: roomType,
-                        bedsAvailable: existingRoomTypeBedsAvailable,
-                    }
-                ).catch((error) => {
-                    console.error(`Error updating roomType details for ${roomType}:`, error);
-                    alert(`Error updating roomType details for ${roomType}: ${error}`);
-                });
-
-                // Fetch existing room-level data
-                let existingRoomRef = ref(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/${roomKey}`);
-                let existingRoomSnapshot = await get(existingRoomRef);
-                let existingRoomData = existingRoomSnapshot.exists() ? existingRoomSnapshot.val() : {};
-                let existingBeds = existingRoomData.beds || {};
-                let existingBedsAvailable = existingRoomData.bedsAvailable;
-                // Update room-level details 
-                let roomnum = roomKey.match(/\d+/)[0];
-                let existingImages = existingRoomData.imagesLink || []; // Fetch existing images
-                let updatedImages = imagelink1.length > 0 ? [...existingImages, ...imagelink1] : existingImages;
-
-                await update(
-                    ref(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/${roomKey}`),
-                    {
-                        roomNumber: roomnum,
-                        floor: floorKey,
+                        roomNumber: roomNumber,
+                        roomCount: roomCount,
+                        amenities: amenities,
                         ac: ac,
-                        roomCount: roomCount,
-                        roomType: roomType,
                         bathroom: bathroom,
                         price: price,
-                        amenities: amenities,
                         remarks: remarks,
-                        imagesLink: updatedImages, // Use updated images array
-                        bedsAvailable: existingBedsAvailable, // Retain existing bedsAvailable value
-                    }
-                ).catch((error) => {
-                    console.error(`Error updating room details for Room ${roomKey}:`, error);
-                    alert(`Error updating room details for Room ${roomKey}: ${error}`);
-                });
+                        bedsAvailable: bedsAvailable,
+                        imagesLink: imageLinks,
+                    };
 
-                await update(
-                    ref(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/${roomKey}/beds`),
-                    {
-                        beds: existingBeds, // Retain existing beds data
+                    // Add bed-level data
+                    for (let bedIndex = 1; bedIndex <= bedsAvailable; bedIndex++) {
+                        bedLevelUpdates[`${roomPath}/beds/bed ${bedIndex}`] = "not booked";
                     }
-                ).catch((error) => {
-                    console.error(`Error updating bed details for Room ${roomKey}:`, error);
-                    alert(`Error updating room details for Room ${roomKey}: ${error}`);
-                });
+                }
             }
         }
 
-        // `.additional-room-container`
-        let additionalRoomContainers = document.querySelectorAll('.additional-room-container');
-        let hostelfloorsDB = document.getElementById("hostelfloorsDB").value
+        // Handle additional rooms
+        const additionalRoomContainers = document.querySelectorAll('.additional-room-container');
 
         for (let roomElem of additionalRoomContainers) {
-            let uniqueId = roomElem.id.split('-')[1]; // Extract unique ID for each room container
+            const uniqueId = roomElem.id.split('-')[1];
+            const floor = parseInt(document.getElementById(`floor-${uniqueId}`).value, 10);
+            const roomType = document.getElementById(`roomType-${uniqueId}`).value;
+            const roomCount = parseInt(document.getElementById(`roomCount-${uniqueId}`).value, 10);
+            const amenities = document.getElementById(`amenities-${uniqueId}`).value;
+            const price = document.getElementById(`price-${uniqueId}`).value;
+            const bathroom = document.getElementById(`bathroom-${uniqueId}`).value;
+            const ac = document.getElementById(`acType-${uniqueId}`).value;
+            const remarks = document.getElementById(`remarks-${uniqueId}`).value;
 
-            // Fetch the room data for this container
-            let floor = document.getElementById(`floorNumber-${uniqueId}`).value;
-            let roomType = document.getElementById(`roomType-${uniqueId}`).value;
-            let roomCount = parseInt(document.getElementById(`roomCount-${uniqueId}`).value, 10);
-            let amenities = document.getElementById(`amenities-${uniqueId}`).value;
-            let price = document.getElementById(`price-${uniqueId}`).value;
-            let bathroom = document.getElementById(`bathroom-${uniqueId}`).value;
-            let ac = document.getElementById(`acType-${uniqueId}`).value;
-            let remarks = document.getElementById(`remarks-${uniqueId}`).value;
-
-            if (floor > hostelfloorsDB) {
-                hostelfloorsDB = floor; // Update hfloorsDB if needed
-            }
-            const db = getDatabase();
-            const floorRef = ref(db, `Hostel details/${hname}`);
-
-            // Update the Firebase key with an object
-            await update(floorRef, { hostelFloors: hostelfloorsDB });
-            // Calculate beds available based on roomType and roomCount
-            const roomTypeBedsAvailable = parseInt(roomType.match(/\d+/)[0]) * roomCount;
-
-            let imageInput = document.getElementById(`roomImage-${uniqueId}`);
-            let files = imageInput.files;
+            // Handle image uploads
+            const imageInput = document.getElementById(`roomImage-${uniqueId}`);
+            const files = imageInput ? imageInput.files : [];
             let imageLinks = [];
 
-            if (files.length !== 0) {
-                for (let file of files) {
-                    let storageRef = ref2(storage, `images/${hname}/room-${roomNumbers[0]}/${file.name}`);
+            if (files.length > 0) {
+                const uploadPromises = Array.from(files).map(async (file) => {
+                    const storageRef = ref2(storage, `images/${hname}/room-${uniqueId}/${file.name}`);
                     await uploadBytes(storageRef, file);
-                    let imageUrl = await getDownloadURL(storageRef);
-                    imageLinks.push(imageUrl);
-                }
+                    return getDownloadURL(storageRef);
+                });
+                imageLinks = await Promise.all(uploadPromises); // Wait for all uploads
             }
 
-            // Update roomType-level details
-            await update(ref(db, `Hostel details/${hname}/rooms/floor${floor}/${roomType}`), {
-                roomType: roomType,
-                roomCount: roomCount,
-                bedsAvailable: roomTypeBedsAvailable,
-            }).catch((error) => console.error(`Error updating roomType details for ${roomType}:`, error));
+            const bedsAvailable = parseInt(roomType.match(/\d+/)[0]) * roomCount;
 
+            const roomTypePath = `Hostel details/${hname}/rooms/floor${floor}/${roomType}`;
+            if (!roomTypeUpdates[roomTypePath]) {
+                roomTypeUpdates[roomTypePath] = {
+                    floor: floor,
+                    roomCount: 0,
+                    roomType: roomType,
+                    price: price,
+                    bedsAvailable: 0,
+                    imagesLink: [],
+                };
+            }
+
+            roomTypeUpdates[roomTypePath].roomCount += roomCount;
+            roomTypeUpdates[roomTypePath].bedsAvailable += bedsAvailable;
+            roomTypeUpdates[roomTypePath].imagesLink = [
+                ...new Set([...roomTypeUpdates[roomTypePath].imagesLink, ...imageLinks]),
+            ];
 
             for (let roomSubIndex = 1; roomSubIndex <= roomCount; roomSubIndex++) {
-                const roomNumber = `F${floor}_R${roomNumberCounter++}`; // Incrementing the room number counter
-                const bedsAvailableForRoom = parseInt(roomType.match(/\d+/)[0]);
+                const roomNumber = `R${roomNumberCounter++}_F${floor}`;
+                const roomPath = `Hostel details/${hname}/rooms/floor${floor}/${roomType}/rooms/${ac}/room${roomNumber}`;
 
-                // Update the room-level details for each room number
-                await update(ref(db, `Hostel details/${hname}/rooms/floor${floor}/${roomType}/rooms/${ac}/room${roomNumber}`), {
+                roomLevelUpdates[roomPath] = {
                     floor: floor,
                     roomType: roomType,
                     roomNumber: roomNumber,
@@ -1381,21 +1617,156 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
                     bathroom: bathroom,
                     price: price,
                     remarks: remarks,
-                    bedsAvailable: bedsAvailableForRoom,
+                    bedsAvailable: bedsAvailable,
                     imagesLink: imageLinks,
-                    beds: {} // Empty object to represent initial bed status
-                });
+                };
 
-                // Insert bed data for the current room (e.g., "bed 1", "bed 2", etc.)
-                for (let bedIndex = 1; bedIndex <= bedsAvailableForRoom; bedIndex++) {
-                    const bedKey = `bed ${bedIndex}`;
-                    await update(ref(db, `Hostel details/${hname}/rooms/floor${floor}/${roomType}/rooms/${ac}/room${roomNumber}/beds`), {
-                        [bedKey]: 'not booked', // Initial status of the bed
-                    }).catch((error) => {
-                        alert(`Error updating bed ${bedKey}: ${error}`);
-                    });
+                for (let bedIndex = 1; bedIndex <= bedsAvailable; bedIndex++) {
+                    bedLevelUpdates[`${roomPath}/beds/bed ${bedIndex}`] = "not booked";
                 }
             }
+        }
+
+        await update(ref(db), roomTypeUpdates); // First batch: room type-level data
+        await update(ref(db), roomLevelUpdates); // Second batch: room-level data
+        await update(ref(db), bedLevelUpdates); // Third batch: bed-level data
+        console.log("Room details saved successfully.");
+
+
+        const floorCount = document.querySelectorAll('.card-header h5').length;
+
+        let roomsObject = {};
+
+        for (let floorIndex = 1; floorIndex <= floorCount; floorIndex++) {
+            const floorNumber = floorIndex;
+            let roomNumberCounter = 1;
+
+            const roomContainers = document.querySelectorAll(`.room-container[data-floor="${floorNumber}"]`);
+
+            if (roomContainers.length === 0) {
+                console.warn(`No room containers found for floor ${floorNumber}. Skipping.`);
+                continue;
+            }
+
+            for (let roomIndex = 0; roomIndex < roomContainers.length; roomIndex++) {
+                const roomElem = roomContainers[roomIndex];
+
+                // Validate that all required fields exist
+                const roomCountElem = roomElem.querySelector(`#roomCount-${floorNumber}-${roomIndex + 1}`);
+                const roomTypeElem = roomElem.querySelector(`#roomType-${floorNumber}-${roomIndex + 1}`);
+                const amenitiesElem = roomElem.querySelector(`#amenities-${floorNumber}-${roomIndex + 1}`);
+                const acTypeElem = roomElem.querySelector(`#acType-${floorNumber}-${roomIndex + 1}`);
+                const bathroomElem = roomElem.querySelector(`#bathroom-${floorNumber}-${roomIndex + 1}`);
+                const priceElem = roomElem.querySelector(`#price-${floorNumber}-${roomIndex + 1}`);
+                const remarksElem = roomElem.querySelector(`#remarks-${floorNumber}-${roomIndex + 1}`);
+                const imageInputElem = roomElem.querySelector(`#roomImage-${floorNumber}-${roomIndex + 1}`);
+
+                // Skip this room if any required input is missing
+                if (!roomCountElem || !roomTypeElem || !amenitiesElem || !acTypeElem || !bathroomElem || !priceElem || !remarksElem) {
+                    console.warn(`Missing required input fields for room ${roomIndex + 1} on floor ${floorNumber}. Skipping.`);
+                    continue;
+                }
+
+                const roomCount = parseInt(roomCountElem.value, 10);
+                const roomType = roomTypeElem.value;
+                const amenities = amenitiesElem.value;
+                const acType = acTypeElem.value;
+                const bathroom = bathroomElem.value;
+                const price = priceElem.value;
+                const remarks = remarksElem.value;
+                let roomImages = [];
+
+                if (imageInputElem && imageInputElem.files.length > 0) {
+                    const files = imageInputElem.files;
+                    const uploadPromises = [];
+                    for (let i = 0; i < files.length; i++) {
+                        const storageRef = ref2(storage, `Roomimages/${hname}/floor${floorNumber}/room-${roomIndex + 1}/${files[i].name}`);
+                        const uploadPromise = uploadBytes(storageRef, files[i]).then(async () => {
+                            const imageUrl = await getDownloadURL(storageRef);
+                            roomImages.push(imageUrl);
+                        });
+                        uploadPromises.push(uploadPromise);
+                    }
+
+                    await Promise.all(uploadPromises); // Wait for all image uploads
+                }
+
+                const roomTypeBedsAvailable = parseInt(roomType.match(/\d+/)[0]) * roomCount;
+
+                // Initialize floor if not already present
+                if (!roomsObject[`floor${floorNumber}`]) {
+                    roomsObject[`floor${floorNumber}`] = {};
+                }
+
+                // Initialize room type under the floor if not already present
+                if (!roomsObject[`floor${floorNumber}`][roomType]) {
+                    roomsObject[`floor${floorNumber}`][roomType] = {
+                        floor: floorNumber,
+                        price: price,
+                        roomCount: roomCount,
+                        roomType: roomType,
+                        bedsAvailable: roomTypeBedsAvailable,
+                        rooms: {}
+                    };
+                }
+
+                // Add AC type to the rooms object
+                if (!roomsObject[`floor${floorNumber}`][roomType].rooms[acType]) {
+                    roomsObject[`floor${floorNumber}`][roomType].rooms[acType] = {};
+                }
+
+
+                for (let roomSubIndex = 1; roomSubIndex <= roomCount; roomSubIndex++) {
+                    const roomNumber = `R${roomNumberCounter++}_F${floorNumber}`;
+                    const bedsAvailableForRoom = parseInt(roomType.match(/\d+/)[0]);
+
+                    roomsObject[`floor${floorNumber}`][roomType].rooms[acType][`room${roomNumber}`] = {
+                        ac: acType,
+                        bathroom: bathroom,
+                        amenities: amenities,
+                        remarks: remarks,
+                        roomNumber: roomNumber,
+                        price: price,
+                        roomType: roomType,
+                        bedsAvailable: bedsAvailableForRoom,
+                        roomCount: roomCount,
+                        floor: floorNumber,
+                        imagesLink: roomImages,
+                        beds: {}
+                    };
+
+                    // Add beds to the room
+                    for (let bedIndex = 1; bedIndex <= bedsAvailableForRoom; bedIndex++) {
+                        const bedKey = `bed ${bedIndex}`;
+                        roomsObject[`floor${floorNumber}`][roomType].rooms[acType][`room${roomNumber}`].beds[bedKey] = "not booked";
+                    }
+                }
+            }
+        }
+
+
+        await update(ref(db, `Hostel details/${hname}/rooms`), roomsObject);
+
+        const additionalFloorsInput = document.getElementById("hostelExtraFloors");
+        const additionalFloors = parseInt(additionalFloorsInput.value, 10) || 0;
+
+        // Get the current number of floors from Firebase
+        const hostelFloorsRef = ref(db, `Hostel details/${hname}/hostelFloors`);
+
+        const existingFloorsSnapshot = await get(hostelFloorsRef);
+        const existingFloors = existingFloorsSnapshot.exists() ? parseInt(existingFloorsSnapshot.val(), 10) : 0;
+
+        // Calculate the new total number of floors
+        const totalFloors = existingFloors + additionalFloors;
+
+        // Update `hostelFloors` in Firebase only if the new total is greater
+        if (totalFloors > existingFloors) {
+            await update(ref(db, `Hostel details/${hname}`), {
+                hostelFloors: totalFloors,
+            });
+            console.log(`Updated total floors to ${totalFloors}`);
+        } else {
+            console.log(`No update needed. Existing floors: ${existingFloors}, Additional floors: ${additionalFloors}`);
         }
 
         alert("Room details saved successfully!");

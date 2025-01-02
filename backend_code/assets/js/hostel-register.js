@@ -354,7 +354,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     rowElem.appendChild(createSelectBox("AC Type", `acType-${floorNumber}-${roomCount}`, true, [
       { value: "ac", text: "ac" },
-      { value: "non-ac", text: "non-ac" },
+      { value: "non_ac", text: "non-ac" },
     ]));
 
     rowElem.appendChild(createInputBox("Remarks", `remarks-${floorNumber}-${roomCount}`, "text", false, "Additional comments"));
@@ -1009,12 +1009,19 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
         if (!roomsObject[`floor${floorNumber}`][roomType]) {
           roomsObject[`floor${floorNumber}`][roomType] = {
             floor: floorNumber,
-            price: price,
+            acPrice: 0,
+            nonacPrice:0,
             roomCount: roomCount,
             roomType: roomType,
+            imageLink:roomImages,
             bedsAvailable: roomTypeBedsAvailable,
             rooms: {}
           };
+        }
+        if (acType === 'ac') {
+          roomsObject[`floor${floorNumber}`][roomType].acPrice = price;
+        } else {
+          roomsObject[`floor${floorNumber}`][roomType].nonacPrice = price;
         }
 
         // Add AC type to the rooms object
@@ -1024,10 +1031,10 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
 
         // Add rooms with the correct format
         for (let roomSubIndex = 1; roomSubIndex <= roomCount; roomSubIndex++) {
-          const roomNumber = `roomR${roomNumberCounter++}_F${floorNumber}`;
+          const roomNumber = `R${roomNumberCounter++}_F${floorNumber}`;
           const bedsAvailableForRoom = parseInt(roomType.match(/\d+/)[0]);
 
-          roomsObject[`floor${floorNumber}`][roomType].rooms[acType][roomNumber] = {
+          roomsObject[`floor${floorNumber}`][roomType].rooms[acType][`room${roomNumber}`] = {
             ac: acType,
             bathroom: bathroom,
             amenities: amenities,
@@ -1045,7 +1052,7 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
           // Add beds to the room
           for (let bedIndex = 1; bedIndex <= bedsAvailableForRoom; bedIndex++) {
             const bedKey = `bed ${bedIndex}`;
-            roomsObject[`floor${floorNumber}`][roomType].rooms[acType][roomNumber].beds[bedKey] = "not booked";
+            roomsObject[`floor${floorNumber}`][roomType].rooms[acType][`room${roomNumber}`].beds[bedKey] = "not booked";
           }
         }
       }
