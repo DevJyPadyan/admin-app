@@ -48,6 +48,35 @@
     <!-- App css -->
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
 </head>
+<style>
+    /* Style for the filter options container */
+    .filterOptions {
+        display: none;
+        position: absolute;
+        background: white;
+        border: 1px solid #ccc;
+        padding: 10px;
+        /* Corrected padding value */
+        width: 230px;
+        box-sizing: border-box;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+    }
+
+    /* Add spacing between checkboxes and labels */
+    .filterOptions input[type="checkbox"] {
+        margin-right: -80px;
+        /* Adjusted margin values */
+        margin-left: -70px;
+    }
+
+    .filterButton i {
+        font-size: 12px;
+        /* Adjust the font size as needed */
+        color: #000;
+    }
+</style>
 
 <body>
     <!-- tap on top start-->
@@ -420,38 +449,65 @@
                                                                 name="text"></th>
                                                         <!--<th>S. No</th>-->
                                                         <th>User Name</th>
-                                                        <th onclick="sortTable(1)">Full Name<span
-                                                                class="sort-icon">⬍</span></th>
+                                                        <th>Full Name &nbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(1)"></span>
+                                                            <span class="filterButton" onclick="toggleFilter(event, 1)"
+                                                                style="cursor: pointer;">
+                                                                <i class="fa fa-filter"></i>
+                                                            </span>
+                                                            <div class="filterOptions"></div>
+                                                        </th>
                                                         <th>Gender</th>
                                                         <th>Phone</th>
                                                         <th>Email ID</th>
                                                         <th>Address line 1</th>
                                                         <th>Address line 2</th>
-                                                        <th onclick="sortTable(2)">City<span class="sort-icon">⬍</span>
+                                                        <th>City&nbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(2)"></span>
+                                                            <span class="filterButton" onclick="toggleFilter(event, 1)"
+                                                                style="cursor: pointer;">
+                                                                <i class="fa fa-filter"></i>
+                                                            </span>
+                                                            <div class="filterOptions"></div>
                                                         </th>
-                                                        <th onclick="sortTable(3)">State<span class="sort-icon">⬍</span>
+                                                        </th>
+                                                        <th>State&nbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(3)"></span>
+                                                            <span class="filterButton" onclick="toggleFilter(event, 1)"
+                                                                style="cursor: pointer;">
+                                                                <i class="fa fa-filter"></i>
+                                                            </span>
+                                                            <div class="filterOptions"></div>
+                                                        </th>
                                                         </th>
                                                         <th>Pincode</th>
-                                                        <th onclick="sortTable(4)">Guard Name<span
-                                                                class="sort-icon">⬍</span></th>
+                                                        <th>Guard Namenbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(4)"></span>
+                                                            <span class="filterButton" onclick="toggleFilter(event, 1)"
+                                                                style="cursor: pointer;">
+                                                                <i class="fa fa-filter"></i>
+                                                            </span>
+                                                            <div class="filterOptions"></div>
+                                                        </th>
                                                         <th>Guard Relation</th>
                                                         <th>Guard Phone</th>
                                                         <th>Guard Email</th>
                                                         <th>Guard Address 1</th>
                                                         <th>Guard Address 2</th>
-                                                        <th onclick="sortTable(5)">Guard City<span
-                                                                class="sort-icon">⬍</span></th>
-                                                        <th onclick="sortTable(6)">Guard State<span
-                                                                class="sort-icon">⬍</span></th>
+                                                        <th>Guard Citynbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(5)"></span></th>
+                                                        <th>Guard Statenbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(6)"></span></th>
                                                         <th>Guard Pincode</th>
-                                                        <th onclick="sortTable(7)">Room type<span
-                                                                class="sort-icon">⬍</span></th>
-                                                        <th onclick="sortTable(8)">Floor<span class="sort-icon">⬍</span>
+                                                        <th>Room typenbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(7)"></span></th>
+                                                        <th>Floornbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(8)"></span>
                                                         </th>
-                                                        <th onclick="sortTable(9)">Air conditioning<span
-                                                                class="sort-icon">⬍</span></th>
-                                                        <th onclick="sortTable(10)">Room price<span
-                                                                class="sort-icon">⬍</span></th>
+                                                        <th>Air conditioningnbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(9)"></span></th>
+                                                        <th>Room pricenbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(10)"></span></th>
                                                         <th>Payment Status</th>
                                                         <th>Delete</th>
                                                     </tr>
@@ -1183,6 +1239,116 @@
             // Export to Excel file
             XLSX.writeFile(workbook, fileName);
         }
+        // Function to toggle the filter options visibility
+        function toggleFilter(event, columnIndex) {
+            event.stopPropagation(); // Prevent sorting or closing dropdown
+            const filterDivs = document.querySelectorAll(".filterOptions");
+            const filterDiv = filterDivs[columnIndex - 1];
+
+            // Toggle dropdown visibility
+            filterDiv.style.display = filterDiv.style.display === "none" ? "block" : "none";
+
+            if (filterDiv.style.display === "block") {
+                populateFilterOptions(columnIndex);
+            }
+        }
+
+        // Populate filter options dynamically
+        function populateFilterOptions(columnIndex) {
+            const table = document.getElementById("table_id");
+            const columnValues = new Set();
+
+            for (let i = 1; i < table.rows.length; i++) { // Skip header
+                const columnValue = table.rows[i].cells[columnIndex].textContent.trim();
+                columnValues.add(columnValue);
+            }
+
+            const filterDivs = document.querySelectorAll(".filterOptions");
+            const filterDiv = filterDivs[columnIndex - 1];
+            filterDiv.innerHTML = ""; // Clear old options
+
+            columnValues.forEach(value => {
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.value = value;
+                checkbox.classList.add("column-filter");
+
+                const label = document.createElement("label");
+                label.textContent = value;
+
+                const container = document.createElement("div");
+                container.style.display = "flex";
+                container.style.alignItems = "center";
+                container.appendChild(checkbox);
+                container.appendChild(label);
+
+                filterDiv.appendChild(container);
+            });
+
+            // Add OK and Clear buttons
+            const buttonContainer = document.createElement("div");
+            buttonContainer.style.marginTop = "10px";
+
+            const okButton = document.createElement("button");
+            okButton.textContent = "OK";
+            okButton.addEventListener("click", (event) => {
+                event.stopPropagation();
+                applyFilter(columnIndex);
+                filterDiv.style.display = "none"; // Hide the container when OK is clicked
+            });
+
+            const clearButton = document.createElement("button");
+            clearButton.textContent = "Clear Filter";
+            clearButton.style.marginLeft = "10px";
+            clearButton.addEventListener("click", (event) => {
+                event.stopPropagation();
+                clearFilter(columnIndex);
+            });
+
+            buttonContainer.appendChild(okButton);
+            buttonContainer.appendChild(clearButton);
+            filterDiv.appendChild(buttonContainer);
+        }
+
+        // Apply the filter
+        function applyFilter(columnIndex) {
+            const filterDivs = document.querySelectorAll(".filterOptions");
+            const checkboxes = filterDivs[columnIndex - 1].querySelectorAll(".column-filter");
+            const selectedValues = new Set();
+
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    selectedValues.add(checkbox.value);
+                }
+            });
+
+            const table = document.getElementById("table_id");
+            for (let i = 1; i < table.rows.length; i++) { // Skip header
+                const cellValue = table.rows[i].cells[columnIndex].textContent.trim();
+                table.rows[i].style.display = selectedValues.size === 0 || selectedValues.has(cellValue) ? "" : "none";
+            }
+        }
+
+        // Clear the filter
+        function clearFilter(columnIndex) {
+            const filterDivs = document.querySelectorAll(".filterOptions");
+            const checkboxes = filterDivs[columnIndex - 1].querySelectorAll(".column-filter");
+            checkboxes.forEach(checkbox => (checkbox.checked = false));
+            applyFilter(columnIndex);
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", () => {
+            const filterDivs = document.querySelectorAll(".filterOptions");
+            filterDivs.forEach(div => (div.style.display = "none"));
+        });
+
+        // Prevent closing dropdown when clicking inside
+        document.querySelectorAll('.filterOptions').forEach(div => {
+            div.addEventListener('click', event => {
+                event.stopPropagation();
+            });
+        });
     </script>
 </body>
 
