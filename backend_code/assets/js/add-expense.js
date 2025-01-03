@@ -43,7 +43,7 @@ let categoryCounter = 0;
 // Subcategory mapping
 const subCategoryMap = {
     utilities: ["Water", "Electricity", "Gas", "Internet", "Water Supplies"],
-    food: ["Groceries", "Cooking Supplies - Raw Materials", "Cooking Supplies - Vegetables or Fruits"],
+    food: ["Cooking Supplies - Vegetables or Fruits", "Groceries", "Cooking Supplies - Raw Materials"],
     maintenance: ["Repairs", "Cleaning"],
     furniture: ["Purchase/Repair"],
     rent: [],
@@ -65,29 +65,6 @@ $(document).ready(function () {
     toggleFrequencyFields();
 });
 
-function updateSubCategoryFields(formId, subCategoryId) {
-    const category = document.getElementById(`category-${formId}`).value;
-    const subCategory = document.getElementById(`subcategory-${subCategoryId}`)?.value;
-
-    const roomFieldContainer = document.getElementById(`room-floor-${subCategoryId}`);
-    const unitFieldContainer = document.getElementById(`units-${subCategoryId}`);
-    const measurementFieldContainer = document.getElementById(`unit-${subCategoryId}`);
-
-    // Reset visibility
-    roomFieldContainer.style.display = "none";
-    unitFieldContainer.style.display = "none";
-    measurementFieldContainer.style.display = "none";
-
-    // Conditional visibility for "Electricity"
-    if (category === "utilities" && subCategory === "Electricity") {
-        roomFieldContainer.style.display = "block";
-        unitFieldContainer.style.display = "block";
-        measurementFieldContainer.style.display = "block";
-    } else if (category === "utilities") {
-        unitFieldContainer.style.display = "block";
-    }
-}
-
 // Function to upload files to Firebase Storage
 async function uploadFiles(files) {
     const uploadedURLs = [];
@@ -99,51 +76,68 @@ async function uploadFiles(files) {
     }
     return uploadedURLs;
 }
+// Object to store the state of each form
+const formStates = {};
 
-// Function to add a new expense form
-function addExpenseForm() {
-    const container = document.getElementById("dynamic-expense-container");
-    const formId = `expense-form-${Date.now()}`;
-    categoryCounter++;
+// Function to store form data in the state
+function saveFormState(formId) {
+    const formElements = document.querySelectorAll(`#${formId} [id^="subcategory-"], #${formId} input, #${formId} textarea, #${formId} select`);
+    const formData = {};
 
-    const form = document.createElement("div");
-    form.setAttribute("id", formId);
-    form.classList.add("card-body", "expense-form", "mb-2");
+    formElements.forEach(element => {
+        formData[element.id] = {
+            value: element.value,
+            display: element.style.display,
+        };
+    });
 
-    // Add padding to the card body for spacing between form elements and card borders
-    form.style.padding = "20px"; // Adjust this value as needed
-    form.style.border = "1px solid #ddd"; // Added border for visibility
+    formStates[formId] = formData;
+}
 
-    form.innerHTML = `
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h6>Category #${categoryCounter}</h6>
-        <button id="remove-expense-form-${formId}" class="ri-delete-bin-line restaurant-button" 
-        style="font-size: 12px; cursor: pointer; top: 10px; right: 10px;"></button>
-    </div>
-    <div class="card-body">
-        <div class="row gy-3">
-            <div class="col-12">
-                <h6><label>Category:</label></h6>
-                <select id="category-${formId}" name="category" class="form-select" required>
-                    ${Object.keys(subCategoryMap)
-            .map(category => `<option value="${category}">${category.charAt(0).toUpperCase() + category.slice(1)}</option>`)
-            .join("")}
-                </select>
-            </div>
-            <div class="col-12">
-                <button id="add-sub-category-${formId}" class="ri-add-line btn restaurant-button"
-                style="width: 100%; display: block; text-align: center;">Add Sub-Category</button>
-            </div>
-            <div class="col-12" id="sub-categories-${formId}"></div>
-        </div>
-    </div>
-`;
+// Function to restore form data from the state
+function restoreFormState(formId) {
+    if (!formStates[formId]) return;
 
-    container.appendChild(form);
+    const formData = formStates[formId];
 
-    document.getElementById(`category-${formId}`).addEventListener("change", () => updateSubCategoryFields(formId));
-    document.getElementById(`add-sub-category-${formId}`).addEventListener("click", () => addSubCategory(formId));
-    document.getElementById(`remove-expense-form-${formId}`).addEventListener("click", () => removeExpenseForm(formId));
+    for (const [id, { value, display }] of Object.entries(formData)) {
+        const element = document.getElementById(id);
+        if (element) {
+            element.value = value || '';
+            element.style.display = display || '';
+        }
+    }
+}
+
+// Update the visibility of fields based on category and subcategory
+function updateSubCategoryFields(formId, subCategoryId) {
+    saveFormState(formId); // Save current state before making changes
+
+    const category = document.getElementById(`category-${formId}`).value;
+    const subCategory = document.getElementById(`subcategory-${subCategoryId}`)?.value;
+
+    const roomFieldContainer = document.getElementById(`room-floor-${subCategoryId}`);
+    const unitFieldContainer = document.getElementById(`units-${subCategoryId}`);
+    const measurementFieldContainer = document.getElementById(`unit-${subCategoryId}`);
+    const noOfOccupantsContainer = document.getElementById(`occupants-${subCategoryId}`);
+
+    // Reset visibility
+    roomFieldContainer.style.display = "none";
+    unitFieldContainer.style.display = "none";
+    measurementFieldContainer.style.display = "none";
+    noOfOccupantsContainer.style.display = "none";
+
+    // Conditional visibility for "Electricity"
+    if (category === "utilities" && subCategory === "Electricity") {
+        roomFieldContainer.style.display = "block";
+        unitFieldContainer.style.display = "block";
+        measurementFieldContainer.style.display = "block";
+        noOfOccupantsContainer.style.display = "block"; // Show occupants field for Electricity
+    } else if (category === "utilities") {
+        unitFieldContainer.style.display = "block";
+    }
+
+    restoreFormState(formId); // Restore previous state after updating visibility
 }
 
 // Function to add a subcategory container
@@ -160,12 +154,14 @@ function addSubCategory(formId) {
     card.style.border = "1px solid #ddd"; // Added border for the card to be visible
     card.style.margin = "15px";
 
+    // Dynamically include the Food Name and Veg/Non-Veg fields if category is "Food"
+
     card.innerHTML = `
-        <div class="card-header" d-flex justify-content-between align-items-center">
-           <button id="remove-sub-category-${subCategoryId}" 
-            class="ri-delete-bin-line restaurant-button mt-3" 
-        style="font-size: 12px; cursor: pointer; top: 10px; right: 10px;">
-        </button>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <button id="remove-sub-category-${subCategoryId}" 
+                class="ri-delete-bin-line restaurant-button mt-3" 
+                style="font-size: 12px; cursor: pointer; top: 10px; right: 10px;">
+            </button>
         </div>
         <div class="card-body">
             <div class="row gy-3">
@@ -177,6 +173,7 @@ function addSubCategory(formId) {
             .join("")}
                     </select>
                 </div>
+                
                 <div class="col-xl-6">
                     <div class="input-box">
                        <h6><label>Cost:</label></h6>
@@ -197,7 +194,7 @@ function addSubCategory(formId) {
                 </div>
                 <div class="col-xl-6">
                     <div class="input-box">
-                       <h6><label>Bill Upload</label></h6>
+                       <h6><label>Bill Upload:</label></h6>
                        <input type="file" id="bill-upload-${subCategoryId}" class="form-control" multiple>
                     </div>
                 </div>
@@ -213,15 +210,25 @@ function addSubCategory(formId) {
                        <input type="text" id="unit-${subCategoryId}" class="form-control" placeholder="Enter unit (e.g., kWh, liters)">
                     </div>
                 </div>
+                <div class="col-xl-6" id="occupants-${subCategoryId}" style="display: none;">
+                    <div class="input-box">
+                       <h6><label>Number of Occupants:</label></h6>
+                       <input type="number" id="occupants-number-${subCategoryId}" class="form-control" placeholder="Enter number of occupants">
+                    </div>
+                </div>
                 <div class="col-xl-6" id="room-floor-${subCategoryId}" style="display: none;">
-                <div class="input-box">
-                     <h6><label>Room Number:</label></h6>
-                    <input type="text" id="room-number-${subCategoryId}" class="form-control" placeholder="Enter room number">
-                    <h6><label>Floor Number:</label></h6>
-                    <input type="text" id="floor-number-${subCategoryId}" class="form-control" placeholder="Enter floor number">
+                    <div class="d-flex justify-content-between align-items-center gap-3">
+                        <div class="input-box flex-grow-1">
+                            <h6><label for="room-number-${subCategoryId}">Room Number:</label></h6>
+                            <input type="text" id="room-number-${subCategoryId}" class="form-control" placeholder="Enter room number">
+                        </div>
+                        <div class="input-box flex-grow-1">
+                            <h6><label for="floor-number-${subCategoryId}">Floor Number:</label></h6>
+                            <input type="text" id="floor-number-${subCategoryId}" class="form-control" placeholder="Enter floor number">
+                        </div>
+                    </div>
                 </div>
-                </div>
-            </div>
+            </div> 
         </div>
     `;
     container.appendChild(card);
@@ -230,20 +237,58 @@ function addSubCategory(formId) {
     document.getElementById(`remove-sub-category-${subCategoryId}`).addEventListener("click", () => removeSubCategory(subCategoryId));
 }
 
+// Function to add a new expense form
+function addExpenseForm() {
+    const container = document.getElementById("dynamic-expense-container");
+    const formId = `expense-form-${Date.now()}`;
+    categoryCounter++;
+
+    const form = document.createElement("div");
+    form.setAttribute("id", formId);
+    form.classList.add("card-body", "expense-form", "mb-2");
+
+    form.innerHTML = `
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6>Category #${categoryCounter}</h6>
+            <button id="remove-expense-form-${formId}" class="ri-delete-bin-line restaurant-button" style="font-size: 12px; cursor: pointer;"></button>
+        </div>
+        <div class="card-body">
+            <div class="row gy-3">
+                <div class="col-12">
+                    <label>Category:</label>
+                    <select id="category-${formId}" name="category" class="form-select" required>
+                        ${Object.keys(subCategoryMap)
+            .map(category => `<option value="${category}">${category.charAt(0).toUpperCase() + category.slice(1)}</option>`)
+            .join("")}
+                    </select>
+                </div>
+                <div class="col-12">
+                    <button id="add-sub-category-${formId}" class="ri-add-line btn restaurant-button" style="width: 100%; display: block;">Add Sub-Category</button>
+                </div>
+                <div class="col-12" id="sub-categories-${formId}"></div>
+            </div>
+        </div>
+    `;
+    container.appendChild(form);
+
+    document.getElementById(`category-${formId}`).addEventListener("change", () => saveFormState(formId));
+    document.getElementById(`add-sub-category-${formId}`).addEventListener("click", () => addSubCategory(formId));
+    document.getElementById(`remove-expense-form-${formId}`).addEventListener("click", () => removeExpenseForm(formId));
+}
+
+// Function to remove an expense form
+function removeExpenseForm(formId) {
+    delete formStates[formId]; // Remove the state for the deleted form
+    document.getElementById(formId).remove();
+}
+
 // Function to remove a subcategory
 function removeSubCategory(subCategoryId) {
     document.getElementById(subCategoryId).remove();
 }
 
-// Function to remove an expense form
-function removeExpenseForm(formId) {
-    document.getElementById(formId).remove();
-}
-
-// Attach event listener for adding new expense forms
 document.getElementById("addExpenseButton").addEventListener("click", addExpenseForm);
 
-// Save data to Firebase
 document.getElementById("saveButton").addEventListener("click", async () => {
     const hostelName = document.getElementById("hostelDropdown").value;
     if (!hostelName) {
@@ -252,17 +297,17 @@ document.getElementById("saveButton").addEventListener("click", async () => {
     }
 
     const frequency = document.getElementById("frequency").value;
-    let dateValue, dateKey;
 
     // Handle "daily" or "date range" inputs
+    let dateValue, dateKey;
     if (frequency === "daily") {
         const selectedDate = document.getElementById("date").value;
         if (!selectedDate) {
             alert("Please select a date for daily frequency!");
             return;
         }
-        dateValue = { from: selectedDate, to: selectedDate }; // Same date for "from" and "to"
-        dateKey = `${selectedDate}-${selectedDate}`; // Create the key as "2024-12-15-2024-12-15"
+        dateValue = { from: selectedDate, to: selectedDate };
+        dateKey = `${selectedDate}-${selectedDate}`;
     } else {
         const fromDate = document.getElementById("fromdate")?.value;
         const toDate = document.getElementById("todate")?.value;
@@ -270,14 +315,14 @@ document.getElementById("saveButton").addEventListener("click", async () => {
             alert("Please fill out both 'From' and 'To' dates!");
             return;
         }
-        dateValue = { from: fromDate, to: toDate }; // Use "from" and "to" dates
-        dateKey = `${fromDate}-${toDate}`; // Create the key as "2024-10-01-2024-12-15"
+        dateValue = { from: fromDate, to: toDate };
+        dateKey = `${fromDate}-${toDate}`;
     }
 
-    const expensesData = {}; // Object to hold all the expense data for the hostel
+    const expensesData = {}; // Object to store all expense data
 
-    // Process each expense form
     const forms = document.querySelectorAll(".card-body.expense-form");
+
     for (const form of forms) {
         const categoryElement = form.querySelector(`[name="category"]`);
         const category = categoryElement?.value;
@@ -291,15 +336,20 @@ document.getElementById("saveButton").addEventListener("click", async () => {
             const description = subCategory.querySelector("textarea")?.value;
             const remarks = subCategory.querySelector("input[type='text']")?.value;
 
-            const roomNumber = subCategory.querySelector("input[id^='room-number']")?.value;
+            const roomNumbers = subCategory
+                .querySelector("input[id^='room-number']")
+                ?.value.split(",")
+                .map(room => room.trim())
+                .filter(Boolean); // Ensure non-empty room numbers
             const floorNumber = subCategory.querySelector("input[id^='floor-number']")?.value;
             const units = subCategory.querySelector("input[id^='units']")?.value;
-            const measurementUnit = subCategory.querySelector(`input[id^='unit']`)?.value;
+            const measurementUnit = subCategory.querySelector("input[id^='unit']")?.value;
+            const noOfOccupants = subCategory.querySelector("input[id^='occupants-number']")?.value;
 
             const billFiles = subCategory.querySelector("input[type='file']")?.files;
             const billImages = billFiles ? await uploadFiles(billFiles) : [];
 
-            // Create an object for the subcategory data
+            // Create a unified object for all categories
             const subCategoryData = {
                 category,
                 subCategory: subCategoryName,
@@ -309,14 +359,45 @@ document.getElementById("saveButton").addEventListener("click", async () => {
                 description,
                 remarks,
                 billImages,
-                ...(subCategoryName === "Electricity" && { roomNumber, floorNumber }),
             };
 
-            // Using category as the key and subcategory as the child key
-            if (!expensesData[category]) {
-                expensesData[category] = {}; // Initialize category if not already present
+            // If subCategory is "Electricity", add roomNumber, floorNumber, and noOfOccupants
+            if (subCategoryName === "Electricity") {
+                subCategoryData.noOfOccupants = noOfOccupants;
+                subCategoryData.roomNumbers = roomNumbers;
+                subCategoryData.floorNumber = floorNumber;
             }
-            expensesData[category][subCategoryName] = subCategoryData; // Set subcategory data under category
+
+            // Add data to the expenses object under the appropriate category and subcategory
+            if (!expensesData[category]) {
+                expensesData[category] = {};
+            }
+            if (!expensesData[category][subCategoryName]) {
+                expensesData[category][subCategoryName] = [];
+            }
+            expensesData[category][subCategoryName].push(subCategoryData);
+
+            // Special handling for room and floor data in categories like Electricity
+            if (category === "utilities" && subCategoryName === "Electricity" && roomNumbers?.length && floorNumber) {
+                roomNumbers.forEach((room) => {
+                    if (!expensesData[category][subCategoryName].roomData) {
+                        expensesData[category][subCategoryName].roomData = {};
+                    }
+                    const floorKey = `floor${floorNumber}`;
+                    if (!expensesData[category][subCategoryName].roomData[floorKey]) {
+                        expensesData[category][subCategoryName].roomData[floorKey] = {};
+                    }
+                    expensesData[category][subCategoryName].roomData[floorKey][`room${room}`] = {
+                        cost,
+                        description,
+                        remarks,
+                        billImages,
+                        roomNumber: room,
+                        floorNumber,
+                        noOfOccupants, // Include noOfOccupants for room-specific data
+                    };
+                });
+            }
         }
     }
 
@@ -324,8 +405,8 @@ document.getElementById("saveButton").addEventListener("click", async () => {
     const data = {
         entry_type: frequency === "daily" ? "daily" : "date_range",
         frequency,
-        date: dateValue, // Store the structured date data
-        expenses: expensesData, // Store all categories and subcategories
+        date: dateValue,
+        expenses: expensesData,
     };
 
     try {
@@ -334,7 +415,7 @@ document.getElementById("saveButton").addEventListener("click", async () => {
         await set(expensesRef, data);
         alert("Expenses saved successfully!");
 
-        location.reload(); // Reload the page after saving
+        location.reload(); // Reload the page
     } catch (error) {
         console.error("Error saving data to Firebase:", error);
         alert("An error occurred while saving the data.");

@@ -8,7 +8,6 @@ const db = getDatabase();
 
 
 const tbody = document.getElementById("tbody1");
-
 const fetchAndDisplayExpenses = () => {
     const dbref = ref(db, "Hostel expenses");
     onValue(dbref, (snapshot) => {
@@ -18,39 +17,46 @@ const fetchAndDisplayExpenses = () => {
         snapshot.forEach((hostelSnapshot) => {
             const hostelName = hostelSnapshot.key;
 
-            // Iterate over frequencies (e.g., weekly, daily)
-            hostelSnapshot.forEach((frequencySnapshot) => {
-                const frequency = frequencySnapshot.key;
+            // Iterate over date ranges (e.g., daily, monthly, etc.)
+            hostelSnapshot.forEach((dateRangeSnapshot) => {
+                const dateRangeKey = dateRangeSnapshot.key; // e.g., "2024-10-01-2024-12-15"
+                const frequency = dateRangeSnapshot.child("frequency").val() || "N/A";
 
-                // Iterate over date ranges or single dates
-                frequencySnapshot.forEach((dateRangeSnapshot) => {
-                    let fromDate, toDate;
+                // Parse from and to dates
+                const dateData = dateRangeSnapshot.child("date").val();
+                const fromDate = dateData?.from || dateRangeKey.split("-")[0] || "N/A";
+                const toDate = dateData?.to || dateRangeKey.split("-")[1] || "N/A";
 
-                    if (frequency.toLowerCase() === "daily") {
-                        // For daily frequency, use the dateRangeKey as both fromDate and toDate
-                        fromDate = toDate = dateRangeSnapshot.key;
-                    } else {
-                        // For other frequencies, check for 'date' child and retrieve 'from' and 'to'
-                        const dateNode = dateRangeSnapshot.child("date");
-                        if (dateNode.exists()) {
-                            fromDate = dateNode.child("from").val() || "N/A";
-                            toDate = dateNode.child("to").val() || "N/A";
+                // Access the 'expenses' node
+                const expensesSnapshot = dateRangeSnapshot.child("expenses");
+
+                expensesSnapshot.forEach((categorySnapshot) => {
+                    const categoryName = categorySnapshot.key;
+
+                    categorySnapshot.forEach((subCategorySnapshot) => {
+                        const subCategoryName = subCategorySnapshot.key;
+                        const expenseDetails = subCategorySnapshot.val();
+
+                        // Iterate through the roomData if available (for room-specific expenses)
+                        if (expenseDetails.roomData) {
+                            for (const floor in expenseDetails.roomData) {
+                                for (const room in expenseDetails.roomData[floor]) {
+                                    const roomData = expenseDetails.roomData[floor][room];
+                                    // Append room-specific data
+                                    appendExpenseRow(
+                                        expenseId++,
+                                        hostelName,
+                                        frequency,
+                                        fromDate,
+                                        toDate,
+                                        categoryName,
+                                        subCategoryName,
+                                        roomData
+                                    );
+                                }
+                            }
                         } else {
-                            fromDate = toDate = "N/A"; // Default if 'date' child is missing
-                        }
-                    }
-
-                    // Access the 'expenses' child under the date range
-                    const expensesSnapshot = dateRangeSnapshot.child("expenses");
-
-                    expensesSnapshot.forEach((categorySnapshot) => {
-                        const categoryName = categorySnapshot.key;
-
-                        categorySnapshot.forEach((subCategorySnapshot) => {
-                            const subCategoryName = subCategorySnapshot.key;
-                            const expenseDetails = subCategorySnapshot.val();
-
-                            // Append data to the table
+                            // Append general category data (without roomData)
                             appendExpenseRow(
                                 expenseId++,
                                 hostelName,
@@ -59,10 +65,9 @@ const fetchAndDisplayExpenses = () => {
                                 toDate,
                                 categoryName,
                                 subCategoryName,
-                                expenseDetails,
-
+                                expenseDetails
                             );
-                        });
+                        }
                     });
                 });
             });

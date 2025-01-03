@@ -47,6 +47,35 @@
 
     <!-- App css -->
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+    <style>
+        /* Style for the filter options container */
+        .filterOptions {
+            display: none;
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            padding: 10px;
+            /* Corrected padding value */
+            width: 230px;
+            box-sizing: border-box;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        /* Add spacing between checkboxes and labels */
+        .filterOptions input[type="checkbox"] {
+            margin-right: -80px;
+            /* Adjusted margin values */
+            margin-left: -70px;
+        }
+
+        .filterButton i {
+            font-size: 12px;
+            /* Adjust the font size as needed */
+            color: #000;
+        }
+    </style>
 </head>
 
 <body>
@@ -419,24 +448,22 @@
                                                     <tr>
                                                         <th><input id="checkall" class="custom-checkbox" type="checkbox"
                                                                 name="text"></th>
-                                                        <!--<th>S. No</th>-->
-                                                        <th onclick="sortTable(1)">Session<span
-                                                                class="sort-icon">⬍</span>
-                                                            <button id="filterButton"
-                                                                onclick="toggleFilter(event)">Filter</button>
-                                                            <!-- Dropdown container for filter options -->
-                                                            <div id="filterOptions" style="display:none; position:absolute;background:white; border: 1px solid #ccc; padding: 10px; 
-        width: 230px; box-sizing: border-box; max-height: 200px;" >
-                                                            </div>
+                                                        <th>Session &nbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(1)"></span>
+                                                            <span class="filterButton" onclick="toggleFilter(event, 1)"
+                                                                style="cursor: pointer;">
+                                                                <i class="fa fa-filter"></i>
+                                                            </span>
+                                                            <div class="filterOptions"></div>
                                                         </th>
-                                                        <th onclick="sortTable(2)">Main Dish<span
-                                                                class="sort-icon">⬍</span></th>
-                                                        <th onclick="sortTable(3)">Side Dishes<span
-                                                                class="sort-icon">⬍</span></th>
-                                                        <th onclick="sortTable(4)">Special dish<span
-                                                                class="sort-icon">⬍</span></th>
-                                                        <th onclick="sortTable(5)">Beverages<span
-                                                                class="sort-icon">⬍</span></th>
+                                                        <th>Main Dish &nbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(2)"></span></th>
+                                                        <th>Side Dishes &nbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(3)"></span></th>
+                                                        <th>Special dish &nbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(1)"></span></th>
+                                                        <th>Beverages &nbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(1)"></span></th>
                                                         <th>Images</th>
                                                     </tr>
                                                 </thead>
@@ -678,91 +705,115 @@
             XLSX.writeFile(workbook, fileName);
         }
         // Function to toggle the filter options visibility
-        function toggleFilter(event) {
-            const filterDiv = document.getElementById("filterOptions");
-
-            // Prevent the filter dropdown from closing if clicked inside
-            event.stopPropagation();
+        function toggleFilter(event, columnIndex) {
+            event.stopPropagation(); // Prevent sorting or closing dropdown
+            const filterDivs = document.querySelectorAll(".filterOptions");
+            const filterDiv = filterDivs[columnIndex - 1];
 
             // Toggle dropdown visibility
             filterDiv.style.display = filterDiv.style.display === "none" ? "block" : "none";
 
             if (filterDiv.style.display === "block") {
-                populateFilterOptions();
+                populateFilterOptions(columnIndex);
             }
         }
 
-        // Function to populate filter checkboxes dynamically
-        function populateFilterOptions() {
+        // Populate filter options dynamically
+        function populateFilterOptions(columnIndex) {
             const table = document.getElementById("table_id");
-            const sessionColumnIndex = 1; // Adjust index if necessary
-            const sessionValues = new Set();
+            const columnValues = new Set();
 
-            // Loop through table rows and collect unique session values
-            for (let i = 1; i < table.rows.length; i++) { // Start from 1 to skip the header row
-                const sessionValue = table.rows[i].cells[sessionColumnIndex].textContent.trim();
-                sessionValues.add(sessionValue);
+            for (let i = 1; i < table.rows.length; i++) { // Skip header
+                const columnValue = table.rows[i].cells[columnIndex].textContent.trim();
+                columnValues.add(columnValue);
             }
 
-            // Clear previous filter options and add new ones
-            const filterDiv = document.getElementById("filterOptions");
-            filterDiv.innerHTML = ""; // Clear any existing filter options
+            const filterDivs = document.querySelectorAll(".filterOptions");
+            const filterDiv = filterDivs[columnIndex - 1];
+            filterDiv.innerHTML = ""; // Clear old options
 
-            // Add each session value as a checkbox
-            sessionValues.forEach(session => {
+            columnValues.forEach(value => {
                 const checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
-                checkbox.value = session;
-                checkbox.classList.add("session-filter");
-                checkbox.addEventListener("change", applyFilter);
+                checkbox.value = value;
+                checkbox.classList.add("column-filter");
 
                 const label = document.createElement("label");
-                label.textContent = session;
+                label.textContent = value;
 
-                filterDiv.appendChild(checkbox);
-                filterDiv.appendChild(label);
-                filterDiv.appendChild(document.createElement("br"));
+                const container = document.createElement("div");
+                container.style.display = "flex";
+                container.style.alignItems = "center";
+                container.appendChild(checkbox);
+                container.appendChild(label);
+
+                filterDiv.appendChild(container);
             });
+
+            // Add OK and Clear buttons
+            const buttonContainer = document.createElement("div");
+            buttonContainer.style.marginTop = "10px";
+
+            const okButton = document.createElement("button");
+            okButton.textContent = "OK";
+            okButton.addEventListener("click", (event) => {
+                event.stopPropagation();
+                applyFilter(columnIndex);
+                filterDiv.style.display = "none"; // Hide the container when OK is clicked
+            });
+
+            const clearButton = document.createElement("button");
+            clearButton.textContent = "Clear Filter";
+            clearButton.style.marginLeft = "10px";
+            clearButton.addEventListener("click", (event) => {
+                event.stopPropagation();
+                clearFilter(columnIndex);
+            });
+
+            buttonContainer.appendChild(okButton);
+            buttonContainer.appendChild(clearButton);
+            filterDiv.appendChild(buttonContainer);
         }
 
-        // Function to apply the filter based on selected checkboxes
-        function applyFilter() {
-            const checkboxes = document.querySelectorAll(".session-filter");
-            const selectedSessions = new Set();
+        // Apply the filter
+        function applyFilter(columnIndex) {
+            const filterDivs = document.querySelectorAll(".filterOptions");
+            const checkboxes = filterDivs[columnIndex - 1].querySelectorAll(".column-filter");
+            const selectedValues = new Set();
 
-            // Get selected session values
             checkboxes.forEach(checkbox => {
                 if (checkbox.checked) {
-                    selectedSessions.add(checkbox.value);
+                    selectedValues.add(checkbox.value);
                 }
             });
 
             const table = document.getElementById("table_id");
-
-            // Loop through all rows and filter based on selected sessions
-            for (let i = 1; i < table.rows.length; i++) { // Start from 1 to skip the header row
-                const sessionCell = table.rows[i].cells[1]; // Session column index
-                const sessionValue = sessionCell.textContent.trim();
-
-                if (selectedSessions.size === 0 || selectedSessions.has(sessionValue)) {
-                    table.rows[i].style.display = ""; // Show the row
-                } else {
-                    table.rows[i].style.display = "none"; // Hide the row
-                }
+            for (let i = 1; i < table.rows.length; i++) { // Skip header
+                const cellValue = table.rows[i].cells[columnIndex].textContent.trim();
+                table.rows[i].style.display = selectedValues.size === 0 || selectedValues.has(cellValue) ? "" : "none";
             }
         }
 
-        // Close the filter dropdown when clicking outside of it
-        document.addEventListener("click", function (event) {
-            const filterDiv = document.getElementById("filterOptions");
-            const filterButton = document.getElementById("filterButton");
+        // Clear the filter
+        function clearFilter(columnIndex) {
+            const filterDivs = document.querySelectorAll(".filterOptions");
+            const checkboxes = filterDivs[columnIndex - 1].querySelectorAll(".column-filter");
+            checkboxes.forEach(checkbox => (checkbox.checked = false));
+            applyFilter(columnIndex);
+        }
 
-            // If the click is outside the filter button or dropdown, hide the filter options
-            if (!filterButton.contains(event.target) && !filterDiv.contains(event.target)) {
-                filterDiv.style.display = "none";
-            }
+        // Close dropdown when clicking outside
+        document.addEventListener("click", () => {
+            const filterDivs = document.querySelectorAll(".filterOptions");
+            filterDivs.forEach(div => (div.style.display = "none"));
         });
 
+        // Prevent closing dropdown when clicking inside
+        document.querySelectorAll('.filterOptions').forEach(div => {
+            div.addEventListener('click', event => {
+                event.stopPropagation();
+            });
+        });
     </script>
 </body>
 
