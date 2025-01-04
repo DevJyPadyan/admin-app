@@ -1052,7 +1052,7 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
           // Add beds to the room
           for (let bedIndex = 1; bedIndex <= bedsAvailableForRoom; bedIndex++) {
             const bedKey = `bed ${bedIndex}`;
-            roomsObject[`floor${floorNumber}`][roomType].rooms[acType][`room${roomNumber}`].beds[bedKey] = "not booked";
+            roomsObject[`floor${floorNumber}`][roomType].rooms[acType][`room${roomNumber}`].beds[bedKey] = {status:"not booked"};
           }
         }
       }

@@ -10,12 +10,10 @@ let flag = 0; // Initialize flag as a counter for row numbers
 
 // Target tbody in the table
 const tbody = document.getElementById("tbody1");
-
-// Function to fetch and display data
 const fetchAndDisplayData = () => {
     const dbRef = ref(db, "Perikitis");
 
-    flag = 0; // Reset flag counter before fetching data
+    let flag = 0; // Reset flag counter before fetching data
 
     onValue(dbRef, (snapshot) => {
         tbody.innerHTML = ""; // Clear existing rows
@@ -26,27 +24,32 @@ const fetchAndDisplayData = () => {
             sessionSnapshot.forEach((dateSnapshot) => {
                 const date = dateSnapshot.key; // Date under session type
 
-                dateSnapshot.forEach((categorySnapshot) => {
-                    const category = categorySnapshot.key; // Veg or Non-Veg
+                dateSnapshot.forEach((mealTypeSnapshot) => {
+                    const mealType = mealTypeSnapshot.key; // Meal type (e.g., "Veg", "Non-Veg")
 
-                    categorySnapshot.forEach((foodSnapshot) => {
+                    mealTypeSnapshot.forEach((foodSnapshot) => {
                         const foodDetails = foodSnapshot.val(); // Food data
 
                         // Increment flag as row counter
                         flag++;
+
+                        // Prepare missing fields if they are not available in the data
+                        const enteredBy = foodDetails.enteredBy || "N/A"; // Default value if enteredBy is missing
+                        const peopleConsumed = foodDetails.peopleConsumed || "N/A"; // Default value if peopleConsumed is missing
 
                         // Append row for each food item
                         appendTableRow(
                             flag, // Pass flag as row number
                             sessionType,
                             date,
-                            category,
+                            mealType,
                             foodDetails.foodName,
                             foodDetails.unitsPrepared,
                             foodDetails.unitsConsumed,
                             foodDetails.leftover,
-                            foodDetails.enteredBy,
-                            foodDetails.peopleConsumed
+                            enteredBy,
+                            peopleConsumed,
+                           // Include mealType in the table for display
                         );
                     });
                 });
