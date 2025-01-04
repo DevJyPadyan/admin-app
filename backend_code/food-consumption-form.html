@@ -428,6 +428,7 @@
                                                                 <option>Breakfast</option>
                                                                 <option>Lunch</option>
                                                                 <option>Dinner</option>
+                                                                <option>Snacks</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -456,7 +457,7 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5>Sub Form 1</h5>
+                                    <h5>Food Data</h5>
                                 </div>
                                 <div class="card-body">
                                     <div id="extras-container">
@@ -468,16 +469,6 @@
                                                         <select class="js-example-basic-single w-100" id="FoodDropdown1"
                                                             required>
                                                             <option value="">Select Food</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-xl-6">
-                                                    <div class="input-box">
-                                                        <h6>Category<span class="required">*</span></h6>
-                                                        <select class="js-example-basic-single w-100" id="category1"
-                                                            required>
-                                                            <option>Veg</option>
-                                                            <option>Non-Veg</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -502,64 +493,14 @@
                                                             placeholder="No. of people consumed">
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5>Sub Form 2</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div id="extras-container">
-                                        <div class="input-items">
-                                            <div class="row gy-3">
-                                                <div class="col-xl-6">
-                                                    <div class="input-box">
-                                                        <h6>Food Name<span class="required">*</span></h6>
-                                                        <select class="js-example-basic-single w-100" name="state"
-                                                            id="FoodDropdown2" required>
-                                                            <option value="">Select Food</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-xl-6">
-                                                    <div class="input-box">
-                                                        <h6>Category<span class="required">*</span></h6>
-                                                        <select class="js-example-basic-single w-100" name="state"
-                                                            id="category2" required>
-                                                            <option>Veg</option>
-                                                            <option>Non-Veg</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-xl-6">
-                                                    <div class="input-box">
-                                                        <h6>Units prepared</h6>
-                                                        <input type="number" class="food-unit" id="unitsPrep2"
-                                                            placeholder="Units prepared">
-                                                    </div>
-                                                </div>
-                                                <div class="col-xl-6">
-                                                    <div class="input-box">
-                                                        <h6>Units consumed</h6>
-                                                        <input type="number" class="food-unit" id="unitsCons2"
-                                                            placeholder="Units consumed">
-                                                    </div>
-                                                </div>
-                                                <div class="col-xl-6">
-                                                    <div class="input-box">
-                                                        <h6>No.of people consumed</h6>
-                                                        <input type="number" class="food-unit" id="peopleCons2"
-                                                            placeholder="No. of people consumed">
-                                                    </div>
+                                                <div class="col-12">
+                                                    <button type="button" id="addFoodBtn"
+                                                        class="btn restaurant-button">Add Food</button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    <div id="foodEntriesContainer"></div>
                                 </div>
                             </div>
                         </div>
