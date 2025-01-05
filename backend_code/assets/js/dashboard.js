@@ -29,7 +29,7 @@ const SelectAlldataReal = () => {
                             userPhone: userData.userPhone || "N/A",
                             paymentAmount: paymentDetails.paymentAmount || "N/A",
                             paymentDate: paymentDetails.paymentDate
-                                ? new Date(paymentDetails.paymentDate).toLocaleDateString()
+                                ? new Date(paymentDetails.paymentDate).toLocaleString()
                                 : "N/A",
                             paymentMode: paymentDetails.paymentMode || "N/A",
                             paymentComplete: roomDetails.paymentComplete || "N/A",
