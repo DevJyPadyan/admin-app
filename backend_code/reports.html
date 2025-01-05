@@ -16,6 +16,7 @@
 
     <!-- Google font-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
@@ -410,24 +411,12 @@
                                     <div class="card-header border-0 pb-1">
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div class="card-header-title">
-                                                <h4>Employees Satisfied</h4>
+                                                <h4>Outgoing Data</h4>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="card-body p-0">
                                         <div class="sales-chart">
-                                            <div class="shap-2">
-                                                <div class="rounded-shap"><i></i><i></i></div>
-                                            </div>
-                                            <div class="shap-2">
-                                                <div class="rounded-shap"><i></i><i></i></div>
-                                            </div>
-                                            <div class="shap-2">
-                                                <div class="rounded-shap"><i></i><i></i></div>
-                                            </div>
-                                            <div class="shap-2">
-                                                <div class="rounded-shap"><i></i><i></i></div>
-                                            </div>
                                             <div id="employ-salary"></div>
                                         </div>
                                     </div>
@@ -456,11 +445,11 @@
                             <div class="card pb-0">
                                 <div class="card-header border-0 pb-1">
                                     <div class="card-header-title">
-                                        <h4>Sales / Purchase</h4>
+                                        <h4>Incoming data</h4>
                                     </div>
                                 </div>
                                 <div class="card-body p-0">
-                                    <div id="sales-purchase-chart"></div>
+                                    <div class="sales-purchase-chart"></div>
                                 </div>
                             </div>
                         </div>
@@ -553,186 +542,195 @@
                             </div>
                         </div>
                         Sales / Purchase Return end-->
-                        <div class="card-body">
-                            <div class="col-xl-6">
-                                <div class="input-box">
-                                    <div id="frequency-fields">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Date filter</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="input-items">
+                                    <div class="row gy-3">
 
-                                        <div id="date-range"
-                                            style="display: flex; justify-content: space-between; align-items: center;">
-                                            <div class="row gy-3">
-                                                <div class="col-xl-6">
-                                                    <h6>From:</h6>
-                                                    <input type="date" id="fromdate" style="width: 100%;">
+                                        <div class="col-xl-6">
+                                            <div class="input-box">
+                                                <div id="daily-date">
+                                                    <h6>From Date</h6>
+                                                    <input type="date" id="fromdate">
                                                 </div>
-                                                <div class="col-xl-6">
-                                                    <h6>To:</h6>
-                                                    <input type="date" id="todate" style="width: 100%;">
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-6">
+                                            <div class="input-box">
+                                                <div id="daily-date">
+                                                    <h6>To Date</h6>
+                                                    <input type="date" id="todate">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mb-5">
+                                            <button id="updateMetrics" class="btn restaurant-button">
+                                                Apply filter
+                                            </button>
+                                            <div class="col-12 mb-5">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Booking history start-->
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header border-0 pb-1">
+                                            <div class="card-header-title">
+                                                <h4>Incoming History</h4>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div>
+                                                <div class="table-responsive theme-scrollbar">
+                                                    <table class="table category-table dataTable no-footer">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>User Name</th>
+                                                                <th>Phone</th>
+                                                                <th>Bed Number</th>
+                                                                <th>Floor</th>
+                                                                <th>Room</th>
+                                                                <th>Room type</th>
+                                                                <th>AC</th>
+                                                                <th>Bathroom type</th>
+                                                                <th>Payment date</th>
+                                                                <th>Paid amount</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="incomingTable">
+                                                            <tr>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <button id="updateMetrics" class="btn restaurant-button mt-3">
-                                        Apply filter
-                                    </button>
                                 </div>
-                            </div>
-                        </div>
-                        <!-- Booking history start-->
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header border-0 pb-1">
-                                    <div class="card-header-title">
-                                        <h4>Incoming History</h4>
-                                    </div>
-                                </div>
+                                <!-- Booking history  end-->
 
-                                <div class="card-body">
-                                    <div>
-                                        <div class="table-responsive theme-scrollbar">
-                                            <table class="table category-table dataTable no-footer">
-                                                <thead>
-                                                    <tr>
-                                                        <th>User Name</th>
-                                                        <th>Phone</th>
-                                                        <th>Bed Number</th>
-                                                        <th>Floor</th>
-                                                        <th>Room</th>
-                                                        <th>Room type</th>
-                                                        <th>AC</th>
-                                                        <th>Bathroom type</th>
-                                                        <th>Payment date</th>
-                                                        <th>Paid amount</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="incomingTable">
-                                                    <tr>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
+                                <!-- Booking history start-->
+                                <div class="col-12">
+                                    <div class="card">
+                                        <div class="card-header border-0 pb-1">
+                                            <div class="card-header-title">
+                                                <h4>Outgoing History</h4>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div>
+                                                <div class="table-responsive theme-scrollbar">
+                                                    <table class="table category-table dataTable no-footer">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Category</th>
+                                                                <th>Item</th>
+                                                                <th>Cost</th>
+                                                                <th>Date range</th>
+
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="outgoingTable">
+                                                            <tr>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <!-- Booking history  end-->
+                        <!-- Container-fluid Ends-->
 
-                        <!-- Booking history start-->
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header border-0 pb-1">
-                                    <div class="card-header-title">
-                                        <h4>Outgoing History</h4>
+                        <!-- footer start-->
+                        <div class="container-fluid">
+                            <footer class="footer">
+                                <div class="row">
+                                    <div class="col-md-12 footer-copyright text-center">
+                                        <p class="mb-0">Copyright 2024 ©Zomo template by pixelstrap</p>
                                     </div>
                                 </div>
+                            </footer>
+                        </div>
+                    </div>
+                    <!-- Reports Section End -->
+                </div>
+                <!-- Page Body End-->
+            </div>
+            <!-- page-wrapper End-->
 
-                                <div class="card-body">
-                                    <div>
-                                        <div class="table-responsive theme-scrollbar">
-                                            <table class="table category-table dataTable no-footer">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Category</th>
-                                                        <th>Item</th>
-                                                        <th>Cost</th>
-                                                        <th>Date range</th>
-
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="outgoingTable">
-                                                    <tr>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+            <!-- Modal Start -->
+            <div class="modal theme-modal fade" id="staticBackdrop" tabindex="-1" role="dialog" aria-modal="true">
+                <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5>Logging Out</h5>
+                            <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                                <i class="ri-close-line"></i>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="mb-0">Are you sure you want to log out?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-cancel" type="button" data-bs-dismiss="modal"
+                                aria-label="Close">No</button>
+                            <button class="btn btn-submit" type="submit" data-bs-dismiss="modal" aria-label="Close"><a
+                                    href="login.html">Yes</a></button>
                         </div>
                     </div>
                 </div>
-                <!-- Container-fluid Ends-->
-
-                <!-- footer start-->
-                <div class="container-fluid">
-                    <footer class="footer">
-                        <div class="row">
-                            <div class="col-md-12 footer-copyright text-center">
-                                <p class="mb-0">Copyright 2024 ©Zomo template by pixelstrap</p>
-                            </div>
-                        </div>
-                    </footer>
-                </div>
             </div>
-            <!-- Reports Section End -->
-        </div>
-        <!-- Page Body End-->
-    </div>
-    <!-- page-wrapper End-->
+            <!-- Modal End -->
 
-    <!-- Modal Start -->
-    <div class="modal theme-modal fade" id="staticBackdrop" tabindex="-1" role="dialog" aria-modal="true">
-        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5>Logging Out</h5>
-                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
-                        <i class="ri-close-line"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p class="mb-0">Are you sure you want to log out?</p>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-cancel" type="button" data-bs-dismiss="modal" aria-label="Close">No</button>
-                    <button class="btn btn-submit" type="submit" data-bs-dismiss="modal" aria-label="Close"><a
-                            href="login.html">Yes</a></button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Modal End -->
+            <!-- latest js -->
+            <script src="assets/js/jquery-3.6.0.min.js"></script>
 
-    <!-- latest js -->
-    <script src="assets/js/jquery-3.6.0.min.js"></script>
+            <!-- Report details js -->
+            <script src="assets/js/Expense-charts.js" type="module" defer></script>
 
-    <!-- Report details js -->
-    <script src="assets/js/Expense-charts.js" type="module" defer></script>
+            <!-- Bootstrap js -->
+            <script src="assets/js/bootstrap/bootstrap.bundle.min.js"></script>
 
-    <!-- Bootstrap js -->
-    <script src="assets/js/bootstrap/bootstrap.bundle.min.js"></script>
+            <!-- feather icon js -->
+            <script src="assets/js/icons/feather-icon/feather.min.js"></script>
+            <script src="assets/js/icons/feather-icon/feather-icon.js"></script>
 
-    <!-- feather icon js -->
-    <script src="assets/js/icons/feather-icon/feather.min.js"></script>
-    <script src="assets/js/icons/feather-icon/feather-icon.js"></script>
+            <!-- scrollbar simplebar js -->
+            <script src="assets/js/scrollbar/simplebar.js"></script>
+            <script src="assets/js/scrollbar/custom.js"></script>
 
-    <!-- scrollbar simplebar js -->
-    <script src="assets/js/scrollbar/simplebar.js"></script>
-    <script src="assets/js/scrollbar/custom.js"></script>
+            <!-- Sidebar js -->
+            <script src="assets/js/config.js"></script>
 
-    <!-- Sidebar js -->
-    <script src="assets/js/config.js"></script>
+            <!-- tooltip init js -->
+            <script src="assets/js/tooltip-init.js"></script>
 
-    <!-- tooltip init js -->
-    <script src="assets/js/tooltip-init.js"></script>
-
-    <!-- Plugins JS -->
-    <script src="assets/js/sidebar-menu.js"></script>
-    <!-- Apexchar js -->
+            <!-- Plugins JS -->
+            <script src="assets/js/sidebar-menu.js"></script>
+            <!-- Apexchar js 
     <script src="assets/js/chart/apex-chart/apex-chart1.js"></script>
     <script src="assets/js/chart/apex-chart/moment.min.js"></script>
     <script src="assets/js/chart/apex-chart/apex-chart.js"></script>
     <script src="assets/js/chart/apex-chart/stock-prices.js"></script>
-    <script src="assets/js/chart/apex-chart/chart-custom.js"></script>
+    <script src="assets/js/chart/apex-chart/chart-custom.js"></script>-->
 
-    <!-- customizer js -->
-    <script src="assets/js/customizer.js"></script>
+            <!-- customizer js -->
+            <script src="assets/js/customizer.js"></script>
 
-    <!-- ratio js -->
-    <script src="assets/js/ratio.js"></script>
+            <!-- ratio js -->
+            <script src="assets/js/ratio.js"></script>
 
-    <!-- Theme js -->
-    <script src="assets/js/script.js"></script>
+            <!-- Theme js -->
+            <script src="assets/js/script.js"></script>
 </body>
 
 </html>
