@@ -6,12 +6,20 @@ import { export_table_to_csv } from "././export-table.js"
 const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 
+const itemsPerPage = 7; // Number of rows per page
+let currentPage = 1; // Current page
+let totalPages = 0; // Total pages
+let allExpenses = []; // To hold all expenses
 
 const tbody = document.getElementById("tbody1");
+
+// Function to fetch and display expenses with pagination
 const fetchAndDisplayExpenses = () => {
     const dbref = ref(db, "Hostel expenses");
     onValue(dbref, (snapshot) => {
         tbody.innerHTML = ""; // Clear the table before appending data
+        allExpenses = []; // Reset the allExpenses array
+
         let expenseId = 1; // Counter for displaying row numbers
 
         snapshot.forEach((hostelSnapshot) => {
@@ -42,36 +50,66 @@ const fetchAndDisplayExpenses = () => {
                             for (const floor in expenseDetails.roomData) {
                                 for (const room in expenseDetails.roomData[floor]) {
                                     const roomData = expenseDetails.roomData[floor][room];
-                                    // Append room-specific data
-                                    appendExpenseRow(
-                                        expenseId++,
+                                    // Store room-specific data in the allExpenses array
+                                    allExpenses.push({
+                                        expenseId: expenseId++,
                                         hostelName,
                                         frequency,
                                         fromDate,
                                         toDate,
                                         categoryName,
                                         subCategoryName,
-                                        roomData
-                                    );
+                                        details: roomData
+                                    });
                                 }
                             }
                         } else {
-                            // Append general category data (without roomData)
-                            appendExpenseRow(
-                                expenseId++,
+                            // Store general category data (without roomData)
+                            allExpenses.push({
+                                expenseId: expenseId++,
                                 hostelName,
                                 frequency,
                                 fromDate,
                                 toDate,
                                 categoryName,
                                 subCategoryName,
-                                expenseDetails
-                            );
+                                details: expenseDetails
+                            });
                         }
                     });
                 });
             });
         });
+
+        // Calculate total pages for pagination
+        totalPages = Math.ceil(allExpenses.length / itemsPerPage);
+
+        // Render the current page
+        renderTable(currentPage);
+        updatePaginationControls();
+    });
+};
+
+// Function to render the current page data
+const renderTable = (page) => {
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = page * itemsPerPage;
+    const pageData = allExpenses.slice(startIndex, endIndex);
+
+    tbody.innerHTML = ""; // Clear existing rows
+
+    // Append rows for the current page
+    pageData.forEach(expense => {
+        appendExpenseRow(
+            expense.expenseId,
+            expense.hostelName,
+            expense.frequency,
+            expense.fromDate,
+            expense.toDate,
+            expense.categoryName,
+            expense.subCategoryName,
+            expense.details
+        );
     });
 };
 
@@ -130,7 +168,6 @@ const appendExpenseRow = (
             ? details.floorNumber
             : "N/A";
 
-
     // Remarks
     td14.innerText = details.remarks || "N/A";
 
@@ -148,6 +185,59 @@ const appendExpenseRow = (
 
     trow.append(td1, td2, td3, td4, td5, td6, td7, td8, td9, td10, td11, td12, td13, td14, td15);
     tbody.appendChild(trow);
+};
+
+//Function to create pagination controls
+const updatePaginationControls = () => {
+    const paginationContainer = document.getElementById("pagination");
+    paginationContainer.innerHTML = ""; // Clear existing controls
+
+    const totalPages = Math.ceil(allExpenses.length / itemsPerPage);
+
+    // Previous button
+    const prevLink = document.createElement("a");
+    prevLink.innerText = "Prev";
+    prevLink.href = "#";
+    prevLink.className = currentPage === 1 ? "disabled" : "";
+    prevLink.addEventListener("click", (event) => {
+        event.preventDefault();
+        if (currentPage > 1) {
+            currentPage--;
+            displayPage(currentPage);
+            updatePaginationControls();
+        }
+    });
+    paginationContainer.appendChild(prevLink);
+
+    // Page numbers
+    for (let i = 1; i <= totalPages; i++) {
+        const pageLink = document.createElement("a");
+        pageLink.innerText = i;
+        pageLink.href = "#";
+        pageLink.className = i === currentPage ? "active" : "";
+        pageLink.addEventListener("click", (event) => {
+            event.preventDefault();
+            currentPage = i;
+            displayPage(currentPage);
+            updatePaginationControls();
+        });
+        paginationContainer.appendChild(pageLink);
+    }
+
+    // Next button
+    const nextLink = document.createElement("a");
+    nextLink.innerText = "Next";
+    nextLink.href = "#";
+    nextLink.className = currentPage === totalPages ? "disabled" : "";
+    nextLink.addEventListener("click", (event) => {
+        event.preventDefault();
+        if (currentPage < totalPages) {
+            currentPage++;
+            displayPage(currentPage);
+            updatePaginationControls();
+        }
+    });
+    paginationContainer.appendChild(nextLink);
 };
 
 // Call the function to fetch and display data on page load
