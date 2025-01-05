@@ -76,6 +76,50 @@
         /* Adjust the font size as needed */
         color: #000;
     }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        gap: 15px;
+    }
+
+    .pagination-controls {
+        display: flex;
+        justify-content: center;
+        /* Centers the pagination */
+        margin-top: 20px;
+        margin-bottom: 20px;
+        gap: 5px;
+        /* Adds spacing between page links */
+    }
+
+    .pagination-controls a {
+        color: black;
+        padding: 4px 8px;
+        text-decoration: none;
+        border: 1px solid #ddd;
+        border-radius: 2px;
+        transition: background-color 0.3s ease;
+    }
+
+    .pagination-controls a.active {
+        background-color: #f2a93e;
+        color: white;
+        border: 1px solid#f2a93e;
+    }
+
+    .pagination-controls a:hover:not(.active) {
+        background-color: #ddd;
+    }
+
+    .pagination-controls a.disabled {
+        pointer-events: none;
+        color: #ccc;
+        border-color: #ccc;
+        background-color: #f5f5f5;
+    }
 </style>
 
 <body>
@@ -504,13 +548,9 @@
                                     </div>
                                 </div>
                             </div>
+                            <div id="pagination" class="pagination-controls"></div>
                         </div>
                     </div>
-                </div>
-                <div id="pagination" style="margin-top: 10px; margin-bottom: 20px; text-align: center;">
-                    <button id="prev" disabled>Previous</button>
-                    <span id="page-info"></span>
-                    <button id="next">Next</button>
                 </div>
                 <!-- Container-fluid Ends-->
 
