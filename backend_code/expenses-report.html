@@ -49,14 +49,14 @@
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
 </head>
 <style>
-    .parent-container {
+    .parent-conatiner {
         position: relative;
     }
 
     /* Style for the filter options container */
     .filterOptions {
         display: none;
-        position: fixed;
+        position: absolute;
         background: white;
         border: 1px solid #ccc;
         padding: 10px;
@@ -328,13 +328,13 @@
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="products.html">Hostel List</a>
+                                            <a href="hostel-list.html">Hostel List</a>
                                         </li>
                                         <li>
                                             <a href="hotel-reports.html">Hostel Reports</a>
                                         </li>
                                         <li>
-                                            <a href="add-new-product.html">Register Hostel</a>
+                                            <a href="add-new-hostel.html">Register Hostel</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -374,11 +374,11 @@
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="food-management.html">Food data entry</a>
+                                            <a href="food-consumption-form.html">Food data entry</a>
                                         </li>
 
                                         <li>
-                                            <a href="food-details.html">Food Report</a>
+                                            <a href="food-consumption-list.html">Food Report</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -500,26 +500,25 @@
                                                                 style="cursor: pointer;">
                                                                 <i class="fa fa-filter"></i>
                                                             </span>
+                                                            <div class="filterOptions"></div>
                                                         </th>
                                                         <th>Units consumed&nbsp;<span class="fa fa-sort"
-                                                                onclick="sortTable(7)"></span></th>
-                                                        <th>Measurement Unit</th>
-                                                        <th>Cost&nbsp;<span class="fa fa-sort"
-                                                                onclick="sortTable(8)"></span></th>
-                                                        <th>Description</th>
-                                                        <th>Room <span class="filterButton"
-                                                                onclick="toggleFilter(event, 10)"
-                                                                style="cursor: pointer;">
-                                                                <i class="fa fa-filter"></i>
-                                                            </span>
+                                                                onclick="sortTable(7)"></span>
                                                             <div class="filterOptions"></div>
                                                         </th>
-                                                        <th>Floor<span class="filterButton"
-                                                                onclick="toggleFilter(event, 11)"
-                                                                style="cursor: pointer;">
-                                                                <i class="fa fa-filter"></i>
-                                                            </span>
+                                                        <th>Measurement Unit<div class="filterOptions"></div>
+                                                        </th>
+                                                        <th>Cost&nbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(9)"></span>
                                                             <div class="filterOptions"></div>
+                                                        </th>
+                                                        <th>Description <div class="filterOptions"></div>
+                                                        </th>
+                                                        <th>Room<span class="fa fa-sort" onclick="sortTable(11)">
+                                                            </span>
+                                                        </th>
+                                                        <th>Floor&nbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(12)"></span>
                                                         </th>
                                                         <th>Remarks</th>
                                                         <th>Bills</th>
@@ -764,19 +763,33 @@
         }
 
 
-        // Function to toggle the filter options visibility
         function toggleFilter(event, columnIndex) {
             event.stopPropagation(); // Prevent sorting or closing dropdown
-            const filterDivs = document.querySelectorAll(".filterOptions");
+
+            // Select all filter options divs
+            const filterDivs = document.querySelectorAll("thead th .filterOptions");
+
+            // Find the correct filter div based on the column index
             const filterDiv = filterDivs[columnIndex - 1];
+            console.log("Column Index:", columnIndex);
+            console.log("Filter Div:", filterDiv);
+
+
+            // Ensure the filter div exists
+            if (!filterDiv) {
+                console.error(`Filter div not found for column index ${columnIndex}`);
+                return;
+            }
 
             // Toggle dropdown visibility
-            filterDiv.style.display = filterDiv.style.display === "none" ? "block" : "none";
+            filterDiv.style.display = filterDiv.style.display === "block" ? "none" : "block";
 
+            // Populate filter options when visible
             if (filterDiv.style.display === "block") {
                 populateFilterOptions(columnIndex);
             }
         }
+
 
         // Populate filter options dynamically
         function populateFilterOptions(columnIndex) {
