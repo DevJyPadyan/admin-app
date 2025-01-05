@@ -337,10 +337,10 @@ document.addEventListener('DOMContentLoaded', function () {
     rowElem.classList.add("row", "gy-3");
 
     rowElem.appendChild(createSelectBox("Room Type", `roomType-${floorNumber}-${roomCount}`, true, [
-      { value: '1 sharing', text: '1 sharing' },
+      /*{ value: '1 sharing', text: '1 sharing' },*/
       { value: '2 sharing', text: '2 sharing' },
       { value: '3 sharing', text: '3 sharing' },
-      { value: '4 sharing', text: '4 sharing' }
+      /*{ value: '4 sharing', text: '4 sharing' }*/
     ]));
     rowElem.appendChild(createInputBox("Room Count", `roomCount-${floorNumber}-${roomCount}`, "number", true));
     rowElem.appendChild(createInputBox("Amenities", `amenities-${floorNumber}-${roomCount}`, "text", false, "e.g., WiFi, Laundry"));

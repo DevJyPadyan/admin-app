@@ -40,6 +40,11 @@ const SelectAlldataReal = () => {
         updatePaginationControls(menuData);
     });
 };
+// Function to display data for a specific page
+const displayPage = (page) => {
+    currentPage = page; // Update the current page
+    renderPaginatedData(menuData); // Render the data for the current page
+};
 
 // Function to render data based on the current page
 const renderPaginatedData = (menuData) => {

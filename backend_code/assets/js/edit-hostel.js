@@ -840,10 +840,10 @@ document.addEventListener('DOMContentLoaded', function () {
         rowElem.classList.add("row", "gy-3");
 
         rowElem.appendChild(createSelectBoxforExtra("Room Type", `roomType-${floorNumber}-${roomCount}`, true, [
-            { value: '1 sharing', text: '1 sharing' },
+            /*{ value: '1 sharing', text: '1 sharing' },*/
             { value: '2 sharing', text: '2 sharing' },
             { value: '3 sharing', text: '3 sharing' },
-            { value: '4 sharing', text: '4 sharing' }
+            /*{ value: '4 sharing', text: '4 sharing' }*/
         ]));
         rowElem.appendChild(createInputBoxforExtra("Room Count", `roomCount-${floorNumber}-${roomCount}`, "number", true));
         rowElem.appendChild(createInputBoxforExtra("Amenities", `amenities-${floorNumber}-${roomCount}`, "text", false, "e.g., WiFi, Laundry"));
@@ -975,10 +975,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Add form fields (room type, amenities, price, etc.)
         rowElem.appendChild(createSelectBox("Room Type", `roomType-${roomCount}`, true, [
-            { value: '1 sharing', text: '1 sharing' },
+            /*{ value: '1 sharing', text: '1 sharing' },*/
             { value: '2 sharing', text: '2 sharing' },
             { value: '3 sharing', text: '3 sharing' },
-            { value: '4 sharing', text: '4 sharing' }
+           /*{ value: '4 sharing', text: '4 sharing' }*/
         ]));
         rowElem.appendChild(createInputBox("Room Count", `roomCount-${roomCount}`, "number", true));
         rowElem.appendChild(createInputBox("Amenities", `amenities-${roomCount}`, "text", false, "e.g., WiFi, Laundry"));
@@ -1510,20 +1510,21 @@ document.getElementById("nextButtonStep1").addEventListener("click", async () =>
 document.getElementById("nextButtonStep2").addEventListener("click", async () => {
     try {
         const hname = document.getElementById("hostelname").value;
+        let roomNumberCounter = 1;
 
         // Fetch existing hostel details
         const existingHostelRef = ref(db, `Hostel details/${hname}`);
         const existingHostelSnapshot = await get(existingHostelRef);
         const existingHostelDetails = existingHostelSnapshot.exists() ? existingHostelSnapshot.val() : {};
-        
+
         let uploadPromises = []; // Store all image upload promises here
-        
+
         let floorContainers = document.querySelectorAll('.floorsContainer');
-        
+
         // Loop through all floor containers
         for (let floorElem of floorContainers) {
             let roomElements = floorElem.querySelectorAll('.room-container');
-        
+
             // Loop through all room elements within the current floor
             for (let roomElem of roomElements) {
                 let floorKey = roomElem.getAttribute('data-floor');
@@ -1535,11 +1536,11 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
                 let bathroom = document.getElementById(`bathroom-${floorKey}-${roomKey}`).value;
                 let price = parseFloat(document.getElementById(`price-${floorKey}-${roomKey}`).value);
                 let remarks = document.getElementById(`remarks-${floorKey}-${roomKey}`).value;
-        
+
                 let imageInput = document.getElementById(`roomImage-${roomKey}`);
                 let files = imageInput.files;
                 let imagelink1 = [];
-        
+
                 // Upload images in parallel
                 if (files.length !== 0) {
                     let imageUploadPromises = Array.from(files).map((file) => {
@@ -1548,24 +1549,24 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
                     });
                     uploadPromises.push(...imageUploadPromises);  // Push all image upload promises to the array
                 }
-        
+
                 // Fetch existing roomType data for updating the roomType-level information
                 let existingRoomTypeRef = ref(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}`);
                 let existingRoomTypeSnapshot = await get(existingRoomTypeRef);
                 let existingRoomTypeData = existingRoomTypeSnapshot.exists() ? existingRoomTypeSnapshot.val() : {};
                 let existingRoomTypeBedsAvailable = existingRoomTypeData.bedsAvailable || 0;
-        
+
                 // Fetch existing room data for updating the room-level information
                 let existingRoomRef = ref(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/${roomKey}`);
                 let existingRoomSnapshot = await get(existingRoomRef);
                 let existingRoomData = existingRoomSnapshot.exists() ? existingRoomSnapshot.val() : {};
                 let existingBeds = existingRoomData.beds || {};
                 let existingBedsAvailable = existingRoomData.bedsAvailable;
-        
+
                 // Ensure imagesLink is defined before updating
                 let existingImages = existingRoomData.imagesLink || []; // Default to empty array if undefined
                 let updatedImages = imagelink1.length > 0 ? [...existingImages, ...imagelink1] : existingImages;
-        
+
                 // Update roomType data
                 await update(ref(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}`), {
                     floor: floorKey,
@@ -1577,7 +1578,7 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
                     console.error(`Error updating roomType details for ${roomType}:`, error);
                     alert(`Error updating roomType details for ${roomType}: ${error}`);
                 });
-        
+
                 // Update room-level details
                 await update(ref(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/${roomKey}`), {
                     roomNumber: roomKey,
@@ -1595,7 +1596,7 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
                     console.error(`Error updating room details for Room ${roomKey}:`, error);
                     alert(`Error updating room details for Room ${roomKey}: ${error}`);
                 });
-        
+
                 // Update bed details
                 await update(ref(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/${roomKey}/beds`), {
                     beds: existingBeds, // Retain existing beds data
@@ -1605,21 +1606,18 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
                 });
             }
         }
-        
+
         // Wait for all image uploads to finish
         await Promise.all(uploadPromises);
         console.log("Hostel details updated successfully!");
-        
-        let additional={};
 
-        // Now, handle the additional rooms
         let additionalRoomContainers = document.querySelectorAll('.additional-room-container');
+
         for (let roomElem of additionalRoomContainers) {
             let uniqueId = roomElem.id.split('-')[1];
             let floor = parseInt(document.getElementById(`floor-${uniqueId}`).value, 10);
             let roomType = document.getElementById(`roomType-${uniqueId}`).value;
             let roomCount = parseInt(document.getElementById(`roomCount-${uniqueId}`).value, 10);
-            let roomNumbers = document.getElementById(`roomNumber-${uniqueId}`).value.split(',').map(num => num.trim());
             let amenities = document.getElementById(`amenities-${uniqueId}`).value;
             let price = document.getElementById(`price-${uniqueId}`).value;
             let bathroom = document.getElementById(`bathroom-${uniqueId}`).value;
@@ -1636,31 +1634,30 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
 
             if (files.length !== 0) {
                 for (let file of files) {
-                    let storageRef = ref2(storage, `images/${hname}/room-${roomNumbers[0]}/${file.name}`);
+                    let storageRef = ref2(storage, `images/${hname}/room-${uniqueId}/${file.name}`);
                     await uploadBytes(storageRef, file);
                     let imageUrl = await getDownloadURL(storageRef);
                     imageLinks.push(imageUrl);
                 }
             }
 
-            // Add roomType-level details to the batch update object
-            if (!additional[`rooms/floor${floor}/${roomType}`]) {
-                additional[`rooms/floor${floor}/${roomType}`] = {};
-            }
-
-            additional[`rooms/floor${floor}/${roomType}`] = {
+            // Update roomType-level details in Firebase
+            const roomTypePath = `Hostel details/${hname}/rooms/floor${floor}/${roomType}`;
+            const roomTypeData = {
+                floor: floor,
                 roomType: roomType,
-                roomCount: roomCount,
+                price: price,
+                imagesLink: imageLinks,
                 bedsAvailable: roomTypeBedsAvailable,
             };
+            await update(ref(db, roomTypePath), roomTypeData);
 
-            // Loop through each room number and add room-level details
-            for (let roomNumber of roomNumbers) {
-                if (!additional[`rooms/floor${floor}/${roomType}/rooms/${ac}`]) {
-                    additional[`rooms/floor${floor}/${roomType}/rooms/${ac}`] = {};
-                }
+            // Loop through each room and add room-level details
+            for (let roomSubIndex = 1; roomSubIndex <= roomCount; roomSubIndex++) {
+                const roomNumber = `R${roomNumberCounter++}_F${floor}`;
+                const roomPath = `${roomTypePath}/rooms/${ac}/room${roomNumber}`;
 
-                additional[`rooms/floor${floor}/${roomType}/rooms/${ac}/room${roomNumber}`] = {
+                const roomData = {
                     floor: floor,
                     roomType: roomType,
                     roomNumber: roomNumber,
@@ -1672,22 +1669,23 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
                     remarks: remarks,
                     bedsAvailable: roomTypeBedsAvailable,
                     imagesLink: imageLinks,
-                    beds: {}, // Empty object for beds data
                 };
+                await update(ref(db, roomPath), roomData);
 
                 // Add bed-level data
                 let bedsData = {};
                 for (let bedIndex = 1; bedIndex <= roomTypeBedsAvailable; bedIndex++) {
                     const bedKey = `bed ${bedIndex}`;
-                    bedsData[bedKey] = 'not booked'; // Initial bed status
+                    bedsData[bedKey] = {
+                        status: "not booked" // Object with the desired structure
+                    };
                 }
 
-                additional[`rooms/floor${floor}/${roomType}/rooms/${ac}/room${roomNumber}/beds`] = bedsData;
+                // Update beds in Firebase
+                const bedsPath = `${roomPath}/beds`;
+                await update(ref(db, bedsPath), bedsData);
             }
         }
-
-        // Update additional rooms
-        await update(ref(db, `Hostel details/${hname}`), additional);
 
 
         const floorCount = document.querySelectorAll('.card-header h5').length;
@@ -1795,7 +1793,7 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
                     // Add beds to the room
                     for (let bedIndex = 1; bedIndex <= bedsAvailableForRoom; bedIndex++) {
                         const bedKey = `bed ${bedIndex}`;
-                        roomsObject[`floor${floorNumber}`][roomType].rooms[acType][`room${roomNumber}`].beds[bedKey] = "not booked";
+                        roomsObject[`floor${floorNumber}`][roomType].rooms[acType][`room${roomNumber}`].beds[bedKey]= {status:"not booked"};
                     }
                 }
             }
