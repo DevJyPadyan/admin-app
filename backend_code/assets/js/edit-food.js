@@ -201,7 +201,7 @@ document.getElementById('submit-food').addEventListener('click', async (event) =
     const foodMenuRef = ref(db);
     await update(foodMenuRef, updates);
     alert('Updated food menu data successfully!');
-    window.location.href = "././food-list.html";
+    window.location.href = "././food-menu-list.html";
 });
 
 // Event listeners for session headers to toggle visibility
