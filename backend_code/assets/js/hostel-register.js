@@ -1180,7 +1180,7 @@ async function checkFoodData() {
 
       // Redirect to another page on 'Yes' click
       btnYes.onclick = () => {
-        window.location.href = "/setup-page.html"; // Replace with your target page URL
+        window.location.href = "/add-new-food.html"; // Replace with your target page URL
       };
 
       // Close modal on 'Cancel' click
