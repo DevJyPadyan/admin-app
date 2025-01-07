@@ -76,6 +76,50 @@
         /* Adjust the font size as needed */
         color: #000;
     }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        gap: 15px;
+    }
+
+    .pagination-controls {
+        display: flex;
+        justify-content: center;
+        /* Centers the pagination */
+        margin-top: 20px;
+        margin-bottom: 20px;
+        gap: 5px;
+        /* Adds spacing between page links */
+    }
+
+    .pagination-controls a {
+        color: black;
+        padding: 4px 8px;
+        text-decoration: none;
+        border: 1px solid #ddd;
+        border-radius: 2px;
+        transition: background-color 0.3s ease;
+    }
+
+    .pagination-controls a.active {
+        background-color:#f2a93e;
+        color: white;
+        border: 1px solid#f2a93e;
+    }
+
+    .pagination-controls a:hover:not(.active) {
+        background-color: #ddd;
+    }
+
+    .pagination-controls a.disabled {
+        pointer-events: none;
+        color: #ccc;
+        border-color: #ccc;
+        background-color: #f5f5f5;
+    }
 </style>
 
 <body>
@@ -311,12 +355,12 @@
                         <div id="sidebar-menu">
                             <ul class="sidebar-links" id="simple-bar">
                                 <li class="back-btn"></li>
-                                <!-- <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="index.html">
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title link-nav" href="dashboard.html">
                                         <i class="ri-home-line"></i>
                                         <span>Dashboard</span>
                                     </a>
-                                </li> -->
+                                </li>
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-store-3-line"></i>
@@ -428,7 +472,7 @@
                                                         <i class="ri-upload-2-fill me-1"></i>Export</a>
                                                 </li>
                                                 <li>
-                                                    <a class="btn btn-dashed" href="food-management.html">Add food
+                                                    <a class="btn btn-dashed" href="food-consumption-form.html">Add food
                                                         data</a>
                                                 </li>
                                             </ul>
@@ -501,502 +545,15 @@
 
                                                 <tbody id="tbody1">
                                                     <tr>
-                                                        <!--<td><input class="custom-checkbox" type="checkbox" name="text"></td>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="assets/images/product/1.png" class="img-fluid"
-                                                                    alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>Poultry Palace</td>
-
-                                                        <td>Buscuit</td>
-
-                                                        <td class="f-w-500">12</td>
-
-                                                        <td class="td-price">$95.97</td>
-
-                                                        <td class="status-danger">
-                                                            <span>Pending</span>
-                                                        </td>
-
-                                                        <td>
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <i class="ri-pencil-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                        data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td><input class="custom-checkbox" type="checkbox" name="text"></td>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="assets/images/product/2.png" class="img-fluid"
-                                                                    alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>Cold Brew Coffee</td>
-
-                                                        <td>Drinks</td>
-
-                                                        <td class="f-w-500">10</td>
-
-                                                        <td class="td-price">$95.97</td>
-
-                                                        <td class="status-close">
-                                                            <span>Approved</span>
-                                                        </td>
-
-                                                        <td>
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <i class="ri-pencil-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                        data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td><input class="custom-checkbox" type="checkbox" name="text"></td>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="assets/images/product/3.png" class="img-fluid"
-                                                                    alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>Peanut Butter Cookies</td>
-
-                                                        <td>Cookies</td>
-
-                                                        <td class="f-w-500">9</td>
-
-                                                        <td class="td-price">$86.35</td>
-
-                                                        <td class="status-close">
-                                                            <span>Approved</span>
-                                                        </td>
-                                                        <td>
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <i class="ri-pencil-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                        data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td><input class="custom-checkbox" type="checkbox" name="text"></td>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="assets/images/product/4.png" class="img-fluid"
-                                                                    alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>Wheet Flakes</td>
-
-                                                        <td>Flakes</td>
-
-                                                        <td class="f-w-500">8</td>
-
-                                                        <td class="td-price">$95.97</td>
-
-                                                        <td class="status-danger">
-                                                            <span>Pending</span>
-                                                        </td>
-                                                        <td>
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <i class="ri-pencil-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                        data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td><input class="custom-checkbox" type="checkbox" name="text"></td>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="assets/images/product/5.png" class="img-fluid"
-                                                                    alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>Potato Chips</td>
-
-                                                        <td>Chips</td>
-
-                                                        <td class="f-w-500">23</td>
-
-                                                        <td class="td-price">$95.97</td>
-
-                                                        <td class="status-close">
-                                                            <span>Approved</span>
-                                                        </td>
-
-                                                        <td>
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <i class="ri-pencil-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                        data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td><input class="custom-checkbox" type="checkbox" name="text"></td>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="assets/images/product/6.png" class="img-fluid"
-                                                                    alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>Wing Master</td>
-
-                                                        <td>Dals</td>
-
-                                                        <td class="f-w-500">50</td>
-
-                                                        <td class="td-price">$95.97</td>
-
-                                                        <td class="status-close">
-                                                            <span>Approved</span>
-                                                        </td>
-
-                                                        <td>
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <i class="ri-pencil-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                        data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td><input class="custom-checkbox" type="checkbox" name="text"></td>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="assets/images/product/7.png" class="img-fluid"
-                                                                    alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>The Burger Barn</td>
-
-                                                        <td>Milk</td>
-
-                                                        <td class="f-w-500">25</td>
-
-                                                        <td class="td-price">$121.43</td>
-
-                                                        <td class="status-close">
-                                                            <span>Approved</span>
-                                                        </td>
-
-                                                        <td>
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <i class="ri-pencil-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                        data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td><input class="custom-checkbox" type="checkbox" name="text"></td>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="assets/images/product/11.png"
-                                                                    class="img-fluid" alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>Wheat Bread</td>
-
-                                                        <td>Breads</td>
-
-                                                        <td class="f-w-500">6</td>
-
-                                                        <td class="td-price">$95.97</td>
-
-                                                        <td class="status-danger">
-                                                            <span>Pending</span>
-                                                        </td>
-
-                                                        <td>
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <i class="ri-pencil-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                        data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td><input class="custom-checkbox" type="checkbox" name="text"></td>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="assets/images/product/8.png" class="img-fluid"
-                                                                    alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>Cup cake</td>
-
-                                                        <td>Pet Food</td>
-
-                                                        <td class="f-w-500">11</td>
-
-                                                        <td class="td-price">$95.97</td>
-
-                                                        <td class="status-close">
-                                                            <span>Approved</span>
-                                                        </td>
-                                                        <td>
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <i class="ri-pencil-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                        data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td><input class="custom-checkbox" type="checkbox" name="text"></td>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="assets/images/product/9.png" class="img-fluid"
-                                                                    alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>Fresh Meat</td>
-
-                                                        <td>Meats</td>
-
-                                                        <td class="f-w-500">18</td>
-
-                                                        <td class="td-price">$95.97</td>
-
-                                                        <td class="status-close">
-                                                            <span>Approved</span>
-                                                        </td>
-
-                                                        <td>
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <i class="ri-pencil-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                        data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
-
-                                                    <tr>
-                                                        <td><input class="custom-checkbox" type="checkbox" name="text"></td>
-                                                        <td>
-                                                            <div class="table-image">
-                                                                <img src="assets/images/product/10.png"
-                                                                    class="img-fluid" alt="">
-                                                            </div>
-                                                        </td>
-
-                                                        <td>Take It Cheesy</td>
-
-                                                        <td>Coffee</td>
-
-                                                        <td class="f-w-500">25</td>
-
-                                                        <td class="td-price">$86.35</td>
-
-                                                        <td class="status-close">
-                                                            <span>Approved</span>
-                                                        </td>
-
-                                                        <td>
-                                                            <ul>
-                                                                <li>
-                                                                    <a href="order-detail.html">
-                                                                        <i class="ri-eye-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)">
-                                                                        <i class="ri-pencil-line"></i>
-                                                                    </a>
-                                                                </li>
-
-                                                                <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                        data-bs-target="#exampleModalToggle">
-                                                                        <i class="ri-delete-bin-line"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>-->
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
+                            <div id="pagination" class="pagination-controls"></div>
                         </div>
                     </div>
                 </div>

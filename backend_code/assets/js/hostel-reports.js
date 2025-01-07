@@ -25,7 +25,7 @@ hostelDropdown3.addEventListener("change", function () {
 const tbody = document.getElementById("tbody1");
 const tbody2 = document.getElementById("tbody2");
 
-// Fetch room details for the selected hostel
+// Fetch hostel details for the selected dropdown
 async function populateHostelDropdown1() {
     const hostelDropdown1 = document.getElementById("hostelDropdown1");
     const hostelsRef = ref(db, "Hostel details/");
@@ -33,13 +33,11 @@ async function populateHostelDropdown1() {
     try {
         console.log("Fetching hostels from Firebase...");
         const snapshot = await get(hostelsRef);
-        console.log("Snapshot received:", snapshot.exists(), snapshot.val());
 
         if (snapshot.exists()) {
             const hostels = snapshot.val();
-            console.log("Hostels data:", hostels);
-
             hostelDropdown1.innerHTML = '<option value="">Select Hostel</option>';
+
             for (let hostelName in hostels) {
                 let option = document.createElement("option");
                 option.value = hostelName;
@@ -47,17 +45,11 @@ async function populateHostelDropdown1() {
                 hostelDropdown1.appendChild(option);
             }
 
-            // Log the dropdown element to ensure it's correctly referenced
-            console.log("Dropdown populated:", hostelDropdown1.innerHTML);
-
-            // Attach the event listener here
             hostelDropdown1.addEventListener("change", async function () {
-                console.log("Dropdown change event triggered"); // Check if this log shows up
-                const hostelName = this.value; // Get the selected hostel name
-                console.log("Selected Hostel:", hostelName); // Log the selected hostel name
-                tbody.innerHTML = '';//clearing table rows fully, when user/admin changes the hostel name
+                const hostelName = this.value;
+                tbody.innerHTML = ""; // Clear existing rows
                 if (hostelName) {
-                    await fetchRoomDetails(hostelName); // Ensure this function is correctly defined and returns a promise
+                    await fetchRoomDetails(hostelName);
                 } else {
                     alert("Please select a valid hostel.");
                 }
@@ -66,55 +58,60 @@ async function populateHostelDropdown1() {
             console.log("No hostels found.");
         }
     } catch (error) {
-        console.error("Error fetching hostels for hostelDropdown1:", error);
+        console.error("Error fetching hostels:", error);
     }
 }
-window.addEventListener('DOMContentLoaded', populateHostelDropdown1);
+window.addEventListener("DOMContentLoaded", populateHostelDropdown1);
 
-// Fetch bed details of the room based on selected hostel and calculate the vacancy
+// Fetch room details for a selected hostel and render table
+let rowsData = [];
+let currentPage = 1;
+const rowsPerPage = 7;
+
 async function fetchRoomDetails(hostelName) {
-    console.log("Fetching room details for:", hostelName); // Log to see if this function is called
     const roomsRef = ref(db, `Hostel details/${hostelName}/rooms/`);
-
     try {
         const snapshot = await get(roomsRef);
-        let expenseId = 1
+        let expenseId = 1;
+
         if (snapshot.exists()) {
             const rooms = snapshot.val();
+            rowsData = [];
             for (let floor in rooms) {
                 for (let type in rooms[floor]) {
                     for (let ac in rooms[floor][type].rooms) {
-                        for (let single_room in rooms[floor][type].rooms[ac]) {
-                            let roomData = rooms[floor][type].rooms[ac][single_room];
+                        for (let singleRoom in rooms[floor][type].rooms[ac]) {
+                            const roomData = rooms[floor][type].rooms[ac][singleRoom];
                             let bedCount = [];
                             let bedBooked = 0;
-                            let bedNotbooked = 0;
+                            let bedNotBooked = 0;
+
                             for (let bed in roomData.beds) {
                                 bedCount.push(bed);
+
                                 const bedData = roomData.beds[bed].status;
                                 if (bedData == 'booked') {
                                     bedBooked++;
-                                }
-                                else if (bedData == 'not booked') {
-                                    bedNotbooked++;
+                                } else if (bedData === "not booked") {
+                                    bedNotBooked++;
                                 }
                             }
-                            // Append data to the table
-                            appendExpenseRow(
-                                expenseId++,
-                                roomData.floor,
-                                roomData.roomNumber,
-                                roomData.roomType + ", " + roomData.ac + ", " + roomData.bathroom + ", " + roomData.amenities,
-                                roomData.price,
-                                bedCount.length,
-                                bedNotbooked,
-                                bedBooked,
-                            );
-            
+
+                            rowsData.push({
+                                id: expenseId++,
+                                floor: roomData.floor,
+                                roomNo: roomData.roomNumber,
+                                roomType: `${roomData.roomType}, ${roomData.ac}, ${roomData.bathroom}, ${roomData.amenities}`,
+                                roomPrice: roomData.price,
+                                totalBeds: bedCount.length,
+                                availableBedsCount: bedNotBooked,
+                                bookedBedsCount: bedBooked,
+                            });
                         }
                     }
                 }
             }
+            renderTable();
         } else {
             console.log("No rooms found for this hostel.");
         }
@@ -123,9 +120,30 @@ async function fetchRoomDetails(hostelName) {
     }
 }
 
+// Render table rows and handle pagination
+function renderTable() {
+    tbody.innerHTML = "";
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = Math.min(startIndex + rowsPerPage, rowsData.length);
 
-// Function to append a single expense record to the table
-const appendExpenseRow = (
+    for (let i = startIndex; i < endIndex; i++) {
+        const row = rowsData[i];
+        appendExpenseRow(
+            row.id,
+            row.floor,
+            row.roomNo,
+            row.roomType,
+            row.roomPrice,
+            row.totalBeds,
+            row.availableBedsCount,
+            row.bookedBedsCount
+        );
+    }
+
+    updatePaginationControls();
+}
+
+function appendExpenseRow(
     id,
     floor,
     roomNo,
@@ -134,43 +152,80 @@ const appendExpenseRow = (
     totalBeds,
     availableBedsCount,
     bookedBedsCount
-) => {
+) {
     const trow = document.createElement("tr");
 
-    const td1 = document.createElement("td");
-    const td2 = document.createElement("td");
-    const td3 = document.createElement("td");
-    const td4 = document.createElement("td");
-    const td5 = document.createElement("td");
-    const td6 = document.createElement("td");
-    const td7 = document.createElement("td");
-    const td8 = document.createElement("td");
-    const td9 = document.createElement("td");
+    trow.innerHTML = `
+        <td>${id}</td>
+        <td>${floor}</td>
+        <td>${roomNo}</td>
+        <td>${roomType}</td>
+        <td>${roomPrice}</td>
+        <td>${totalBeds}</td>
+        <td>${availableBedsCount}</td>
+        <td>${bookedBedsCount}</td>
+        <td>
+            <a data-bs-toggle="modal" data-bs-target="#viewRoomDetails" style="cursor:pointer; color:orange; text-decoration:underline">View beds</a>
+        </td>
+    `;
 
-
-    td1.innerText = id;
-    td2.innerText = floor;
-    td3.innerText = roomNo;
-    td4.innerText = roomType;
-    td5.innerText = roomPrice;
-    td6.innerText = totalBeds;
-    td7.innerText = availableBedsCount;
-    td8.innerText = bookedBedsCount;
-
-    var detailsButton = document.createElement('a');
-    detailsButton.innerHTML = '<a data-bs-toggle="modal" data-bs-target="#viewRoomDetails" style="cursor:pointer; color:orange; text-decoration: underline">View beds </a>';
-    detailsButton.onclick = function (event) {
-        event.stopPropagation(); // Prevent row click event
+    trow.querySelector("a").addEventListener("click", (event) => {
+        event.stopPropagation();
         loadBedView(floor, roomNo, roomType);
-    };
+    });
 
-    // Remove reference to the removed columns
-    // Example: Append the remove button to the correct column
-    td9.appendChild(detailsButton);
-
-    trow.append(td1, td2, td3, td4, td5, td6, td7, td8, td9);
     tbody.appendChild(trow);
-};
+}
+
+function updatePaginationControls() {
+    const paginationContainer = document.getElementById("pagination");
+    paginationContainer.innerHTML = "";
+    const totalPages = Math.ceil(rowsData.length / rowsPerPage);
+
+    // Previous Button
+    const prevLink = document.createElement("a");
+    prevLink.innerText = "Prev";
+    prevLink.href = "#";
+    prevLink.className = currentPage === 1 ? "disabled" : "";
+    prevLink.addEventListener("click", (event) => {
+        event.preventDefault();
+        if (currentPage > 1) {
+            currentPage--;
+            renderTable();
+        }
+    });
+    paginationContainer.appendChild(prevLink);
+
+    // Page Numbers
+    for (let i = 1; i <= totalPages; i++) {
+        const pageLink = document.createElement("a");
+        pageLink.innerText = i;
+        pageLink.href = "#";
+        pageLink.className = i === currentPage ? "active" : "";
+        pageLink.addEventListener("click", (event) => {
+            event.preventDefault();
+            currentPage = i;
+            renderTable();
+        });
+        paginationContainer.appendChild(pageLink);
+    }
+
+    // Next Button
+    const nextLink = document.createElement("a");
+    nextLink.innerText = "Next";
+    nextLink.href = "#";
+    nextLink.className = currentPage === totalPages ? "disabled" : "";
+    nextLink.addEventListener("click", (event) => {
+        event.preventDefault();
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderTable();
+        }
+    });
+    paginationContainer.appendChild(nextLink);
+}
+
+
 
 /**
  * loading the bed view for that particular hostel's floor is clicked via details td in the table.
@@ -180,7 +235,7 @@ const appendExpenseRow = (
 async function loadBedView(floor, roomNo, roomType) {
     const hostelName = document.getElementById("hostelDropdown1").value;
     let details = roomType.split(', ')
-    const dbref = ref(db, 'Hostel details/' + hostelName + '/rooms/' + "floor" + floor + '/'+details[0]+'/rooms/'+details[1]+'/room' + roomNo + '/beds');
+    const dbref = ref(db, 'Hostel details/' + hostelName + '/rooms/' + "floor" + floor + '/' + details[0] + '/rooms/' + details[1] + '/room' + roomNo + '/beds');
     let hostelBedAvailability = []
     await onValue(dbref, (snapshot) => {
         console.log(snapshot)
@@ -215,7 +270,7 @@ async function loadBedView(floor, roomNo, roomType) {
             
         // })
     })
-    console.log(hostelBedAvailability, 'Hostel details/' + hostelName + '/rooms/' + "floor" + floor + '/'+details[0]+'/rooms/'+details[1]+'/room' + roomNo + '/beds');
+    console.log(hostelBedAvailability, 'Hostel details/' + hostelName + '/rooms/' + "floor" + floor + '/' + details[0] + '/rooms/' + details[1] + '/room' + roomNo + '/beds');
 
 
     // let bedId = 'bed ' + i;
@@ -302,7 +357,7 @@ async function fetchVacancyRoomDetails(hostelName) {
                         stringArray = bedData.split('/');
                         let fromDateArray = new Date(stringArray[2]);
                         let toDateArray = new Date(stringArray[3]);
-                        let Difference_In_Time =toDateArray.getTime() - fromDateArray.getTime();
+                        let Difference_In_Time = toDateArray.getTime() - fromDateArray.getTime();
                         let Difference_In_Days = Math.round(Difference_In_Time / (1000 * 3600 * 24));
                         console.log(JSON.stringify(roomData),stringArray[0])
                         if (stringArray[0] == 'yes vacation') {

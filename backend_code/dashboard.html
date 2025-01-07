@@ -12,7 +12,7 @@
     <meta name="author" content="pixelstrap">
     <link rel="icon" href="assets/images/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="assets/images/favicon.png" type="image/x-icon">
-    <title>Perikitis - Hostel details</title>
+    <title>Perikitis - Dashboard</title>
 
     <!-- Google font-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,6 +48,35 @@
     <!-- App css -->
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
 </head>
+<style>
+    /* Style for the filter options container */
+    .filterOptions {
+        display: none;
+        position: absolute;
+        background: white;
+        border: 1px solid #ccc;
+        padding: 10px;
+        /* Corrected padding value */
+        width: 230px;
+        box-sizing: border-box;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+    }
+
+    /* Add spacing between checkboxes and labels */
+    .filterOptions input[type="checkbox"] {
+        margin-right: -80px;
+        /* Adjusted margin values */
+        margin-left: -70px;
+    }
+
+    .filterButton i {
+        font-size: 12px;
+        /* Adjust the font size as needed */
+        color: #000;
+    }
+</style>
 
 <body>
     <!-- tap on top start-->
@@ -84,11 +113,11 @@
                 </div>
                 <div class="welcome-title">
                     <h5>
-                        Hostel that's you own!
+                        User payment details!
                         <img src="./assets/images/header.gif" alt="">
                     </h5>
                     <span>
-                        Have a quick look at your list of Hostel !!
+                        Have a quick look in front of your table !!
                     </span>
                 </div>
                 <div class="nav-right col-xl-6 col-5 pull-right right-header p-0">
@@ -282,12 +311,12 @@
                         <div id="sidebar-menu">
                             <ul class="sidebar-links" id="simple-bar">
                                 <li class="back-btn"></li>
-                                <!-- <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="index.html">
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title link-nav" href="dashboard.html">
                                         <i class="ri-home-line"></i>
                                         <span>Dashboard</span>
                                     </a>
-                                </li> -->
+                                </li>
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-store-3-line"></i>
@@ -295,13 +324,13 @@
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="products.html">Hostel List</a>
+                                            <a href="hostel-list.html">Hostel List</a>
                                         </li>
                                         <li>
                                             <a href="hotel-reports.html">Hostel Reports</a>
                                         </li>
                                         <li>
-                                            <a href="add-new-product.html">Register Hostel</a>
+                                            <a href="add-new-hostel.html">Register Hostel</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -341,11 +370,26 @@
                                     </a>
                                     <ul class="sidebar-submenu">
                                         <li>
-                                            <a href="food-management.html">Food data entry</a>
+                                            <a href="food-consumption-form.html">Food data entry</a>
                                         </li>
 
                                         <li>
-                                            <a href="food-details.html">Food Report</a>
+                                            <a href="food-consumption-list.html">Food Report</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="sidebar-list">
+                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
+                                        <i class="ri-bowl-line"></i>
+                                        <span>Food Menu</span>
+                                    </a>
+                                    <ul class="sidebar-submenu">
+                                        <li>
+                                            <a href="add-new-food.html">Add Food Menu</a>
+                                        </li>
+
+                                        <li>
+                                            <a href="food-menu-list.html">Food Menu list</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -367,7 +411,7 @@
                             <div class="card card-table">
                                 <div class="card-body">
                                     <div class="title-header option-title d-sm-flex d-block">
-                                        <h5>Hostel List</h5>
+                                        <h5>Bookings List</h5>
                                         <div class="right-options">
                                             <ul>
                                                 <!--<li>
@@ -379,11 +423,12 @@
                                                         <i class="ri-upload-2-fill me-1"></i>Export</a>
                                                 </li>-->
                                                 <li>
-                                                    <a id="export_table_btn" onclick="downloadExcel()" class="product-btn-1">
+                                                    <a id="export_table_btn" onclick="downloadExcel()"
+                                                        class="product-btn-1">
                                                         <i class="ri-upload-2-fill me-1"></i>Export</a>
                                                 </li>
                                                 <li>
-                                                    <a class="btn btn-dashed" href="add-new-product.html">Add Hostel</a>
+                                                    <a class="btn btn-dashed" href="add-new-hostel.html">Add Hostel</a>
                                                 </li>
                                             </ul>
                                         </div>
@@ -403,23 +448,47 @@
                                                     <tr>
                                                         <th><input id="checkall" class="custom-checkbox" type="checkbox"
                                                                 name="text"></th>
-                                                        <!--<th>S. No</th>-->
-                                                        <th onclick="sortTable(1)">Hostel Name<span
-                                                            class="sort-icon">⬍</span></th>
-                                                        <th onclick="sortTable(2)">Hostel Type<span
-                                                            class="sort-icon">⬍</span></th>
-                                                        <th>Address 1</th>
-                                                        <th>Address 2</th>
-                                                        <th onclick="sortTable(3)">City<span
-                                                            class="sort-icon">⬍</span></th>
-                                                        <th onclick="sortTable(4)">State<span
-                                                            class="sort-icon">⬍</span></th>
-                                                        <th>Phone</th>
-                                                        <th>Email ID</th>
-                                                        <th>Pin code</th>
-                                                        <th onclick="sortTable(5)">Floors<span
-                                                            class="sort-icon">⬍</span></th>
-                                                        <th>Delete</th>
+                                                        <th>User Name&nbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(1)"></span>
+                                                            <span class="filterButton" onclick="toggleFilter(event, 1)"
+                                                                style="cursor: pointer;">
+                                                                <i class="fa fa-filter"></i>
+                                                            </span>
+                                                            <div class="filterOptions"></div>
+                                                        </th>
+                                                        <th>Phone<div class="filterOptions"></div>
+                                                        </th>
+                                                        <th>Payment Date &nbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(3)"></span>
+                                                            <span class="filterButton" onclick="toggleFilter(event, 3)"
+                                                                style="cursor: pointer;">
+                                                                <i class="fa fa-filter"></i>
+                                                            </span>
+                                                            <div class="filterOptions"></div>
+                                                        </th>
+                                                        <th>Paid Amount&nbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(4)"></span>
+                                                        </th>
+                                                        <th>Mode&nbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(5)"></span>
+                                                            <span class="filterButton" onclick="toggleFilter(event, 5)"
+                                                                style="cursor: pointer;">
+                                                                <i class="fa fa-filter"></i>
+                                                            </span>
+                                                            <div class="filterOptions"></div>
+                                                        </th>
+                                                        <th>Room Type<div class="filterOptions"></div>
+                                                        </th>
+                                                        <th>Room No.<div class="filterOptions"></div>
+                                                        </th>
+                                                        <th>Payment status &nbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(6)"></span>
+                                                            <span class="filterButton" onclick="toggleFilter(event, 6)"
+                                                                style="cursor: pointer;">
+                                                                <i class="fa fa-filter"></i>
+                                                            </span>
+                                                            <div class="filterOptions"></div>
+                                                        </th>
                                                     </tr>
                                                 </thead>
 
@@ -435,6 +504,7 @@
                         </div>
                     </div>
                 </div>
+
                 <!-- Container-fluid Ends-->
 
                 <div class="container-fluid">
@@ -531,7 +601,7 @@
     <script src="assets/js/firebase-config.js" type="module" defer></script>
 
     <!-- Hostel details js -->
-    <script src="assets/js/hostel-details.js" type="module" defer></script>
+    <script src="assets/js/dashboard.js" type="module" defer></script>
 
     <!-- latest js -->
     <script src="assets/js/jquery-3.6.0.min.js"></script>
@@ -629,36 +699,158 @@
             rows.forEach(row => tableBody.appendChild(row));
         }
     </script>
-     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-     <script>
-         function getFormattedDateTime() {
-             const now = new Date();
- 
-             // Format: YYYYMMDD_hhmmss
-             const formattedDate = now.getFullYear().toString().padStart(4, '0') +
-                 (now.getMonth() + 1).toString().padStart(2, '0') +
-                 now.getDate().toString().padStart(2, '0');
-             const formattedTime = now.getHours().toString().padStart(2, '0') +
-                 now.getMinutes().toString().padStart(2, '0') +
-                 now.getSeconds().toString().padStart(2, '0');
- 
-             return formattedDate+"_"+formattedTime;
-         }
- 
- 
-         const fileName = "hostels_list_"+getFormattedDateTime()+".xlsx";
-         function downloadExcel() {
- 
-             // Get the table element
-             const table = document.getElementById('table_id');
- 
-             // Convert the table to a workbook
-             const workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
- 
-             // Export to Excel file
-             XLSX.writeFile(workbook, fileName);
-         }
-     </script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script>
+        function getFormattedDateTime() {
+            const now = new Date();
+
+            // Format: YYYYMMDD_hhmmss
+            const formattedDate = now.getFullYear().toString().padStart(4, '0') +
+                (now.getMonth() + 1).toString().padStart(2, '0') +
+                now.getDate().toString().padStart(2, '0');
+            const formattedTime = now.getHours().toString().padStart(2, '0') +
+                now.getMinutes().toString().padStart(2, '0') +
+                now.getSeconds().toString().padStart(2, '0');
+
+            return formattedDate + "_" + formattedTime;
+        }
+
+
+        const fileName = "hostels_list_" + getFormattedDateTime() + ".xlsx";
+        function downloadExcel() {
+
+            // Get the table element
+            const table = document.getElementById('table_id');
+
+            // Convert the table to a workbook
+            const workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+
+            // Export to Excel file
+            XLSX.writeFile(workbook, fileName);
+        }
+        // Function to toggle the filter options visibility
+        function toggleFilter(event, columnIndex) {
+            event.stopPropagation(); // Prevent sorting or closing dropdown
+
+            // Select all filter options divs
+            const filterDivs = document.querySelectorAll("thead th .filterOptions");
+
+            // Find the correct filter div based on the column index
+            const filterDiv = filterDivs[columnIndex - 1];
+
+            // Ensure the filter div exists
+            if (!filterDiv) {
+                console.error(`Filter div not found for column index ${columnIndex}`);
+                return;
+            }
+
+            // Toggle dropdown visibility
+            filterDiv.style.display = filterDiv.style.display === "block" ? "none" : "block";
+
+            // Populate filter options when visible
+            if (filterDiv.style.display === "block") {
+                populateFilterOptions(columnIndex);
+            }
+        }
+
+
+        // Populate filter options dynamically
+        function populateFilterOptions(columnIndex) {
+            const table = document.getElementById("table_id");
+            const columnValues = new Set();
+
+            for (let i = 1; i < table.rows.length; i++) { // Skip header
+                const columnValue = table.rows[i].cells[columnIndex].textContent.trim();
+                columnValues.add(columnValue);
+            }
+
+            const filterDivs = document.querySelectorAll(".filterOptions");
+            const filterDiv = filterDivs[columnIndex - 1];
+            filterDiv.innerHTML = ""; // Clear old options
+
+            columnValues.forEach(value => {
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.value = value;
+                checkbox.classList.add("column-filter");
+
+                const label = document.createElement("label");
+                label.textContent = value;
+
+                const container = document.createElement("div");
+                container.style.display = "flex";
+                container.style.alignItems = "center";
+                container.appendChild(checkbox);
+                container.appendChild(label);
+
+                filterDiv.appendChild(container);
+            });
+
+            // Add OK and Clear buttons
+            const buttonContainer = document.createElement("div");
+            buttonContainer.style.marginTop = "10px";
+
+            const okButton = document.createElement("button");
+            okButton.textContent = "OK";
+            okButton.addEventListener("click", (event) => {
+                event.stopPropagation();
+                applyFilter(columnIndex);
+                filterDiv.style.display = "none"; // Hide the container when OK is clicked
+            });
+
+            const clearButton = document.createElement("button");
+            clearButton.textContent = "Clear Filter";
+            clearButton.style.marginLeft = "10px";
+            clearButton.addEventListener("click", (event) => {
+                event.stopPropagation();
+                clearFilter(columnIndex);
+            });
+
+            buttonContainer.appendChild(okButton);
+            buttonContainer.appendChild(clearButton);
+            filterDiv.appendChild(buttonContainer);
+        }
+
+        // Apply the filter
+        function applyFilter(columnIndex) {
+            const filterDivs = document.querySelectorAll(".filterOptions");
+            const checkboxes = filterDivs[columnIndex - 1].querySelectorAll(".column-filter");
+            const selectedValues = new Set();
+
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    selectedValues.add(checkbox.value);
+                }
+            });
+
+            const table = document.getElementById("table_id");
+            for (let i = 1; i < table.rows.length; i++) { // Skip header
+                const cellValue = table.rows[i].cells[columnIndex].textContent.trim();
+                table.rows[i].style.display = selectedValues.size === 0 || selectedValues.has(cellValue) ? "" : "none";
+            }
+        }
+
+        // Clear the filter
+        function clearFilter(columnIndex) {
+            const filterDivs = document.querySelectorAll(".filterOptions");
+            const checkboxes = filterDivs[columnIndex - 1].querySelectorAll(".column-filter");
+            checkboxes.forEach(checkbox => (checkbox.checked = false));
+            applyFilter(columnIndex);
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", () => {
+            const filterDivs = document.querySelectorAll(".filterOptions");
+            filterDivs.forEach(div => (div.style.display = "none"));
+        });
+
+        // Prevent closing dropdown when clicking inside
+        document.querySelectorAll('.filterOptions').forEach(div => {
+            div.addEventListener('click', event => {
+                event.stopPropagation();
+            });
+        });
+    </script>
 </body>
 
 </html>

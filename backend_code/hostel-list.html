@@ -49,10 +49,6 @@
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
 </head>
 <style>
-    .parent-container {
-        position: relative;
-    }
-
     /* Style for the filter options container */
     .filterOptions {
         display: none;
@@ -79,6 +75,50 @@
         font-size: 12px;
         /* Adjust the font size as needed */
         color: #000;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+        margin-bottom: 20px;
+        gap: 15px;
+    }
+
+    .pagination-controls {
+        display: flex;
+        justify-content: center;
+        /* Centers the pagination */
+        margin-top: 20px;
+        margin-bottom: 20px;
+        gap: 5px;
+        /* Adds spacing between page links */
+    }
+
+    .pagination-controls a {
+        color: black;
+        padding: 4px 8px;
+        text-decoration: none;
+        border: 1px solid #ddd;
+        border-radius: 2px;
+        transition: background-color 0.3s ease;
+    }
+
+    .pagination-controls a.active {
+        background-color: #f2a93e;
+        color: white;
+        border: 1px solid#f2a93e;
+    }
+
+    .pagination-controls a:hover:not(.active) {
+        background-color: #ddd;
+    }
+
+    .pagination-controls a.disabled {
+        pointer-events: none;
+        color: #ccc;
+        border-color: #ccc;
+        background-color: #f5f5f5;
     }
 </style>
 
@@ -315,12 +355,12 @@
                         <div id="sidebar-menu">
                             <ul class="sidebar-links" id="simple-bar">
                                 <li class="back-btn"></li>
-                                <!-- <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="index.html">
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title link-nav" href="dashboard.html">
                                         <i class="ri-home-line"></i>
                                         <span>Dashboard</span>
                                     </a>
-                                </li> -->
+                                </li>
                                 <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-store-3-line"></i>
@@ -452,7 +492,6 @@
                                                     <tr>
                                                         <th><input id="checkall" class="custom-checkbox" type="checkbox"
                                                                 name="text"></th>
-                                                        <!--<th>S. No</th>-->
                                                         <th>Hostel Name&nbsp;<span class="fa fa-sort"
                                                                 onclick="sortTable(1)"></span>
                                                             <span class="filterButton" onclick="toggleFilter(event, 1)"
@@ -469,28 +508,11 @@
                                                             </span>
                                                             <div class="filterOptions"></div>
                                                         </th>
-                                                        <th>Address 1</th>
-                                                        <th>Address 2</th>
+                                                        <th>Address 1 <div class="filterOptions"></div>
+                                                        </th>
+                                                        <th>Address 2 <div class="filterOptions"></div>
+                                                        </th>
                                                         <th>City&nbsp;<span class="fa fa-sort"
-                                                                onclick="sortTable(3)"></span>
-                                                            <span class="filterButton" onclick="toggleFilter(event, 3)"
-                                                                style="cursor: pointer;">
-                                                                <i class="fa fa-filter"></i>
-                                                            </span>
-                                                            <div class="filterOptions"></div>
-                                                        </th>
-                                                        <th>State&nbsp;<span class="fa fa-sort"
-                                                                onclick="sortTable(4)"></span>
-                                                            <span class="filterButton" onclick="toggleFilter(event, 4)"
-                                                                style="cursor: pointer;">
-                                                                <i class="fa fa-filter"></i>
-                                                            </span>
-                                                            <div class="filterOptions"></div>
-                                                        </th>
-                                                        <th>Phone</th>
-                                                        <th>Email ID</th>
-                                                        <th>Pin code</th>
-                                                        <th>Floors&nbsp;<span class="fa fa-sort"
                                                                 onclick="sortTable(5)"></span>
                                                             <span class="filterButton" onclick="toggleFilter(event, 5)"
                                                                 style="cursor: pointer;">
@@ -498,6 +520,21 @@
                                                             </span>
                                                             <div class="filterOptions"></div>
                                                         </th>
+                                                        <th>State&nbsp;<span class="fa fa-sort"
+                                                                onclick="sortTable(6)"></span>
+                                                            <span class="filterButton" onclick="toggleFilter(event, 6)"
+                                                                style="cursor: pointer;">
+                                                                <i class="fa fa-filter"></i>
+                                                            </span>
+                                                            <div class="filterOptions"></div>
+                                                        </th>
+                                                        <th>Phone<div class="filterOptions"></div>
+                                                        </th>
+                                                        <th>Email ID<div class="filterOptions"></div>
+                                                        </th>
+                                                        <th>Pin code<div class="filterOptions"></div>
+                                                        </th>
+                                                        <th>Floors</th>
                                                         <th>Delete</th>
                                                     </tr>
                                                 </thead>
@@ -511,6 +548,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <div id="pagination" class="pagination-controls"></div>
                         </div>
                     </div>
                 </div>
@@ -740,16 +778,28 @@
         // Function to toggle the filter options visibility
         function toggleFilter(event, columnIndex) {
             event.stopPropagation(); // Prevent sorting or closing dropdown
-            const filterDivs = document.querySelectorAll(".filterOptions");
+
+            // Select all filter options divs
+            const filterDivs = document.querySelectorAll("thead th .filterOptions");
+
+            // Find the correct filter div based on the column index
             const filterDiv = filterDivs[columnIndex - 1];
 
-            // Toggle dropdown visibility
-            filterDiv.style.display = filterDiv.style.display === "none" ? "block" : "none";
+            // Ensure the filter div exists
+            if (!filterDiv) {
+                console.error(`Filter div not found for column index ${columnIndex}`);
+                return;
+            }
 
+            // Toggle dropdown visibility
+            filterDiv.style.display = filterDiv.style.display === "block" ? "none" : "block";
+
+            // Populate filter options when visible
             if (filterDiv.style.display === "block") {
                 populateFilterOptions(columnIndex);
             }
         }
+
 
         // Populate filter options dynamically
         function populateFilterOptions(columnIndex) {

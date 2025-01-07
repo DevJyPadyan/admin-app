@@ -337,10 +337,10 @@ document.addEventListener('DOMContentLoaded', function () {
     rowElem.classList.add("row", "gy-3");
 
     rowElem.appendChild(createSelectBox("Room Type", `roomType-${floorNumber}-${roomCount}`, true, [
-      { value: '1 sharing', text: '1 sharing' },
+      /*{ value: '1 sharing', text: '1 sharing' },*/
       { value: '2 sharing', text: '2 sharing' },
       { value: '3 sharing', text: '3 sharing' },
-      { value: '4 sharing', text: '4 sharing' }
+      /*{ value: '4 sharing', text: '4 sharing' }*/
     ]));
     rowElem.appendChild(createInputBox("Room Count", `roomCount-${floorNumber}-${roomCount}`, "number", true));
     rowElem.appendChild(createInputBox("Amenities", `amenities-${floorNumber}-${roomCount}`, "text", false, "e.g., WiFi, Laundry"));
@@ -1052,7 +1052,7 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
           // Add beds to the room
           for (let bedIndex = 1; bedIndex <= bedsAvailableForRoom; bedIndex++) {
             const bedKey = `bed ${bedIndex}`;
-            roomsObject[`floor${floorNumber}`][roomType].rooms[acType][`room${roomNumber}`].beds[bedKey] = "not booked";
+            roomsObject[`floor${floorNumber}`][roomType].rooms[acType][`room${roomNumber}`].beds[bedKey] = {status:"not booked"};
           }
         }
       }
@@ -1134,6 +1134,73 @@ function redirectToHome() {
 
 // Navigation Buttons
 document.getElementById("prevButton").addEventListener("click", () => prevStep(currentStep - 1));
+
+// Function to fetch data and show modal
+async function checkFoodData() {
+  // Get modal elements
+  const modalTitle = document.getElementById("staticBackdropLabel");
+  const modalBody = document.querySelector("#staticBackdrop .modal-body p");
+  const btnYes = document.querySelector("#staticBackdrop .btn--yes");
+  const btnNo = document.querySelector("#staticBackdrop .btn--no");
+
+  // Show loading spinner in the modal while waiting
+  modalTitle.textContent = "Loading...";
+  modalBody.innerHTML = `<div class="spinner-border text-primary" role="status">
+                           <span class="visually-hidden">Loading...</span>
+                         </div>`;
+  btnYes.style.display = "none"; // Hide buttons while loading
+  btnNo.style.display = "none";
+
+  // Show modal immediately
+  const modal = new bootstrap.Modal(document.getElementById("staticBackdrop"));
+  modal.show();
+
+  try {
+    // Fetch data from Firebase
+    const foodMenuRef = ref(db, "Food Menu");
+    const snapshot = await get(foodMenuRef);
+
+    // Update modal content based on data presence
+    if (snapshot.exists()) {
+      // Data exists
+      modalTitle.textContent = "Food Menu Found";
+      modalBody.textContent = "The Food Menu data is present. You can proceed as needed.";
+      btnYes.style.display = "none"; // Hide 'Yes' button
+      btnNo.style.display = "inline-block"; // Show 'No' button
+      btnNo.textContent = "OK"; // Change 'No' button to 'OK'
+      btnNo.onclick = () => modal.hide(); // Close modal on 'OK' click
+    } else {
+      // Data not found
+      modalTitle.textContent = "Food Menu Not Found";
+      modalBody.textContent = "No Food Menu data found. Click OK to proceed to the setup page.";
+      btnYes.style.display = "inline-block"; // Show 'Yes' button
+      btnYes.textContent = "OK";
+      btnNo.style.display = "inline-block"; // Show 'No' button
+      btnNo.textContent = "Cancel"; // Change 'No' button to 'Cancel'
+
+      // Redirect to another page on 'Yes' click
+      btnYes.onclick = () => {
+        window.location.href = "/setup-page.html"; // Replace with your target page URL
+      };
+
+      // Close modal on 'Cancel' click
+      btnNo.onclick = () => modal.hide();
+    }
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    modalTitle.textContent = "Error";
+    modalBody.textContent = "An error occurred while checking the Food Menu. Please try again later.";
+    btnYes.style.display = "none"; // Hide 'Yes' button
+    btnNo.style.display = "inline-block"; // Show 'No' button
+    btnNo.textContent = "Close"; // Change 'No' button to 'Close'
+    btnNo.onclick = () => modal.hide(); // Close modal
+  }
+}
+
+// Call the function on page load
+window.onload = () => {
+  checkFoodData();
+};
 
 // Save Hostel Details, Floors, and Rooms
 /*document.getElementById("nextButton").addEventListener("click", async () => {

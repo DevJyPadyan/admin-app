@@ -840,10 +840,10 @@ document.addEventListener('DOMContentLoaded', function () {
         rowElem.classList.add("row", "gy-3");
 
         rowElem.appendChild(createSelectBoxforExtra("Room Type", `roomType-${floorNumber}-${roomCount}`, true, [
-            { value: '1 sharing', text: '1 sharing' },
+            /*{ value: '1 sharing', text: '1 sharing' },*/
             { value: '2 sharing', text: '2 sharing' },
             { value: '3 sharing', text: '3 sharing' },
-            { value: '4 sharing', text: '4 sharing' }
+            /*{ value: '4 sharing', text: '4 sharing' }*/
         ]));
         rowElem.appendChild(createInputBoxforExtra("Room Count", `roomCount-${floorNumber}-${roomCount}`, "number", true));
         rowElem.appendChild(createInputBoxforExtra("Amenities", `amenities-${floorNumber}-${roomCount}`, "text", false, "e.g., WiFi, Laundry"));
@@ -975,10 +975,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Add form fields (room type, amenities, price, etc.)
         rowElem.appendChild(createSelectBox("Room Type", `roomType-${roomCount}`, true, [
-            { value: '1 sharing', text: '1 sharing' },
+            /*{ value: '1 sharing', text: '1 sharing' },*/
             { value: '2 sharing', text: '2 sharing' },
             { value: '3 sharing', text: '3 sharing' },
-            { value: '4 sharing', text: '4 sharing' }
+           /*{ value: '4 sharing', text: '4 sharing' }*/
         ]));
         rowElem.appendChild(createInputBox("Room Count", `roomCount-${roomCount}`, "number", true));
         rowElem.appendChild(createInputBox("Amenities", `amenities-${roomCount}`, "text", false, "e.g., WiFi, Laundry"));
@@ -1123,35 +1123,68 @@ document.addEventListener('DOMContentLoaded', function () {
     const floorsContainer = document.getElementById("floorsContainer");
 
 
-    // Fetch and prefill room details when "Get Room" button is clicked 
-    getRoomButton.addEventListener('click', async () => {
+    getRoomButton.addEventListener("click", async () => {
         const hostelName = document.getElementById("hostelname").value;
+        const roomType = document.getElementById("roomType").value; // Selected roomType
+        const acType = document.getElementById("acType").value; // Selected acType
+
+        console.log(`Fetching rooms for Hostel: ${hostelName}, Room Type: ${roomType}, AC Type: ${acType}`);
+
         const roomsRef = ref(db, `Hostel details/${hostelName}/rooms`);
 
         try {
             const snapshot = await get(roomsRef);
             if (snapshot.exists()) {
                 const roomsData = snapshot.val();
-                floorsContainer.innerHTML = ''; // Clear existing floor containers
+                console.log("Rooms data fetched successfully:", roomsData);
 
-                // Loop through each floor and its rooms
+                floorsContainer.innerHTML = ""; // Clear existing floor containers
+                console.log("Cleared existing floor containers.");
+
+                // Loop through each floor and filter rooms based on roomType and acType
                 Object.keys(roomsData).forEach((floorKey) => {
                     const floorData = roomsData[floorKey];
-                    const floorNumber = floorKey.replace('floor', ''); // Extract floor number
-                    createFloorContainer(floorNumber, floorData); // Create floor container
+                    console.log(`Processing Floor: ${floorKey}`, floorData);
+
+                    const filteredFloorData = {}; // Object to store filtered data for this floor
+
+                    if (floorData[roomType]) {
+                        console.log(`Found matching Room Type (${roomType}) on Floor: ${floorKey}`);
+                        const roomCategory = floorData[roomType]["rooms"][acType];
+                        if (roomCategory) {
+                            console.log(`Found matching AC Type (${acType}) on Floor: ${floorKey}`);
+                            filteredFloorData[roomType] = {
+                                ...floorData[roomType],
+                                rooms: {
+                                    [acType]: roomCategory
+                                }
+                            };
+                        } else {
+                            console.log(`No rooms found for AC Type (${acType}) on Floor: ${floorKey}`);
+                        }
+                    } else {
+                        console.log(`No rooms found for Room Type (${roomType}) on Floor: ${floorKey}`);
+                    }
+
+                    if (Object.keys(filteredFloorData).length > 0) {
+                        const floorNumber = floorKey.replace("floor", ""); // Extract floor number
+                        console.log(`Creating floor container for Floor ${floorNumber}`);
+                        createFloorContainer(floorNumber, filteredFloorData); // Create floor container
+                    }
                 });
             } else {
-                console.log('No rooms data found for this hostel.'); // Debug: Log if no data exists
-                alert('No rooms found for this hostel.');
+                console.log("No rooms data found for this hostel.");
+                alert("No rooms found for this hostel.");
             }
         } catch (error) {
-            console.error('Error fetching rooms:', error);
+            console.error("Error fetching rooms:", error);
         }
     });
 
-
-    // Function to create a floor container with grouped rooms
+    // Function to create a floor container with grouped rooms (Unchanged)
     function createFloorContainer(floorNumber, floorData) {
+        console.log(`Creating floor container for Floor ${floorNumber} with data:`, floorData);
+
         const floorElem = document.createElement("div");
         floorElem.classList.add("col-12", "mb-4");
         floorElem.id = floorNumber;
@@ -1160,7 +1193,12 @@ document.addEventListener('DOMContentLoaded', function () {
         cardElem.classList.add("card");
 
         const cardHeaderElem = document.createElement("div");
-        cardHeaderElem.classList.add("card-header", "d-flex", "justify-content-between", "align-items-center");
+        cardHeaderElem.classList.add(
+            "card-header",
+            "d-flex",
+            "justify-content-between",
+            "align-items-center"
+        );
 
         const floorLabel = document.createElement("h5");
         floorLabel.innerText = `Floor ${floorNumber}`;
@@ -1176,14 +1214,17 @@ document.addEventListener('DOMContentLoaded', function () {
         // Loop through room types (e.g., "2 sharing")
         Object.keys(floorData).forEach((roomTypeKey) => {
             const roomTypeData = floorData[roomTypeKey];
+            console.log(`Processing Room Type: ${roomTypeKey}`, roomTypeData);
 
             // Loop through room configurations (e.g., "ac", "non-ac")
             Object.keys(roomTypeData.rooms).forEach((roomConfigKey) => {
                 const rooms = roomTypeData.rooms[roomConfigKey];
+                console.log(`Processing Room Configuration: ${roomConfigKey}`, rooms);
 
                 // Loop through individual rooms
                 Object.keys(rooms).forEach((roomKey) => {
                     const roomDetails = rooms[roomKey];
+                    console.log(`Creating room container for Room: ${roomKey}`, roomDetails);
                     createRoomContainer(roomWrapper, floorNumber, roomKey, roomDetails);
                 });
             });
@@ -1193,11 +1234,15 @@ document.addEventListener('DOMContentLoaded', function () {
         cardElem.appendChild(cardBodyElem);
         floorElem.appendChild(cardElem);
         floorsContainer.appendChild(floorElem);
+        console.log(`Added Floor ${floorNumber} container to the DOM.`);
     }
 
+    // Function to create a room container (Unchanged)
     function createRoomContainer(parentElem, floorNumber, roomKey, roomDetails) {
-        const mainParentElem = document.createElement('div');
-        mainParentElem.classList.add('col-12');
+        console.log(`Creating room container for Room Key: ${roomKey}`, roomDetails);
+
+        const mainParentElem = document.createElement("div");
+        mainParentElem.classList.add("col-12");
 
         const roomElem = document.createElement("div");
         roomElem.classList.add("card", "mb-3", "room-container");
@@ -1207,10 +1252,15 @@ document.addEventListener('DOMContentLoaded', function () {
         roomElem.id = `room-${roomKey}`;
 
         const roomHeader = document.createElement("div");
-        roomHeader.classList.add("card-header", "d-flex", "justify-content-between", "align-items-center");
+        roomHeader.classList.add(
+            "card-header",
+            "d-flex",
+            "justify-content-between",
+            "align-items-center"
+        );
 
         const roomLabel = document.createElement("h6");
-        roomLabel.innerText = `Room ${roomKey.replace('room', '')} (${roomDetails.roomType}) - Floor ${floorNumber}`;
+        roomLabel.innerText = `Room ${roomKey.replace("room", "")} (${roomDetails.roomType}) - Floor ${floorNumber}`;
 
         const deleteIcon = document.createElement("a");
         deleteIcon.className = "ri-delete-bin-line";
@@ -1218,26 +1268,25 @@ document.addEventListener('DOMContentLoaded', function () {
         deleteIcon.style.cursor = "pointer";
         deleteIcon.id = `delete-room-${roomKey}`;
 
-        deleteIcon.addEventListener('click', async () => {
-            if (confirm('Are you sure you want to delete this room?')) {
+        deleteIcon.addEventListener("click", async () => {
+            if (confirm("Are you sure you want to delete this room?")) {
                 try {
-
                     const hostelName = document.getElementById("hostelname").value;
                     const roomType = roomDetails.roomType;
                     const roomConfig = roomDetails.ac;
                     const roomPath = `Hostel details/${hostelName}/rooms/floor${floorNumber}/${roomType}/rooms/${roomConfig}/${roomKey}`;
 
-                    console.log('Deleting from Firebase path:', roomPath);
+                    console.log("Deleting from Firebase path:", roomPath);
                     await remove(ref(db, roomPath));
 
                     const roomElement = document.getElementById(`room-${roomKey}`);
                     if (roomElement) {
                         roomElement.remove();
                     }
-                    alert('Room deleted successfully.');
+                    alert("Room deleted successfully.");
                 } catch (error) {
-                    console.error('Error deleting room:', error);
-                    alert('Failed to delete room.');
+                    console.error("Error deleting room:", error);
+                    alert("Failed to delete room.");
                 }
             }
         });
@@ -1250,9 +1299,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const rowElem = document.createElement("div");
         rowElem.classList.add("row", "gy-3");
+        const roomTypeSelect = createSelectBox('Room Type', `roomType-${floorNumber}-${roomKey}`, true, ['1 sharing', '2 sharing', '3 sharing', '4 sharing'], roomDetails.roomType);
+        rowElem.appendChild(roomTypeSelect);
 
-        // Prefill room data
-        rowElem.appendChild(createSelectBox('Room Type', `roomType-${floorNumber}-${roomKey}`, true, ['1 sharing', '2 sharing', '3 sharing', '4 sharing'], roomDetails.roomType));
+        // Log the room type to console for debugging
+        console.log(`Prefilled Room Type for room ${roomKey} (Floor ${floorNumber}): ${roomDetails.roomType}`);
         rowElem.appendChild(createInputBox('Room Count', `roomCount-${floorNumber}-${roomKey}`, 'number', true, '', true, roomDetails.roomCount));
         rowElem.appendChild(createInputBox('Room Number', `roomNumber-${floorNumber}-${roomKey}`, 'text', false, '', true, roomDetails.roomNumber));
         rowElem.appendChild(createInputBox('Amenities', `amenities-${floorNumber}-${roomKey}`, 'text', false, 'e.g. WiFi, Laundry', false, roomDetails.amenities));
@@ -1458,156 +1509,155 @@ document.getElementById("nextButtonStep1").addEventListener("click", async () =>
 // Step 2: Save Floor and Room Details
 document.getElementById("nextButtonStep2").addEventListener("click", async () => {
     try {
-
         const hname = document.getElementById("hostelname").value;
-
-        // Initialize objects for separate updates
-        const roomTypeUpdates = {}; // For room type-level data (e.g., total beds, room count)
-        const roomLevelUpdates = {}; // For individual room-level data (e.g., specific room details)
-        const bedLevelUpdates = {}; // For bed-level data
         let roomNumberCounter = 1;
 
-        // Handle existing floors and rooms
-        const floorContainers = document.querySelectorAll('.floorsContainer');
+        // Fetch existing hostel details
+        const existingHostelRef = ref(db, `Hostel details/${hname}`);
+        const existingHostelSnapshot = await get(existingHostelRef);
+        const existingHostelDetails = existingHostelSnapshot.exists() ? existingHostelSnapshot.val() : {};
 
+        let uploadPromises = []; // Store all image upload promises here
+
+        let floorContainers = document.querySelectorAll('.floorsContainer');
+
+        // Loop through all floor containers
         for (let floorElem of floorContainers) {
-            const floorNumber = floorElem.getAttribute("data-floor"); // Get the floor number
-            const roomElements = floorElem.querySelectorAll('.room-container');
+            let roomElements = floorElem.querySelectorAll('.room-container');
 
+            // Loop through all room elements within the current floor
             for (let roomElem of roomElements) {
-                // Extract `roomKey` from room label (e.g., "Room R5_F2 (Floor 2)")
-                const roomLabel = roomElem.querySelector('.card-header h6');
-                const roomKeyMatch = roomLabel?.innerText.match(/Room\s+(\S+)\s+\(Floor/); // Match room key like "R5_F2"
-                const roomKey = roomKeyMatch ? roomKeyMatch[1] : null;
+                let floorKey = roomElem.getAttribute('data-floor');
+                let roomKey = roomElem.id.split('-')[1];
+                let roomType = document.getElementById(`roomType-${floorKey}-${roomKey}`).value;
+                let roomCount = parseInt(document.getElementById(`roomCount-${floorKey}-${roomKey}`).value, 10);
+                let amenities = document.getElementById(`amenities-${floorKey}-${roomKey}`).value;
+                let ac = document.getElementById(`acType-${floorKey}-${roomKey}`).value;
+                let bathroom = document.getElementById(`bathroom-${floorKey}-${roomKey}`).value;
+                let price = parseFloat(document.getElementById(`price-${floorKey}-${roomKey}`).value);
+                let remarks = document.getElementById(`remarks-${floorKey}-${roomKey}`).value;
 
-                if (!roomKey) {
-                    console.warn(`Unable to determine roomKey for room element:`, roomElem);
-                    continue; // Skip this room if `roomKey` cannot be determined
-                }
+                let imageInput = document.getElementById(`roomImage-${roomKey}`);
+                let files = imageInput.files;
+                let imagelink1 = [];
 
-                // Extract room details from input fields
-                const roomType = document.getElementById(`roomType-${floorNumber}-${roomKey}`).value;
-                const roomCount = parseInt(document.getElementById(`roomCount-${floorNumber}-${roomKey}`).value, 10);
-                const amenities = document.getElementById(`amenities-${floorNumber}-${roomKey}`).value;
-                const ac = document.getElementById(`acType-${floorNumber}-${roomKey}`).value;
-                const bathroom = document.getElementById(`bathroom-${floorNumber}-${roomKey}`).value;
-                const price = document.getElementById(`price-${floorNumber}-${roomKey}`).value;
-                const remarks = document.getElementById(`remarks-${floorNumber}-${roomKey}`).value;
-
-                // Handle image uploads
-                const imageInput = document.getElementById(`roomImage-${roomKey}`);
-                const files = imageInput ? imageInput.files : [];
-                let imageLinks = [];
-
-                if (files.length > 0) {
-                    const uploadPromises = Array.from(files).map(async (file) => {
-                        const storageRef = ref2(storage, `images/${hname}/room-${roomKey}/${file.name}`);
-                        await uploadBytes(storageRef, file);
-                        return getDownloadURL(storageRef);
+                // Upload images in parallel
+                if (files.length !== 0) {
+                    let imageUploadPromises = Array.from(files).map((file) => {
+                        let storageRef = ref2(storage, `images/${hname}/room-${roomKey}/${file.name}`);
+                        return uploadBytes(storageRef, file).then(() => getDownloadURL(storageRef));
                     });
-                    imageLinks = await Promise.all(uploadPromises); // Wait for all uploads
+                    uploadPromises.push(...imageUploadPromises);  // Push all image upload promises to the array
                 }
 
-                // Calculate beds available based on room type
-                const bedsAvailable = parseInt(roomType.match(/\d+/)[0]) * roomCount;
+                // Fetch existing roomType data for updating the roomType-level information
+                let existingRoomTypeRef = ref(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}`);
+                let existingRoomTypeSnapshot = await get(existingRoomTypeRef);
+                let existingRoomTypeData = existingRoomTypeSnapshot.exists() ? existingRoomTypeSnapshot.val() : {};
+                let existingRoomTypeBedsAvailable = existingRoomTypeData.bedsAvailable || 0;
 
-                // Update roomType-level data
-                const roomTypePath = `Hostel details/${hname}/rooms/floor${floorNumber}/${roomType}`;
-                if (!roomTypeUpdates[roomTypePath]) {
-                    roomTypeUpdates[roomTypePath] = {
-                        floor: floorNumber,
-                        roomCount: 0,
-                        bedsAvailable: 0,
-                        imagesLink: [],
-                    };
-                }
+                // Fetch existing room data for updating the room-level information
+                let existingRoomRef = ref(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/${roomKey}`);
+                let existingRoomSnapshot = await get(existingRoomRef);
+                let existingRoomData = existingRoomSnapshot.exists() ? existingRoomSnapshot.val() : {};
+                let existingBeds = existingRoomData.beds || {};
+                let existingBedsAvailable = existingRoomData.bedsAvailable;
 
-                roomTypeUpdates[roomTypePath].roomCount += roomCount;
-                roomTypeUpdates[roomTypePath].bedsAvailable += bedsAvailable;
-                roomTypeUpdates[roomTypePath].imagesLink = [
-                    ...new Set([...roomTypeUpdates[roomTypePath].imagesLink, ...imageLinks]), // Avoid duplicate image links
-                ];
+                // Ensure imagesLink is defined before updating
+                let existingImages = existingRoomData.imagesLink || []; // Default to empty array if undefined
+                let updatedImages = imagelink1.length > 0 ? [...existingImages, ...imagelink1] : existingImages;
 
-                // Update room-level data
-                for (let roomSubIndex = 1; roomSubIndex <= roomCount; roomSubIndex++) {
-                    const roomNumber = `R${roomNumberCounter++}_F${floorNumber}`;
-                    const roomPath = `Hostel details/${hname}/rooms/floor${floorNumber}/${roomType}/rooms/${ac}/room${roomNumber}`;
+                // Update roomType data
+                await update(ref(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}`), {
+                    floor: floorKey,
+                    price: price,
+                    roomCount: roomCount,
+                    roomType: roomType,
+                    bedsAvailable: existingRoomTypeBedsAvailable,
+                }).catch((error) => {
+                    console.error(`Error updating roomType details for ${roomType}:`, error);
+                    alert(`Error updating roomType details for ${roomType}: ${error}`);
+                });
 
-                    roomLevelUpdates[roomPath] = {
-                        floor: floorNumber,
-                        roomType: roomType,
-                        roomNumber: roomNumber,
-                        roomCount: roomCount,
-                        amenities: amenities,
-                        ac: ac,
-                        bathroom: bathroom,
-                        price: price,
-                        remarks: remarks,
-                        bedsAvailable: bedsAvailable,
-                        imagesLink: imageLinks,
-                    };
+                // Update room-level details
+                await update(ref(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/${roomKey}`), {
+                    roomNumber: roomKey,
+                    floor: floorKey,
+                    ac: ac,
+                    roomCount: roomCount,
+                    roomType: roomType,
+                    bathroom: bathroom,
+                    price: price,
+                    amenities: amenities,
+                    remarks: remarks,
+                    imagesLink: updatedImages, // Use updated images array (even if empty)
+                    bedsAvailable: existingBedsAvailable,
+                }).catch((error) => {
+                    console.error(`Error updating room details for Room ${roomKey}:`, error);
+                    alert(`Error updating room details for Room ${roomKey}: ${error}`);
+                });
 
-                    // Add bed-level data
-                    for (let bedIndex = 1; bedIndex <= bedsAvailable; bedIndex++) {
-                        bedLevelUpdates[`${roomPath}/beds/bed ${bedIndex}`] = "not booked";
-                    }
-                }
+                // Update bed details
+                await update(ref(db, `Hostel details/${hname}/rooms/floor${floorKey}/${roomType}/rooms/${ac}/${roomKey}/beds`), {
+                    beds: existingBeds, // Retain existing beds data
+                }).catch((error) => {
+                    console.error(`Error updating bed details for Room ${roomKey}:`, error);
+                    alert(`Error updating room details for Room ${roomKey}: ${error}`);
+                });
             }
         }
 
-        // Handle additional rooms
-        const additionalRoomContainers = document.querySelectorAll('.additional-room-container');
+        // Wait for all image uploads to finish
+        await Promise.all(uploadPromises);
+        console.log("Hostel details updated successfully!");
+
+        let additionalRoomContainers = document.querySelectorAll('.additional-room-container');
 
         for (let roomElem of additionalRoomContainers) {
-            const uniqueId = roomElem.id.split('-')[1];
-            const floor = parseInt(document.getElementById(`floor-${uniqueId}`).value, 10);
-            const roomType = document.getElementById(`roomType-${uniqueId}`).value;
-            const roomCount = parseInt(document.getElementById(`roomCount-${uniqueId}`).value, 10);
-            const amenities = document.getElementById(`amenities-${uniqueId}`).value;
-            const price = document.getElementById(`price-${uniqueId}`).value;
-            const bathroom = document.getElementById(`bathroom-${uniqueId}`).value;
-            const ac = document.getElementById(`acType-${uniqueId}`).value;
-            const remarks = document.getElementById(`remarks-${uniqueId}`).value;
+            let uniqueId = roomElem.id.split('-')[1];
+            let floor = parseInt(document.getElementById(`floor-${uniqueId}`).value, 10);
+            let roomType = document.getElementById(`roomType-${uniqueId}`).value;
+            let roomCount = parseInt(document.getElementById(`roomCount-${uniqueId}`).value, 10);
+            let amenities = document.getElementById(`amenities-${uniqueId}`).value;
+            let price = document.getElementById(`price-${uniqueId}`).value;
+            let bathroom = document.getElementById(`bathroom-${uniqueId}`).value;
+            let ac = document.getElementById(`acType-${uniqueId}`).value;
+            let remarks = document.getElementById(`remarks-${uniqueId}`).value;
 
-            // Handle image uploads
-            const imageInput = document.getElementById(`roomImage-${uniqueId}`);
-            const files = imageInput ? imageInput.files : [];
+            // Calculate beds available
+            const roomTypeBedsAvailable = parseInt(roomType.match(/\d+/)[0]) * roomCount;
+
+            // Handle images upload
+            let imageInput = document.getElementById(`roomImage-${uniqueId}`);
+            let files = imageInput.files;
             let imageLinks = [];
 
-            if (files.length > 0) {
-                const uploadPromises = Array.from(files).map(async (file) => {
-                    const storageRef = ref2(storage, `images/${hname}/room-${uniqueId}/${file.name}`);
+            if (files.length !== 0) {
+                for (let file of files) {
+                    let storageRef = ref2(storage, `images/${hname}/room-${uniqueId}/${file.name}`);
                     await uploadBytes(storageRef, file);
-                    return getDownloadURL(storageRef);
-                });
-                imageLinks = await Promise.all(uploadPromises); // Wait for all uploads
+                    let imageUrl = await getDownloadURL(storageRef);
+                    imageLinks.push(imageUrl);
+                }
             }
 
-            const bedsAvailable = parseInt(roomType.match(/\d+/)[0]) * roomCount;
-
+            // Update roomType-level details in Firebase
             const roomTypePath = `Hostel details/${hname}/rooms/floor${floor}/${roomType}`;
-            if (!roomTypeUpdates[roomTypePath]) {
-                roomTypeUpdates[roomTypePath] = {
-                    floor: floor,
-                    roomCount: 0,
-                    roomType: roomType,
-                    price: price,
-                    bedsAvailable: 0,
-                    imagesLink: [],
-                };
-            }
+            const roomTypeData = {
+                floor: floor,
+                roomType: roomType,
+                price: price,
+                imagesLink: imageLinks,
+                bedsAvailable: roomTypeBedsAvailable,
+            };
+            await update(ref(db, roomTypePath), roomTypeData);
 
-            roomTypeUpdates[roomTypePath].roomCount += roomCount;
-            roomTypeUpdates[roomTypePath].bedsAvailable += bedsAvailable;
-            roomTypeUpdates[roomTypePath].imagesLink = [
-                ...new Set([...roomTypeUpdates[roomTypePath].imagesLink, ...imageLinks]),
-            ];
-
+            // Loop through each room and add room-level details
             for (let roomSubIndex = 1; roomSubIndex <= roomCount; roomSubIndex++) {
                 const roomNumber = `R${roomNumberCounter++}_F${floor}`;
-                const roomPath = `Hostel details/${hname}/rooms/floor${floor}/${roomType}/rooms/${ac}/room${roomNumber}`;
+                const roomPath = `${roomTypePath}/rooms/${ac}/room${roomNumber}`;
 
-                roomLevelUpdates[roomPath] = {
+                const roomData = {
                     floor: floor,
                     roomType: roomType,
                     roomNumber: roomNumber,
@@ -1617,20 +1667,25 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
                     bathroom: bathroom,
                     price: price,
                     remarks: remarks,
-                    bedsAvailable: bedsAvailable,
+                    bedsAvailable: roomTypeBedsAvailable,
                     imagesLink: imageLinks,
                 };
+                await update(ref(db, roomPath), roomData);
 
-                for (let bedIndex = 1; bedIndex <= bedsAvailable; bedIndex++) {
-                    bedLevelUpdates[`${roomPath}/beds/bed ${bedIndex}`] = "not booked";
+                // Add bed-level data
+                let bedsData = {};
+                for (let bedIndex = 1; bedIndex <= roomTypeBedsAvailable; bedIndex++) {
+                    const bedKey = `bed ${bedIndex}`;
+                    bedsData[bedKey] = {
+                        status: "not booked" // Object with the desired structure
+                    };
                 }
+
+                // Update beds in Firebase
+                const bedsPath = `${roomPath}/beds`;
+                await update(ref(db, bedsPath), bedsData);
             }
         }
-
-        await update(ref(db), roomTypeUpdates); // First batch: room type-level data
-        await update(ref(db), roomLevelUpdates); // Second batch: room-level data
-        await update(ref(db), bedLevelUpdates); // Third batch: bed-level data
-        console.log("Room details saved successfully.");
 
 
         const floorCount = document.querySelectorAll('.card-header h5').length;
@@ -1738,7 +1793,7 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
                     // Add beds to the room
                     for (let bedIndex = 1; bedIndex <= bedsAvailableForRoom; bedIndex++) {
                         const bedKey = `bed ${bedIndex}`;
-                        roomsObject[`floor${floorNumber}`][roomType].rooms[acType][`room${roomNumber}`].beds[bedKey] = "not booked";
+                        roomsObject[`floor${floorNumber}`][roomType].rooms[acType][`room${roomNumber}`].beds[bedKey]= {status:"not booked"};
                     }
                 }
             }
