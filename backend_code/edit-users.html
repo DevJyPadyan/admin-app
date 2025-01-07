@@ -471,8 +471,8 @@
                                                             <h6>Gender</h6>
                                                             <select class="js-example-basic-single w-100" name="state"
                                                                 id="usergender">
-                                                                <option>Men</option>
-                                                                <option>Women</option>
+                                                                <option value="men">Men</option>
+                                                                <option value="women">Women</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -729,301 +729,239 @@
                             </div>
                         </div>
                         <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5>Room Booking</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="input-items">
-                                        <div class="row gy-3">
-                                            <div class="col-xl-6">
-                                                <div class="input-box">
-                                                    <h6>Hostel Name</h6>
-                                                    <select id="hostelDropdown" class="js-example-basic-single w-100">
-                                                        <option value="">Select Hostel</option>
-                                                    </select>
+                            <!-- <div class="accordion accordion-flush help-accordion" id="accordionFlushExample">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#flush-collapseOne" aria-expanded="false">
+                                            Vacation Details
+                                        </button>
+                                    </h2>
+                                    <div id="flush-collapseOne" class="accordion-collapse collapse show"
+                                        data-bs-parent="#accordionFlushExample">
+                                        <div class="accordion-body">
+                                            <div class="row gy-3">
+                                                <div class="col-xl-6">
+                                                    <h6>From:</h6>
+                                                    <input type="date" id="vacation_fromdate" style="width: 100%;">
+                                                </div>
+                                                <div class="col-xl-6">
+                                                    <h6>To:</h6>
+                                                    <input type="date" id="vacation_todate" style="width: 100%;">
                                                 </div>
                                             </div>
-                                            <div class="col-xl-6">
-                                                <div class="input-box">
-                                                    <h6>Floor</h6>
-                                                    <input type="text" placeholder="Enter Floor number" id="floornum">
+                                            <div class="row gy-3" style="padding-top: 15px;">
+                                                <div style="display: flex; gap: 10px; justify-content: end;">
+                                                    <button type="button" id="cancelVacation"
+                                                        class="btn btn-secondary">Cancel</button>
+                                                    <button type="button" id="updateVacation"
+                                                        class="btn btn-primary">Update</button>
                                                 </div>
                                             </div>
-                                            <div class="col-xl-6">
-                                                <div class="input-box">
-                                                    <h6>Room type</h6>
-                                                    <select class="js-example-basic-single w-100" name="state"
-                                                        id="roomtype">
-                                                        <option>1 sharing</option>
-                                                        <option>2 sharing</option>
-                                                        <option>3 sharing</option>
-                                                        <option>4 sharing</option>
-                                                    </select>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#flush-collapseFive"
+                                                aria-expanded="false" aria-controls="flush-collapseFive">
+                                                Checkout Approval ?
+                                            </button>
+                                        </h2>
+                                        <div id="flush-collapseFive" class="accordion-collapse collapse"
+                                            data-bs-parent="#accordionFlushExample">
+                                            <div class="accordion-body">
+                                                <div class="row gy-3">
+                                                    <div class="col-xl-6">
+                                                        <h6>Checkout Request Initiated Date:</h6>
+                                                        <input type="date" id="checkoutdate_user" style="width: 100%;">
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <h6>Checkout Date:</h6>
+                                                        <input type="date" id="checkoutdate_admin" style="width: 100%;">
+                                                    </div>
+                                                </div>
+                                                <div class="row gy-3" style="padding-top: 15px;">
+                                                    <div style="display: flex; gap: 10px; justify-content: end;">
+                                                        <button type="button" id="declineCheckout"
+                                                            class="btn btn-secondary">Decline</button>
+                                                        <button type="button" id="approveCheckout"
+                                                            class="btn btn-primary">Approve</button>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="col-xl-6">
-                                                <div class="input-box">
-                                                    <h6>Air conditioning</h6>
-                                                    <select class="js-example-basic-single w-100" name="state"
-                                                        id="aircond">
-                                                        <option>ac</option>
-                                                        <option>non-ac</option>
-                                                    </select>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#flush-collapseFive"
+                                                aria-expanded="false" aria-controls="flush-collapseFive">
+                                                Payment Details
+                                            </button>
+                                        </h2>
+                                        <div id="flush-collapseFive" class="accordion-collapse collapse"
+                                            data-bs-parent="#accordionFlushExample">
+                                            <div class="accordion-body">
+                                                <div class="row gy-3">
+                                                    <div class="col-xl-6">
+                                                        <h6>Checkout Request Initiated Date:</h6>
+                                                        <input type="date" id="checkoutdate_user" style="width: 100%;">
+                                                    </div>
+                                                    <div class="col-xl-6">
+                                                        <h6>Checkout Date:</h6>
+                                                        <input type="date" id="checkoutdate_admin" style="width: 100%;">
+                                                    </div>
+                                                </div>
+                                                <div class="row gy-3" style="padding-top: 15px;">
+                                                    <div style="display: flex; gap: 10px; justify-content: end;">
+                                                        <button type="button" id="declineCheckout"
+                                                            class="btn btn-secondary">Decline</button>
+                                                        <button type="button" id="approveCheckout"
+                                                            class="btn btn-primary">Approve</button>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="col-xl-6">
-                                                <div class="input-box">
-                                                    <h6>Room price</h6>
-                                                    <input type="number" placeholder="Enter Room price" id="roomprice">
-                                                </div>
-                                            </div>
-                                            <div class="col-xl-6">
-                                                <div class="input-box">
-                                                    <h6>Payment Status</h6>
-                                                    <input type="text" placeholder="Booking Status" value="Yes"
-                                                        id="paymentComplete">
+                                        </div>
+                                    </div>
+                                </div> -->
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>User Details</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="container-fluid">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <div class="card card-table">
+                                                        <div class="card-body">
+                                                            <div class="title-header option-title d-sm-flex d-block">
+                                                                <h5>Users History</h5>
+                                                                <div class="right-options">
+                                                                    <ul>
+                                                                        <!--<li>
+                                                                        <a href="javascript:void(0)" class="product-btn-1">
+                                                                            <i class="ri-download-2-fill me-1"></i>import</a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a href="javascript:void(0)" class="product-btn-1">
+                                                                            <i class="ri-upload-2-fill me-1"></i>Export</a>
+                                                                    </li>-->
+                                                                        <li>
+                                                                            <a id="export_table_btn"
+                                                                                onclick="downloadExcel()"
+                                                                                class="product-btn-1">
+                                                                                <i
+                                                                                    class="ri-upload-2-fill me-1"></i>Export</a>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <div class="input-box">
+                                                                    <input class="search-box" type="search"
+                                                                        placeholder="Search User details here..."
+                                                                        id="myInput" onkeyup='searchTable()'>
+                                                                    <br>
+                                                                    <br>
+                                                                </div>
+                                                                <div class="table-responsive theme-scrollbar">
+                                                                    <table
+                                                                        class="table category-table dataTable no-footer"
+                                                                        id="table_id">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th><input id="checkall"
+                                                                                        class="custom-checkbox"
+                                                                                        type="checkbox" name="text">
+                                                                                </th>
+                                                                                <!--<th>S. No</th>-->
+                                                                                <th>Booking ID</th>
+                                                                                <th>Hostel Name <span class="fa fa-sort"
+                                                                                        onclick="sortTable(1)"></span>
+                                                                                    <span class="filterButton"
+                                                                                        onclick="toggleFilter(event, 1)"
+                                                                                        style="cursor: pointer;">
+                                                                                        <i class="fa fa-filter"></i>
+                                                                                    </span>
+                                                                                    <div class="filterOptions"></div>
+                                                                                </th>
+                                                                                <th>Floor</th>
+                                                                                <th>Type</th>
+                                                                                <th>AC</th>
+                                                                                <th>Room No</th>
+                                                                                <th>Bed ID</th>
+                                                                                <th>Room Rent &nbsp; <span class="fa fa-sort"
+                                                                                        onclick="sortTable(2)"></span>
+                                                                                    <span class="filterButton"
+                                                                                        onclick="toggleFilter(event, 1)"
+                                                                                        style="cursor: pointer;">
+                                                                                        <i class="fa fa-filter"></i>
+                                                                                    </span>
+                                                                                    <div class="filterOptions"></div>
+                                                                                </th>
+                                                                                </th>
+                                                                                <th>Booking Date&nbsp;<span class="fa fa-sort"
+                                                                                        onclick="sortTable(3)"></span>
+                                                                                    <span class="filterButton"
+                                                                                        onclick="toggleFilter(event, 1)"
+                                                                                        style="cursor: pointer;">
+                                                                                        <i class="fa fa-filter"></i>
+                                                                                    </span>
+                                                                                    <div class="filterOptions"></div>
+                                                                                </th>
+                                                                                <th>Status &nbsp;<span class="fa fa-sort"
+                                                                                    onclick="sortTable(3)"></span>
+                                                                                <span class="filterButton"
+                                                                                    onclick="toggleFilter(event, 1)"
+                                                                                    style="cursor: pointer;">
+                                                                                    <i class="fa fa-filter"></i>
+                                                                                </span>
+                                                                                <div class="filterOptions"></div>
+                                                                            </th>
+                                                                                <th>Payment History</th>
+                                                                                <th>Vacation Details</th>
+                                                                                <th>Checkout Details</th>
+                                                                            </tr>
+                                                                        </thead>
+
+                                                                        <tbody id="tbody1">
+                                                                            <tr>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-12 mb-5">
+                                <button type="button" id="updateUser" class="btn restaurant-button">Update</button>
+                            </div>
                         </div>
-                        <!--<div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Hostel Videos</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="input-items">
-                                                <div class="row gy-3">
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Video Provider</h6>
-                                                            <select class="js-example-basic-single w-100" name="state">
-                                                                <option>Video</option>
-                                                                <option>Youtube</option>
-                                                                <option>Dailymotion</option>
-                                                                <option>Vimeo</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Video Link</h6>
-                                                            <input type="text" placeholder="Video Link">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>-->
-                        <!--<div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Product variations</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="input-items">
-                                                <div class="row gy-3">
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Option Name</h6>
-                                                            <select class="js-example-basic-single w-100" name="state">
-                                                                <option>Color</option>
-                                                                <option>Size</option>
-                                                                <option>Material</option>
-                                                                <option>Style</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Option Value</h6>
-                                                            <input type="text" class="px-0"
-                                                                placeholder="Type tag & hit enter"
-                                                                data-role="tagsinput">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Shipping</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="input-items">
-                                                <div class="row gy-3">
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Weight (kg)</h6>
-                                                            <input type="number" placeholder="Weight">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Dimensions (cm)</h6>
-                                                            <select class="js-example-basic-single w-100" name="state">
-                                                                <option>Length</option>
-                                                                <option>Width</option>
-                                                                <option>Height</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Product Price</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="input-items">
-                                                <div class="row gy-3">
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>price</h6>
-                                                            <input type="number" placeholder="0">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Compare at price</h6>
-                                                            <input type="number" placeholder="0">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Product Inventory</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="input-items">
-                                                <div class="row gy-3">
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>SKU</h6>
-                                                            <input type="text">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Stock Status</h6>
-                                                            <select class="js-example-basic-single w-100" name="state">
-                                                                <option>In Stock</option>
-                                                                <option>Out Of Stock</option>
-                                                                <option>On Backorder</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Link Products</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="input-items">
-                                                <div class="row gy-3">
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Upsells</h6>
-                                                            <input type="text" name="text">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Cross-Sells</h6>
-                                                            <input type="text" name="text">
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>-->
-                        <div class="col-12 mb-5">
-                            <button type="button" id="updateUser" class="btn restaurant-button">Update</button>
-                        </div>
-                        <!--<div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h5>Search engine listing</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="input-items">
-                                                <div class="row gy-3">
-                                                    <div class="col-12">
-                                                        <div class="input-box">
-                                                            <div class="seo-view">
-                                                                <span class="link">https://zomo.com</span>
-                                                                <h5>Online Order From Neardy Restaurant</h5>
-                                                                <p>Find then best restaurants, cafes and bars on zomo,
-                                                                    view menus , photos, rating and user reviews for top
-                                                                    restaursnts.
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>Page title</h6>
-                                                            <input type="search" placeholder="Fresh Fruits">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-xl-6">
-                                                        <div class="input-box">
-                                                            <h6>URL handle</h6>
-                                                            <input type="search"
-                                                                placeholder="https://themes.pixelstrap.net/zomo/index.html">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <button type="button" id="registerHostel"
-                                                            class="btn restaurant-button">Save</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>-->
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- New Product Add End -->
+            <!-- New Product Add End -->
 
-        <!-- footer Start -->
-        <div class="container-fluid">
-            <footer class="footer">
-                <div class="row">
-                    <div class="col-md-12 footer-copyright text-center">
-                        <p class="mb-0">Copyright 2024 ©Perikitis</p>
+            <!-- footer Start -->
+            <div class="container-fluid">
+                <footer class="footer">
+                    <div class="row">
+                        <div class="col-md-12 footer-copyright text-center">
+                            <p class="mb-0">Copyright 2024 ©Perikitis</p>
+                        </div>
                     </div>
-                </div>
-            </footer>
+                </footer>
+            </div>
+            <!-- footer En -->
         </div>
-        <!-- footer En -->
-    </div>
-    <!-- Container-fluid End -->
+        <!-- Container-fluid End -->
     </div>
     <!-- Page Body End -->
     </div>
@@ -1087,6 +1025,133 @@
         </div>
     </div>
     <!-- Modal End -->
+
+    <!-- Modal Start - Payment details -->
+    <div class="modal theme-modal fade" id="viewPaymentDetails" tabindex="-1" role="dialog" aria-modal="true">
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Payment Details</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive theme-scrollbar">
+                        <table
+                            class="table category-table dataTable no-footer"
+                            id="table_id_payment">
+                            <thead>
+                                <tr>
+                                    <th><input id="checkall"
+                                            class="custom-checkbox"
+                                            type="checkbox" name="text">
+                                    </th>
+                                    <th>Transaction ID</th>
+                                    <th>Amount</th>
+                                    <th>Payment Mode</th>
+                                    <th>Payment Date</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="tbody2">
+                                <tr>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-cancel" type="button" data-bs-dismiss="modal"
+                        aria-label="Close">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Start - Vacation details -->
+    <div class="modal theme-modal fade" id="viewVacationDetails" tabindex="-1" role="dialog" aria-modal="true">
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Vacation Details</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-items">
+                        <div class="row gy-3">
+                            <div class="col-xl-6">
+                                <div class="input-box">
+                                    <h6>From Date</h6>
+                                    <input placeholder="From Date" type="date" id="vacation_fromdate">
+                                </div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="input-box">
+                                    <h6>To Date</h6>
+                                    <input placeholder="From Date" type="date" id="vacation_todate">
+                                </div>
+                            </div>
+                            <!-- <div class="col-xl-6">
+                                <div class="input-box">
+                                    <h6>User Phone</h6>
+                                    <input type="text" placeholder="User Email" readonly id="useremail">
+                                </div>
+                            </div> -->
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-cancel" type="button" id="cancelVacationBtn">
+                        Cancel Vacation</button>
+                    <button type="button" id="updateVacationBtn"
+                        class="btn btn-primary">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Start - Checkout details -->
+    <div class="modal theme-modal fade" id="viewCheckoutDetails" tabindex="-1" role="dialog" aria-modal="true">
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Check-out Details</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-items">
+                        <div class="row gy-3">
+                            <div class="col-xl-6">
+                                <h6>Checkout Initiated Date:</h6>
+                                <input type="date"  id="checkoutdate_user">
+                            </div>
+                            <div class="col-xl-6">
+                                <h6>Checkout Date:</h6>
+                                <input type="date" id="checkoutdate_admin">
+                            </div>
+                            <div class="col-xl-6">
+                                <h6>Status:</h6>
+                                <input type="text" value="" readonly id="checkout_approval">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-cancel" type="button" data-bs-dismiss="modal"
+                        aria-label="Close" id="declineCheckout">Decliine</button>
+                    <button type="button" id="approveCheckout"
+                        class="btn btn-primary">Approve</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <!-- latest js -->
