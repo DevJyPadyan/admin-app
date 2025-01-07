@@ -88,8 +88,9 @@ async function fetchRoomDetails(hostelName) {
 
                             for (let bed in roomData.beds) {
                                 bedCount.push(bed);
-                                const bedData = roomData.beds[bed];
-                                if (bedData === "booked") {
+
+                                const bedData = roomData.beds[bed].status;
+                                if (bedData == 'booked') {
                                     bedBooked++;
                                 } else if (bedData === "not booked") {
                                     bedNotBooked++;
@@ -241,13 +242,16 @@ async function loadBedView(floor, roomNo, roomType) {
         hostelBedAvailability = [];
         const parentContainer = document.getElementById('bedParent');
         parentContainer.innerHTML = '';//removing the previous loaded data and setting it up freshly in the below for loop.
-        snapshot.forEach(iterator => {
-            console.log(iterator.val())
-            hostelBedAvailability.push(iterator.val());
+        let beds = snapshot.val();
+        // console.log(JSON.stringify(beds))
+        for(let key in beds){
+            let bed = beds[key];
+            // console.log(JSON.stringify(bed))
+            hostelBedAvailability.push(bed.status);
             const elem = document.createElement('div');
             elem.classList.add('card');
             //if room is already booked, then blocking the user not to select the room.
-            if (iterator.val() == 'booked') {
+            if (bed.status == 'booked') {
                 elem.style.backgroundColor = "#FF7F7F";
                 elem.style.border = "1px solid #FF7F7F"
                 elem.style.color = "red";
@@ -258,9 +262,13 @@ async function loadBedView(floor, roomNo, roomType) {
                 elem.style.border = "1px solid black"
                 elem.style.pointerEvents = "none";
             }
-            elem.innerHTML = `<div class="card-body">Bed - ${iterator.val()}</div>`;
+            elem.innerHTML = `<div class="card-body">${key} - ${bed.status}</div>`;
             parentContainer.appendChild(elem);
-        })
+        }
+        // snapshot.forEach(iterator => {
+        //     console.log(iterator.val().status)
+            
+        // })
     })
     console.log(hostelBedAvailability, 'Hostel details/' + hostelName + '/rooms/' + "floor" + floor + '/' + details[0] + '/rooms/' + details[1] + '/room' + roomNo + '/beds');
 
@@ -332,8 +340,11 @@ async function fetchVacancyRoomDetails(hostelName) {
         let expenseId = 1
         if (snapshot.exists()) {
             const rooms = snapshot.val();
+            console.log(JSON.stringify(rooms))
             for (let floor in rooms) {
+                console.log(JSON.stringify(floor))
                 for (let room in rooms[floor]) {
+                    console.log(JSON.stringify(room))
                     const roomData = rooms[floor][room];
                     let bedCount = [];
                     let bedBooked = 0;
@@ -348,14 +359,16 @@ async function fetchVacancyRoomDetails(hostelName) {
                         let toDateArray = new Date(stringArray[3]);
                         let Difference_In_Time = toDateArray.getTime() - fromDateArray.getTime();
                         let Difference_In_Days = Math.round(Difference_In_Time / (1000 * 3600 * 24));
+                        console.log(JSON.stringify(roomData),stringArray[0])
                         if (stringArray[0] == 'yes vacation') {
                             bedBooked++;
+                            console.log(roomData.floor,roomData.room)
                             // Append data to the table
                             appendExpenseRow2(
                                 expenseId++,
                                 stringArray[1],
-                                roomData.floor,
-                                roomData.room,
+                                floor,
+                                room,
                                 bed,
                                 stringArray[2],
                                 stringArray[3],
@@ -403,10 +416,13 @@ const appendExpenseRow2 = async (
     let userDbName = username;
     try {
         const h = await get(dbref);
-        userDbName = h.val().userName
+        console.log(JSON.stringify(h))
+        if(h){
+            userDbName = h.val().userName
+        }
 
     } catch (error) {
-        console.error('Error fetching floor:', error);
+        console.error('Error fetching userDetails:', error);
     }
 
     td1.innerText = id;

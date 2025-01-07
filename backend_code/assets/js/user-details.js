@@ -92,8 +92,6 @@ function view() {
             // Get total number of cells
             var totalCells = rowSelected.cells.length;
 
-            // Safely access the paymentComplete field
-            var paymentComplete = totalCells > 25 ? rowSelected.cells[25].innerHTML : 'N/A';
 
             // Fetch other fields (ensure indices match)
             var userName = rowSelected.cells[1].innerHTML;
@@ -117,12 +115,6 @@ function view() {
             var guardState = rowSelected.cells[18].innerHTML;
             var guardPin = rowSelected.cells[19].innerHTML;
 
-            var roomType = rowSelected.cells[20].innerHTML;
-            var floorNumber = rowSelected.cells[21].innerHTML;
-            var AirConditioning = rowSelected.cells[22].innerHTML;
-            var roomPrice = rowSelected.cells[23].innerHTML;
-            var hostelName = rowSelected.cells[24].innerHTML;
-
             // Store data in localStorage
             var data = [];
             data.push(userName);
@@ -144,12 +136,6 @@ function view() {
             data.push(guardCity);
             data.push(guardState);
             data.push(guardPin);
-            data.push(roomType);
-            data.push(floorNumber);
-            data.push(AirConditioning);
-            data.push(roomPrice);
-            data.push(hostelName);
-            data.push(paymentComplete);
 
             localStorage.setItem('userDetailsAmin', JSON.stringify(data));
             console.log(data);
@@ -220,23 +206,11 @@ const AddsingleRecord = (user, bookingDetails) => {
         user.guardPin || 'N/A'
     ];
 
-    // Booking details
-    if (bookingDetails) {
-        cells.push(
-            bookingDetails.roomType || 'N/A',
-            bookingDetails.floor || 'N/A',
-            bookingDetails.ac || 'N/A',
-            bookingDetails.totalAmount || 'N/A',
-            bookingDetails.paymentComplete || 'N/A'
-        );
-    } else {
-        cells.push('N/A', 'N/A', 'N/A', 'N/A', 'N/A');
-    }
 
     cells.forEach(data => {
-        var td = document.createElement('td');
-        td.innerHTML = data;
-        trow.appendChild(td);
+            var td = document.createElement('td');
+            td.innerHTML = data;
+            trow.appendChild(td);
     });
 
     // Remove button - append before the paymentComplete cell
