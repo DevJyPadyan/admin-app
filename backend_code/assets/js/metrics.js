@@ -7,29 +7,45 @@ let hostelData = [];
 const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 
-const getHostelData = () => {
-        let cnt = 0;
+const getHostelData = async () => {
+    try {
         const dbref = ref(db);
-            onValue(dbref, (snapshot) => {
-        hostelData = snapshot.val();
-        console.log('Hostel data',hostelData);
-        while(!hostelData){
-                cnt++;
-                console.log('Cnt',cnt);
-        }
 
+        // Use a Promise to wrap the async onValue behavior
+        const hostelData = await new Promise((resolve, reject) => {
+            onValue(
+                dbref,
+                (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        resolve(data);
+                    } else {
+                        reject(new Error('No data found in the snapshot'));
+                    }
+                },
+                (error) => reject(error)
+            );
+        });
+
+        console.log('Hostel data:', hostelData);
+
+        // Populate the dropdown
         const hostelDropdown = document.getElementById('hostel-name');
-        // Loop through the keys in the hostelData object
-        Object.keys(hostelData['Hostel details']).forEach(hostelName => {
+        Object.keys(hostelData['Hostel details']).forEach((hostelName) => {
             const option = document.createElement('option');
             option.value = hostelName; // Set the value of the option
             option.textContent = hostelName; // Set the displayed text
             hostelDropdown.appendChild(option); // Append the option to the dropdown
         });
-        initializeDefaultFilters();
-    });
-        
-}
+
+        initializeDefaultFilters(); // Call this after populating the dropdown
+    } catch (error) {
+        console.error('Error fetching hostel data:', error);
+    }
+};
+
+
+
                 // Get total beds, occupied beds, and available beds
 const getBedStats = () => {
     let bedStatsData = [];
@@ -480,7 +496,8 @@ function calculateHostelData(fromDate, toDate) {
             renderCharts(dataOutput);
         }
 
-        function filterData() {
+        function filterData(event) {
+                event.preventDefault();
             const selectedHostel = document.getElementById('hostel-name').value;
             const startDate = document.getElementById('start-date').value;
             const endDate = document.getElementById('end-date').value;
