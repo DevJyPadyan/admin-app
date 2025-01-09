@@ -11,7 +11,7 @@ const getHostelData = async () => {
     try {
         const dbref = ref(db);
 
-        // Use a Promise to wrap the async onValue behavior
+        // Use a Promise to fetch data from the database
         const hostelData = await new Promise((resolve, reject) => {
             onValue(
                 dbref,
@@ -31,18 +31,27 @@ const getHostelData = async () => {
 
         // Populate the dropdown
         const hostelDropdown = document.getElementById('hostel-name');
-        Object.keys(hostelData['Hostel details']).forEach((hostelName) => {
-            const option = document.createElement('option');
-            option.value = hostelName; // Set the value of the option
-            option.textContent = hostelName; // Set the displayed text
-            hostelDropdown.appendChild(option); // Append the option to the dropdown
-        });
+        hostelDropdown.innerHTML = ""; // Clear existing options if any
+        const hostelDetails = hostelData['Hostel details'];
 
-        initializeDefaultFilters(); // Call this after populating the dropdown
+        if (hostelDetails && Object.keys(hostelDetails).length > 0) {
+            Object.keys(hostelDetails).forEach((hostelName) => {
+                const option = document.createElement('option');
+                option.value = hostelName; // Set the value of the option
+                option.textContent = hostelName; // Set the displayed text
+                hostelDropdown.appendChild(option); // Append the option to the dropdown
+            });
+
+            // Call initializeDefaultFilters after ensuring dropdown is populated
+            initializeDefaultFilters();
+        } else {
+            console.warn('No hostel details found to populate the dropdown.');
+        }
     } catch (error) {
         console.error('Error fetching hostel data:', error);
     }
 };
+
 
 
 
