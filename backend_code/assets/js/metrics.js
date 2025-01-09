@@ -1,5 +1,5 @@
 
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, get, set, onValue, child, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"
 import { firebaseConfig } from "./firebase-config.js";
 
@@ -13,10 +13,8 @@ const getHostelData = () => {
         const dbref = ref(db);
             onValue(dbref, (snapshot) => {
         hostelData = snapshot.val();
-        console.log('Hostel data',hostelData);
         while(!hostelData){
-                cnt++;
-                console.log('Cnt',cnt);
+                cnt++;        
         }
 
         const hostelDropdown = document.getElementById('hostel-name');
