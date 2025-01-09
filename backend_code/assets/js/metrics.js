@@ -17,6 +17,15 @@ const getHostelData = () => {
                 cnt++;
                 console.log('Cnt',cnt);
         }
+
+        const hostelDropdown = document.getElementById('hostel-name');
+        // Loop through the keys in the hostelData object
+        Object.keys(hostelData['Hostel details']).forEach(hostelName => {
+            const option = document.createElement('option');
+            option.value = hostelName; // Set the value of the option
+            option.textContent = hostelName; // Set the displayed text
+            hostelDropdown.appendChild(option); // Append the option to the dropdown
+        });
         initializeDefaultFilters();
     });
         
