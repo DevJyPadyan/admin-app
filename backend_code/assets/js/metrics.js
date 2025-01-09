@@ -670,5 +670,6 @@ if (foodDataExists) {
 
         }
 
-        document.addEventListener('DOMContentLoaded', getHostelData);
+        // document.addEventListener('DOMContentLoaded', getHostelData);
+window.addEventListener("load", getHostelData);
   
