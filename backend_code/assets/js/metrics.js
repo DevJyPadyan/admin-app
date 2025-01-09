@@ -635,7 +635,7 @@ function calculateHostelData(fromDate, toDate) {
                 return Object.entries(expensesByHostel?.categoryWiseExpenses || {}).map(([category, amount]) => `
                     <tr>
                         <td>${category} (${hostelKey})</td>
-                        <td>$${amount.toFixed(2)}</td>
+                        <td>₹${amount.toFixed(2)}</td>
                     </tr>
                 `).join('');
             }).join('');
@@ -647,7 +647,7 @@ function calculateHostelData(fromDate, toDate) {
                 <tr>
                     <td>${detail.date}</td>
                     <td>${detail.description}</td>
-                    <td>$${detail.amount.toFixed(2)}</td>
+                    <td>₹${detail.amount.toFixed(2)}</td>
                     <td>${detail.transactionId}</td>
                 </tr>
             `).join('');
