@@ -7,50 +7,62 @@ let hostelData = [];
 const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 
-const getHostelData = async () => {
-    try {
-        const dbref = ref(db);
 
-        // Use a Promise to fetch data from the database
-        const hostelData = await new Promise((resolve, reject) => {
+const waitForData = (dbref) => {
+    return new Promise((resolve, reject) => {
+        const interval = setInterval(() => {
             onValue(
                 dbref,
                 (snapshot) => {
                     const data = snapshot.val();
                     if (data) {
-                        resolve(data);
-                    } else {
-                        reject(new Error('No data found in the snapshot'));
+                        clearInterval(interval); // Stop polling
+                        resolve(data); // Resolve when data is found
                     }
                 },
-                (error) => reject(error)
+                (error) => {
+                    clearInterval(interval); // Stop polling on error
+                    reject(error); // Reject if an error occurs
+                }
             );
+        }, 100); // Poll every 100ms
+    });
+};
+
+const getHostelData = async () => {
+    try {
+        const dbref = ref(db);
+
+        // Wait until data is retrieved
+        const hostelData = await waitForData(dbref);
+        console.log("Hostel data:", hostelData);
+
+        // Validate and populate dropdown
+        if (!hostelData || !hostelData["Hostel details"]) {
+            throw new Error("Invalid hostel data format");
+        }
+
+        const hostelDetails = hostelData["Hostel details"];
+        const hostelDropdown = document.getElementById("hostel-name");
+
+        hostelDropdown.innerHTML = "";
+        Object.keys(hostelDetails).forEach((hostelName) => {
+            const option = document.createElement("option");
+            option.value = hostelName;
+            option.textContent = hostelName;
+            hostelDropdown.appendChild(option);
         });
 
-        console.log('Hostel data:', hostelData);
+        console.log("Dropdown populated with hostel names");
 
-        // Populate the dropdown
-        const hostelDropdown = document.getElementById('hostel-name');
-        hostelDropdown.innerHTML = ""; // Clear existing options if any
-        const hostelDetails = hostelData['Hostel details'];
+        // Call initializeDefaultFilters after ensuring dropdown is populated
+        initializeDefaultFilters();
 
-        if (hostelDetails && Object.keys(hostelDetails).length > 0) {
-            Object.keys(hostelDetails).forEach((hostelName) => {
-                const option = document.createElement('option');
-                option.value = hostelName; // Set the value of the option
-                option.textContent = hostelName; // Set the displayed text
-                hostelDropdown.appendChild(option); // Append the option to the dropdown
-            });
-
-            // Call initializeDefaultFilters after ensuring dropdown is populated
-            initializeDefaultFilters();
-        } else {
-            console.warn('No hostel details found to populate the dropdown.');
-        }
     } catch (error) {
-        console.error('Error fetching hostel data:', error);
+        console.error("Error fetching hostel data:", error);
     }
 };
+
 
 
 
