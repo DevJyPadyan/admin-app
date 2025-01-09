@@ -14,8 +14,9 @@ const getHostelData = () => {
         snapshot.forEach((h) => {
             hostelData.push(h.val());
         });
+            initializeDefaultFilters();
     });
-        initializeDefaultFilters();
+        
 }
                 // Get total beds, occupied beds, and available beds
 const getBedStats = () => {
