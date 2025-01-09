@@ -7,7 +7,7 @@ let hostelData = [];
 const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 
-function getHostelData() {
+const getHostelData = () => {
         const dbref = ref(db, "Hostel details");
     onValue(dbref, (snapshot) => {
         hostelData = [];
@@ -15,6 +15,7 @@ function getHostelData() {
             hostelData.push(h.val());
         });
     });
+        initializeDefaultFilters();
 }
                 // Get total beds, occupied beds, and available beds
 const getBedStats = () => {
@@ -448,7 +449,7 @@ function calculateHostelData(fromDate, toDate) {
         }
 
         function initializeDefaultFilters() {
-            getHostelData();
+            // getHostelData();
             console.log('Hostel data',hostelData);
             const today = new Date();
             const year = today.getFullYear();
@@ -669,5 +670,5 @@ if (foodDataExists) {
 
         }
 
-        document.addEventListener('DOMContentLoaded', initializeDefaultFilters);
+        document.addEventListener('DOMContentLoaded', getHostelData);
   
