@@ -156,8 +156,25 @@
     </div>
 
     <!-- Add JS -->
-    <script src="./data.js"></script>
+     <!-- Firebase js -->
+    <script src="assets/js/firebase-config.js" type="module" defer></script>
+<!--     <script src="./data.js"></script> -->
     <script>
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, get, set, onValue, child, update, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"
+import { firebaseConfig } from "./firebase-config.js";
+
+        let hostelData = [];
+        const app = initializeApp(firebaseConfig);
+const db = getDatabase();
+
+        const dbref = ref(db, "Hostel details");
+    onValue(dbref, (snapshot) => {
+        hostelData = [];
+        snapshot.forEach((h) => {
+            hostelData.push(h.val());
+        });
+    });
                 // Get total beds, occupied beds, and available beds
 const getBedStats = () => {
     let bedStatsData = [];
