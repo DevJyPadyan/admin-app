@@ -10,17 +10,14 @@ const db = getDatabase();
 const getHostelData = () => {
         let cnt = 0;
         const dbref = ref(db);
-    onValue(dbref, (snapshot) => {
-        hostelData = [];
-        snapshot.forEach((h) => {
-            hostelData.push(h.val());
-        });
-            console.log('Hostel data',hostelData);
-            while(!hostelData){
-                    cnt++;
-                    console.log('Cnt',cnt);
-            }
-            initializeDefaultFilters();
+            onValue(dbref, (snapshot) => {
+        hostelData = snapshot.val();
+        console.log('Hostel data',hostelData);
+        while(!hostelData){
+                cnt++;
+                console.log('Cnt',cnt);
+        }
+        initializeDefaultFilters();
     });
         
 }
