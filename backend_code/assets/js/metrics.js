@@ -8,12 +8,18 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 
 const getHostelData = () => {
+        let cnt = 0;
         const dbref = ref(db, "Hostel details");
     onValue(dbref, (snapshot) => {
         hostelData = [];
         snapshot.forEach((h) => {
             hostelData.push(h.val());
         });
+            console.log('Hostel data',hostelData);
+            while(!hostelData){
+                    cnt++;
+                    console.log('Cnt',cnt);
+            }
             initializeDefaultFilters();
     });
         
