@@ -24,33 +24,47 @@ const fetchAndDisplayExpenses = () => {
 
         snapshot.forEach((hostelSnapshot) => {
             const hostelName = hostelSnapshot.key;
-
+        
             // Iterate over date ranges (e.g., daily, monthly, etc.)
             hostelSnapshot.forEach((dateRangeSnapshot) => {
                 const dateRangeKey = dateRangeSnapshot.key; // e.g., "2024-10-01-2024-12-15"
                 const frequency = dateRangeSnapshot.child("frequency").val() || "N/A";
-
+        
                 // Parse from and to dates
                 const dateData = dateRangeSnapshot.child("date").val();
                 const fromDate = dateData?.from || dateRangeKey.split("-")[0] || "N/A";
                 const toDate = dateData?.to || dateRangeKey.split("-")[1] || "N/A";
-
+        
                 // Access the 'expenses' node
                 const expensesSnapshot = dateRangeSnapshot.child("expenses");
-
+        
                 expensesSnapshot.forEach((categorySnapshot) => {
                     const categoryName = categorySnapshot.key;
-
+        
                     categorySnapshot.forEach((subCategorySnapshot) => {
                         const subCategoryName = subCategorySnapshot.key;
-                        const expenseDetails = subCategorySnapshot.val();
-
-                        // Iterate through the roomData if available (for room-specific expenses)
-                        if (expenseDetails.roomData) {
-                            for (const floor in expenseDetails.roomData) {
-                                for (const room in expenseDetails.roomData[floor]) {
-                                    const roomData = expenseDetails.roomData[floor][room];
-                                    // Store room-specific data in the allExpenses array
+                        const expenseData = subCategorySnapshot.val();
+        
+                        // Handle array-based subcategories (e.g., "Groceries")
+                        if (Array.isArray(expenseData)) {
+                            expenseData.forEach((expenseDetails) => {
+                                allExpenses.push({
+                                    expenseId: expenseId++,
+                                    hostelName,
+                                    frequency,
+                                    fromDate,
+                                    toDate,
+                                    categoryName,
+                                    subCategoryName,
+                                    details: expenseDetails, // Use expense details directly
+                                });
+                            });
+                        } 
+                        // Handle room-specific expenses (e.g., electricity in specific rooms)
+                        else if (expenseData.roomData) {
+                            for (const floor in expenseData.roomData) {
+                                for (const room in expenseData.roomData[floor]) {
+                                    const roomData = expenseData.roomData[floor][room];
                                     allExpenses.push({
                                         expenseId: expenseId++,
                                         hostelName,
@@ -59,12 +73,13 @@ const fetchAndDisplayExpenses = () => {
                                         toDate,
                                         categoryName,
                                         subCategoryName,
-                                        details: roomData
+                                        details: roomData, // Use room-specific data
                                     });
                                 }
                             }
-                        } else {
-                            // Store general category data (without roomData)
+                        } 
+                        // Handle general object-based subcategories
+                        else {
                             allExpenses.push({
                                 expenseId: expenseId++,
                                 hostelName,
@@ -73,13 +88,13 @@ const fetchAndDisplayExpenses = () => {
                                 toDate,
                                 categoryName,
                                 subCategoryName,
-                                details: expenseDetails
+                                details: expenseData, // Use the object as-is
                             });
                         }
                     });
                 });
             });
-        });
+        });        
 
         // Calculate total pages for pagination
         totalPages = Math.ceil(allExpenses.length / itemsPerPage);
@@ -113,7 +128,6 @@ const renderTable = (page) => {
     });
 };
 
-// Function to append a single expense record to the table
 const appendExpenseRow = (
     id,
     hostelName,
@@ -149,30 +163,35 @@ const appendExpenseRow = (
     td5.innerText = toDate;
     td6.innerText = category;
     td7.innerText = subCategory;
-    td8.innerText = details.units || "N/A";
-    td9.innerText = details.measurementUnit || "N/A";
-    td10.innerText = details.cost || "N/A";
+
+    // Use the values directly from the main category
+    const units = details?.units || "N/A"; // Fetch units from the main category
+    const measurementUnit = details?.measurementUnit || "N/A"; // Fetch measurementUnit from the main category
+
+    // Units and Measurement Unit
+    td8.innerText = units;
+    td9.innerText = measurementUnit;
+    // Cost
+    td10.innerText = details?.cost || "N/A";
 
     // Description
-    td11.innerText = details.description || "N/A";
+    td11.innerText = details?.description || "N/A";
 
-    // Room number
-    td12.innerText =
-        subCategory.toLowerCase() === "electricity" && details.roomNumber
-            ? details.roomNumber
-            : "N/A";
+    // Room number (only applicable for "electricity" subCategory)
+    td12.innerText = subCategory.toLowerCase() === "electricity" && details?.roomNumber
+        ? details.roomNumber
+        : "N/A";
 
-    // Floor number
-    td13.innerText =
-        subCategory.toLowerCase() === "electricity" && details.floorNumber
-            ? details.floorNumber
-            : "N/A";
+    // Floor number (only applicable for "electricity" subCategory)
+    td13.innerText = subCategory.toLowerCase() === "electricity" && details?.floorNumber
+        ? details.floorNumber
+        : "N/A";
 
     // Remarks
-    td14.innerText = details.remarks || "N/A";
+    td14.innerText = details?.remarks || "N/A";
 
-    // Bills
-    if (details.billImages && details.billImages.length > 0) {
+    // Bills (only if available)
+    if (details?.billImages && details.billImages.length > 0) {
         td15.innerHTML = details.billImages
             .map(
                 (image, index) =>
@@ -183,9 +202,13 @@ const appendExpenseRow = (
         td15.innerText = "No Bills";
     }
 
+    // Append each td element to the row
     trow.append(td1, td2, td3, td4, td5, td6, td7, td8, td9, td10, td11, td12, td13, td14, td15);
+
+    // Append the row to the tbody (table body)
     tbody.appendChild(trow);
 };
+
 
 //Function to create pagination controls
 const updatePaginationControls = () => {

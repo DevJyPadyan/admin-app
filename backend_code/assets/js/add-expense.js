@@ -46,9 +46,9 @@ const subCategoryMap = {
     food: ["Cooking Supplies - Vegetables or Fruits", "Groceries", "Cooking Supplies - Raw Materials"],
     maintenance: ["Repairs", "Cleaning"],
     furniture: ["Purchase/Repair"],
-    rent: [],
+    /*rent: [],
     salary: [],
-    miscellaneous: []
+    miscellaneous: []*/
 };
 
 // Function to toggle date fields based on frequency
@@ -118,7 +118,7 @@ function updateSubCategoryFields(formId, subCategoryId) {
 
     const roomFieldContainer = document.getElementById(`room-floor-${subCategoryId}`);
     const unitFieldContainer = document.getElementById(`units-${subCategoryId}`);
-    const measurementFieldContainer = document.getElementById(`unit-${subCategoryId}`);
+    const measurementFieldContainer = document.getElementById(`measurementUnit-${subCategoryId}`);
     const noOfOccupantsContainer = document.getElementById(`occupants-${subCategoryId}`);
 
     // Reset visibility
@@ -204,10 +204,10 @@ function addSubCategory(formId) {
                        <input type="number" id="units-${subCategoryId}" class="form-control" placeholder="Enter units">
                     </div>
                 </div>
-                <div class="col-xl-6" id="unit-${subCategoryId}">
+                <div class="col-xl-6" id="measurementunit-${subCategoryId}">
                     <div class="input-box">
                        <h6><label>Measurement Unit:</label></h6>
-                       <input type="text" id="unit-${subCategoryId}" class="form-control" placeholder="Enter unit (e.g., kWh, liters)">
+                       <input type="text" id="measurementUnit-${subCategoryId}" class="form-control" placeholder="Enter unit (e.g., kWh, liters)">
                     </div>
                 </div>
                 <div class="col-xl-6" id="occupants-${subCategoryId}" style="display: none;">
@@ -289,8 +289,8 @@ function removeSubCategory(subCategoryId) {
 
 document.getElementById("addExpenseButton").addEventListener("click", addExpenseForm);
 
-document.getElementById("saveButton").addEventListener("click", async () => {
-    const hostelName = document.getElementById("hostelDropdown").value;
+document.getElementById("saveButton").addEventListener("click", async () => { 
+const hostelName = document.getElementById("hostelDropdown").value;
     if (!hostelName) {
         alert("Please select a hostel!");
         return;
@@ -323,28 +323,33 @@ document.getElementById("saveButton").addEventListener("click", async () => {
 
     const forms = document.querySelectorAll(".card-body.expense-form");
 
+    // Utility function to sanitize keys for Firebase
+    function sanitizeKey(key) {
+        return key.replace(/[.#$/\[\]]/g, "_"); // Replace invalid characters with an underscore
+    }
+
     for (const form of forms) {
         const categoryElement = form.querySelector(`[name="category"]`);
-        const category = categoryElement?.value;
+        const category = sanitizeKey(categoryElement?.value || "");
         if (!category) continue; // Skip if category is not selected
 
         const subCategoryContainer = form.querySelectorAll(".card");
 
         for (const subCategory of subCategoryContainer) {
-            const subCategoryName = subCategory.querySelector("select")?.value;
-            const cost = subCategory.querySelector("input[type='number']")?.value;
-            const description = subCategory.querySelector("textarea")?.value;
-            const remarks = subCategory.querySelector("input[type='text']")?.value;
+            const subCategoryName = sanitizeKey(subCategory.querySelector("select")?.value || "");
+            const cost = subCategory.querySelector("input[type='number']")?.value || null;
+            const description = subCategory.querySelector("textarea")?.value || null;
+            const remarks = subCategory.querySelector("input[type='text']")?.value || null;
 
             const roomNumbers = subCategory
                 .querySelector("input[id^='room-number']")
                 ?.value.split(",")
                 .map(room => room.trim())
                 .filter(Boolean); // Ensure non-empty room numbers
-            const floorNumber = subCategory.querySelector("input[id^='floor-number']")?.value;
-            const units = subCategory.querySelector("input[id^='units']")?.value;
-            const measurementUnit = subCategory.querySelector("input[id^='unit']")?.value;
-            const noOfOccupants = subCategory.querySelector("input[id^='occupants-number']")?.value;
+            const floorNumber = subCategory.querySelector("input[id^='floor-number']")?.value || null;
+            const units = subCategory.querySelector("input[id^='units']")?.value || null;
+            const measurementUnit = subCategory.querySelector("input[id^='measurementUnit']")?.value || null;
+            const noOfOccupants = subCategory.querySelector("input[id^='occupants-number']")?.value || null;
 
             const billFiles = subCategory.querySelector("input[type='file']")?.files;
             const billImages = billFiles ? await uploadFiles(billFiles) : [];
@@ -360,6 +365,11 @@ document.getElementById("saveButton").addEventListener("click", async () => {
                 remarks,
                 billImages,
             };
+
+            // Skip if all fields are empty
+            if (!cost && !description && !remarks && !units && !measurementUnit) {
+                continue;
+            }
 
             // If subCategory is "Electricity", add roomNumber, floorNumber, and noOfOccupants
             if (subCategoryName === "Electricity") {
@@ -393,6 +403,8 @@ document.getElementById("saveButton").addEventListener("click", async () => {
                         remarks,
                         billImages,
                         roomNumber: room,
+                        units:units,
+                        measurementUnit:measurementUnit,
                         floorNumber,
                         noOfOccupants, // Include noOfOccupants for room-specific data
                     };
@@ -409,7 +421,24 @@ document.getElementById("saveButton").addEventListener("click", async () => {
         expenses: expensesData,
     };
 
+    // Validate the data before saving
+    function validateData(data) {
+        for (const key in data) {
+            if (data.hasOwnProperty(key)) {
+                const value = data[key];
+                if (typeof key !== "string" || /[.#$/\[\]]/.test(key)) {
+                    throw new Error(`Invalid key: ${key}`);
+                }
+                if (typeof value === "object" && value !== null) {
+                    validateData(value); // Recursive validation for nested objects
+                }
+            }
+        }
+    }
+
     try {
+        validateData(expensesData); // Validate the expenses data
+
         // Save to Firebase
         const expensesRef = ref(db, `Hostel expenses/${hostelName}/${dateKey}`);
         await set(expensesRef, data);

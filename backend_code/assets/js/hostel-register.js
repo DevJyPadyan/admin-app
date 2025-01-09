@@ -687,6 +687,7 @@ async function setupWeekContainer() {
   }
 
   // Function to create week checkboxes for week2, week3, week4, and week5
+
   function addWeekCheckboxes(currentWeekNum, existingWeeks) {
     const container = document.createElement("div");
     container.classList.add("mt-3");
@@ -718,8 +719,9 @@ async function setupWeekContainer() {
       checkboxContainer.appendChild(checkboxElem);
 
       const weekExists = existingWeeks.includes(`week${week}`);
-      inputElem.disabled = weekExists;
-      if (weekExists) {
+      // Disable the checkbox if the week already exists or if it's the current week being added
+      inputElem.disabled = weekExists || week === currentWeekNum;
+      if (weekExists || week === currentWeekNum) {
         weekLabelElem.style.color = 'gray';
       }
 
@@ -1010,10 +1012,10 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
           roomsObject[`floor${floorNumber}`][roomType] = {
             floor: floorNumber,
             acPrice: 0,
-            nonacPrice:0,
+            nonacPrice: 0,
             roomCount: roomCount,
             roomType: roomType,
-            imageLink:roomImages,
+            imagesLink: roomImages,
             bedsAvailable: roomTypeBedsAvailable,
             rooms: {}
           };
@@ -1052,7 +1054,7 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
           // Add beds to the room
           for (let bedIndex = 1; bedIndex <= bedsAvailableForRoom; bedIndex++) {
             const bedKey = `bed ${bedIndex}`;
-            roomsObject[`floor${floorNumber}`][roomType].rooms[acType][`room${roomNumber}`].beds[bedKey] = {status:"not booked"};
+            roomsObject[`floor${floorNumber}`][roomType].rooms[acType][`room${roomNumber}`].beds[bedKey] = { status: "not booked" };
           }
         }
       }
