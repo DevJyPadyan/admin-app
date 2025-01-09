@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, get, set, child, update, remove, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, get, set, onValue, child, update, remove, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { getStorage, ref as ref2, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 import { firebaseConfig } from "./firebase-config.js";
 
@@ -7,23 +7,18 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 const storage = getStorage(app);
 
-//Populate hostelDropdown1 for available rooms
-
-
-// Fetch room details for the selected hostel
+// Fetch room details for the selected hostel and populate the hostel dropdown
+// Populate hostel dropdown
 async function populateHostelDropdown1() {
   const hostelDropdown1 = document.getElementById("hostelDropdown1");
   const hostelsRef = ref(db, "Hostel details/");
 
   try {
-    console.log("Fetching hostels from Firebase...");
     const snapshot = await get(hostelsRef);
-    console.log("Snapshot received:", snapshot.exists(), snapshot.val());
-
     if (snapshot.exists()) {
       const hostels = snapshot.val();
-      console.log("Hostels data:", hostels);
 
+      // Populate hostel dropdown
       hostelDropdown1.innerHTML = '<option value="">Select Hostel</option>';
       for (let hostelName in hostels) {
         let option = document.createElement("option");
@@ -31,22 +26,6 @@ async function populateHostelDropdown1() {
         option.text = hostelName;
         hostelDropdown1.appendChild(option);
       }
-
-      // Log the dropdown element to ensure it's correctly referenced
-      console.log("Dropdown populated:", hostelDropdown1.innerHTML);
-
-      // Attach the event listener here
-      hostelDropdown1.addEventListener("change", async function () {
-        console.log("Dropdown change event triggered"); // Check if this log shows up
-        const hostelName = this.value; // Get the selected hostel name
-        console.log("Selected Hostel:", hostelName); // Log the selected hostel name
-
-        if (hostelName) {
-          await fetchRoomDetails(hostelName); // Ensure this function is correctly defined and returns a promise
-        } else {
-          alert("Please select a valid hostel.");
-        }
-      });
     } else {
       console.log("No hostels found.");
     }
@@ -55,77 +34,342 @@ async function populateHostelDropdown1() {
   }
 }
 
-// Fetch room details based on selected hostel
-async function fetchRoomDetails(hostelName) {
-  console.log("Fetching room details for:", hostelName); // Log to see if this function is called
-  const roomsRef = ref(db, `Hostel details/${hostelName}/rooms/`);
+// Fetch room details based on selected filters
+async function fetchFilteredRoomDetails() {
+  const hostelName = document.getElementById("hostelDropdown1").value;
+  const roomType = document.getElementById("roomType").value;
+  const acType = document.getElementById("acType").value;
+  const bathroomType = document.getElementById("bathroomType").value;
 
+  if (!hostelName) {
+    alert("Please select a hostel name.");
+    return;
+  }
+
+  console.log("Applying filters:", {
+    hostelName,
+    roomType,
+    acType,
+    bathroomType,
+  });
+
+  const roomsRef = ref(db, `Hostel details/${hostelName}/rooms/`);
   try {
     const snapshot = await get(roomsRef);
-    console.log("Room details snapshot received:", snapshot.exists(), snapshot.val());
-
     const roomTableBody = document.querySelector("#roomTable tbody");
-    roomTableBody.innerHTML = ""; // Clear previous data
+    roomTableBody.innerHTML = ""; // Clear previous table data
 
     if (snapshot.exists()) {
       const rooms = snapshot.val();
-      for (let floor in rooms) {
-        for (let room in rooms[floor]) {
-          const roomData = rooms[floor][room];
-          const row = roomTableBody.insertRow();
-          row.innerHTML = `
-                      <td>${roomData.floor}</td>
-                      <td>${roomData.roomNumber}</td>
-                      <td>${roomData.roomType}</td>
-                      <td>${roomData.ac}</td>
-                      <td>${roomData.amenities}</td>
-                      <td>${roomData.bathroom}</td>
-                      <td>${roomData.roomCount}</td>
-                      <td>${roomData.price}</td>
-                  `;
+      let matchedRooms = 0; // Counter to track matched rooms
+
+      for (let floorKey in rooms) {
+        const floor = rooms[floorKey];
+        for (let roomTypeKey in floor) {
+          if (roomType !== "all" && roomTypeKey !== roomType) continue;
+
+          const roomTypeData = floor[roomTypeKey];
+          for (let acTypeKey in roomTypeData.rooms) {
+            if (acType !== "all" && acTypeKey !== acType) continue;
+
+            const acRooms = roomTypeData.rooms[acTypeKey];
+            for (let roomKey in acRooms) {
+              const roomData = acRooms[roomKey];
+
+              if (bathroomType !== "all" && roomData.bathroom !== bathroomType) continue;
+
+              const row = roomTableBody.insertRow();
+              row.innerHTML = `
+                <td>${roomData.floor}</td>
+                <td>${roomData.roomNumber}</td>
+                <td>${roomData.roomType}</td>
+                <td>${roomData.ac}</td>
+                <td>${roomData.amenities}</td>
+                <td>${roomData.bathroom}</td>
+                <td>${roomData.price}</td>
+                <td>
+                  <a data-bs-toggle="modal" data-bs-target="#viewRoomDetails" style="cursor:pointer; color:orange; text-decoration:underline">View beds</a> |
+                  <a data-bs-toggle="modal" data-bs-target="#viewExtrasModal" style="cursor:pointer; color:orange; text-decoration:underline">View extras</a>
+                </td>
+              `;
+
+              // Attach event listener to "View beds" link
+              const viewBedsLink = row.querySelector("a:first-of-type");
+              viewBedsLink.addEventListener("click", (event) => {
+                event.stopPropagation();
+                loadBedView(
+                  roomData.floor,
+                  roomData.roomNumber,
+                  roomData.roomType,
+                  acTypeKey,
+                  roomData.bathroom,
+                  roomData.price
+                );
+              });
+
+              // Attach event listener to "View extras" link
+              const viewExtrasLink = row.querySelector("a:last-of-type");
+              viewExtrasLink.addEventListener("click", (event) => {
+                event.stopPropagation();
+                loadExtrasView();
+              });
+
+              matchedRooms++;
+            }
+          }
         }
+      }
+
+      if (matchedRooms === 0) {
+        roomTableBody.innerHTML = "<tr><td colspan='8'>No rooms match the selected filters.</td></tr>";
       }
     } else {
       console.log("No rooms found for this hostel.");
-      roomTableBody.innerHTML = "<tr><td colspan='7'>No rooms available.</td></tr>";
+      roomTableBody.innerHTML = "<tr><td colspan='8'>No rooms available.</td></tr>";
     }
   } catch (error) {
-    console.error("Error fetching room details:", error);
+    console.error("Error fetching filtered room details:", error);
   }
 }
 
-// Call populateHostelDropdown1 on DOM content load
-window.addEventListener('DOMContentLoaded', populateHostelDropdown1);
+let selectedExtras = {}; // Object to store selected extras
 
-//Populate hostel dropdown for room booking
-async function populateHostelDropdown(prefilledHostel = "") {
-  const hostelDropdown = document.getElementById("hostelDropdown");
-  const hostelsRef = ref(db, "Hostel details/");
+async function loadExtrasView() {
+  const hostelName = document.getElementById("hostelDropdown1").value;
+
+  if (!hostelName) {
+    alert("Please select a hostel name.");
+    return;
+  }
+
+  const extrasRef = ref(db, `Hostel details/${hostelName}/extras`);
+  const extraTableBody = document.querySelector("#extraTable tbody");
 
   try {
-    const snapshot = await get(hostelsRef);
-    if (snapshot.exists()) {
-      const hostels = snapshot.val();
-      hostelDropdown.innerHTML = '<option value="">Select Hostel</option>';
-      for (let hostelName in hostels) {
-        let option = document.createElement("option");
-        option.value = hostelName;
-        option.text = hostelName;
-        hostelDropdown.appendChild(option);
-      }
+    const snapshot = await get(extrasRef);
 
-      // Prefill the dropdown with the user's hostel if available
-      if (prefilledHostel) {
-        hostelDropdown.value = prefilledHostel;
-      }
+    extraTableBody.innerHTML = ""; // Clear previous data
+
+    if (snapshot.exists()) {
+      const extras = snapshot.val();
+      console.log("Extras Data:", extras);
+
+      extras.forEach((extra, index) => {
+        const row = document.createElement("tr");
+
+        // Checkbox cell
+        const checkboxCell = document.createElement("td");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.classList.add("extra-checkbox");
+        checkbox.dataset.index = index;
+
+
+        checkbox.addEventListener("change", (e) => {
+          if (e.target.checked) {
+            selectedExtras[index] = {
+              foodName: extra.foodName,
+              foodPrice: extra.foodPrice,
+            };
+          } else {
+            delete selectedExtras[index];
+          }
+          console.log("Selected Extras:", selectedExtras);
+        });
+
+        checkboxCell.appendChild(checkbox);
+        row.appendChild(checkboxCell);
+
+
+        const foodNameCell = document.createElement("td");
+        foodNameCell.textContent = extra.foodName;
+        row.appendChild(foodNameCell);
+
+        const foodPriceCell = document.createElement("td");
+        foodPriceCell.textContent = `₹${extra.foodPrice}`;
+        row.appendChild(foodPriceCell);
+
+        extraTableBody.appendChild(row);
+      });
+
+      // Show the modal
+      const viewExtrasModal = new bootstrap.Modal(
+        document.getElementById("viewExtrasModal")
+      );
+      viewExtrasModal.show();
     } else {
-      console.log("No hostels found.");
+      console.log("No extras found for this hostel.");
+      extraTableBody.innerHTML =
+        "<tr><td colspan='3'>No extras available.</td></tr>";
     }
   } catch (error) {
-    console.error("Error fetching hostels:", error);
+    console.error("Error fetching extras:", error);
+    extraTableBody.innerHTML =
+      "<tr><td colspan='3'>Error loading extras data.</td></tr>";
   }
 }
-window.addEventListener('DOMContentLoaded', populateHostelDropdown);
+
+
+// Attach event listeners for dynamic filtering
+function attachFilterEventListeners() {
+  const filterInputs = [
+    document.getElementById("hostelDropdown1"),
+    document.getElementById("roomType"),
+    document.getElementById("acType"),
+    document.getElementById("bathroomType"),
+  ];
+
+  filterInputs.forEach((input) => {
+    input.addEventListener("change", fetchFilteredRoomDetails);
+  });
+}
+
+// Initialize dropdowns and attach listeners
+document.addEventListener("DOMContentLoaded", () => {
+  populateHostelDropdown1();
+  attachFilterEventListeners();
+});
+
+
+let selectedDetails = {};
+let isUpdatingBedStatus = false; // Flag to prevent unnecessary UI reloads
+
+// Load bed view for the selected room
+async function loadBedView(floor, roomNo, roomType, acType, bathroom, price) {
+  const hostelName = document.getElementById("hostelDropdown1").value;
+
+  const dbref = ref(
+    db,
+    `Hostel details/${hostelName}/rooms/floor${floor}/${roomType}/rooms/${acType}/room${roomNo}/beds`
+  );
+
+  const parentContainer = document.getElementById("bedParent");
+  parentContainer.innerHTML = ""; // Clear any previous data
+
+  await onValue(dbref, (snapshot) => {
+    if (isUpdatingBedStatus) return; // Skip UI update if we're already updating the status
+
+    const beds = snapshot.val();
+    if (!beds) {
+      parentContainer.innerHTML = "<p>No beds available.</p>";
+      return;
+    }
+
+    parentContainer.innerHTML = "";
+    for (let key in beds) {
+      let bed = beds[key];
+
+      const elem = document.createElement("div");
+      elem.classList.add("card");
+      elem.style.cursor = "pointer";
+
+
+      if (bed.status === "booked") {
+        elem.style.backgroundColor = "#FF7F7F"; 
+        elem.style.border = "1px solid #FF7F7F";
+        elem.style.color = "red";
+        elem.style.pointerEvents = "none";
+      } else {
+        elem.style.backgroundColor = "white";
+        elem.style.border = "1px solid black";
+
+        // Add event listener for bed selection
+        elem.addEventListener("click", async () => {
+
+          const cards = parentContainer.querySelectorAll(".card");
+          cards.forEach((card) => {
+            card.style.backgroundColor = "white";
+            card.style.color = "black";
+          });
+
+          elem.style.backgroundColor = "lightgreen";
+          elem.style.color = "black";
+
+          // Store selected bed details
+          selectedDetails = {
+            floor,
+            roomNumber: roomNo,
+            roomType,
+            ac: acType,
+            bedId: key,
+            bathroomType: bathroom || "N/A",
+            price: price || "N/A",
+            hostelName,
+          };
+
+          console.log("Selected Bed Details:", selectedDetails);
+
+          // Temporarily disable updates to avoid UI reset
+          isUpdatingBedStatus = true;
+
+          // Update the bed status in Firebase as "booked"
+          const bedRef = ref(
+            db,
+            `Hostel details/${hostelName}/rooms/floor${floor}/${roomType}/rooms/${acType}/room${roomNo}/beds/${key}`
+          );
+
+          try {
+            await update(bedRef, { status: "booked" });
+            console.log(`Bed ${key} status updated to "booked".`);
+
+            // Re-enable updates after a brief delay
+            setTimeout(() => {
+              isUpdatingBedStatus = false;
+            }, 500);
+          } catch (error) {
+            console.error("Error updating bed status:", error);
+            isUpdatingBedStatus = false;
+          }
+        });
+      }
+
+      elem.innerHTML = `<div class="card-body">${key} - ${bed.status}</div>`;
+      parentContainer.appendChild(elem);
+    }
+  });
+}
+
+// Attach event listener to the "Apply Filter" button
+document.getElementById("applyFilter").addEventListener("click", fetchFilteredRoomDetails);
+
+
+function confirmSelection() {
+  // Ensure a bed has been selected
+  if (Object.keys(selectedDetails).length === 0) {
+    alert("Please select a bed before confirming.");
+    return;
+  }
+
+  // Find and highlight the corresponding table row
+  const roomTableBody = document.querySelector("#roomTable tbody");
+  const rows = roomTableBody.querySelectorAll("tr");
+
+  rows.forEach((row) => {
+    const floor = row.cells[0].textContent.trim();
+    const roomNumber = row.cells[1].textContent.trim();
+
+    const selectedFloor = selectedDetails.floor.toString().trim();
+    const selectedRoomNumber = selectedDetails.roomNumber.toString().trim();
+
+
+    if (floor === selectedFloor && roomNumber === selectedRoomNumber) {
+      row.style.backgroundColor = "lightgreen"; // Highlight the row
+    } else {
+
+      row.style.backgroundColor = ""; 
+    }
+  });
+
+  const modal = bootstrap.Modal.getInstance(document.getElementById("viewRoomDetails"));
+  modal.hide();
+
+  console.log("Selected Row Data:", selectedDetails);
+}
+
+
+// Attach event listener to the "OK" button in the modal
+document.getElementById("confirmBooking").addEventListener("click", confirmSelection);
+
 
 /*Hostel Multiple images upload*/
 var files = [];
@@ -189,17 +433,15 @@ registerUser.addEventListener('click', async (e) => {
   var guardState = document.getElementById("guardstate").value;
   var guardCity = document.getElementById("guardcity").value;
   var guardPin = document.getElementById("guardpin").value;
-  var roomType = document.getElementById("roomtype").value;
-  var floor = document.getElementById("floornum").value;
-  var ac = document.getElementById("aircond").value;
-  var totalAmount = document.getElementById("roomprice").value;
+  var paymentMode = document.getElementById("paymentMode").value;
+  var paymentId = document.getElementById("paymentId").value;
+  var paymentComments = document.getElementById("paymentComments").value;
   var paymentComplete = document.getElementById("paymentComplete").value;
-  var hostelDropdown = document.getElementById("hostelDropdown").value;
 
   // Validation for user and guardian details
   if (!userName || !userFullName || !userPhone || !userGender || !userEmail || !userAddress1 || !userCity || !userState || !userPin ||
     !password1 || !password2 || !guardName || !guardRelation || !guardEmail || !guardPhone || !guardAddress1 || !guardCity || !guardState
-    || !guardPin || !roomType || !floor || !ac || !totalAmount || !paymentComplete) {
+    || !guardPin || !paymentMode || !paymentComplete) {
     alert("Please fill all required fields.");
     return;
   }
@@ -258,8 +500,8 @@ registerUser.addEventListener('click', async (e) => {
       password1: password1,
       password2: password2,
       guardName: guardName,
-      guardianDetails:"yes",
-      proofSubmission:"yes",
+      guardianDetails: "yes",
+      proofSubmission: "yes",
       guardRelation: guardRelation,
       guardEmail: guardEmail,
       guardPhone: guardPhone,
@@ -278,16 +520,53 @@ registerUser.addEventListener('click', async (e) => {
 
     await set(userRef, newUserDetails); // Store user details
 
-    // Store room details under the hostel's booking
-    const bookingsRef = ref(db, "User details/" + userUid + '/Bookings/' + hostelDropdown + '/RoomDetails/');
+    // Generate current timestamp for booking
+    const currentTimestamp = new Date().toISOString();
+    const currentDate = new Date().toDateString(); // Get the current date string
+
+    // Format the timestamp to use as a valid Firebase key
+    const formattedTimestamp = currentTimestamp
+      .replace(/[.]/g, "_")
+      .replace(/[:]/g, "_")
+      .replace(/[-]/g, "_")
+      .replace(/T/g, "_")
+      .replace(/Z/g, "");
+
+    // Room and payment details
     const roomDetails = {
-      roomType: roomType,
-      floor: floor,
-      ac: ac,
-      totalAmount: totalAmount,
-      paymentComplete: paymentComplete
+      roomType: selectedDetails.roomType,
+      floor: selectedDetails.floor,
+      ac: selectedDetails.ac,
+      totalAmount: selectedDetails.price,
+      paymentComplete: "yes",
+      paymentDate: currentTimestamp,
+      paymenttransId: paymentMode === "Online" ? paymentId : null,
+      paymentComments: paymentMode === "Manual" ? paymentComments : null,
+      room: selectedDetails.roomNumber,
+      roomBookedDate: currentTimestamp,
+      hostelName: selectedDetails.hostelName,
+      status: "Updated",
+      bedId: selectedDetails.bedId,
+      roomRent: selectedDetails.price,
+      extras: Object.values(selectedExtras), // Add extras as an array
     };
+
+    // Store the room details in bookings
+    const bookingsRef = ref(db, `User details/${userUid}/Bookings/${currentDate}/RoomDetails/`);
     await set(bookingsRef, roomDetails);
+
+
+    const paymentDetails = {
+      [formattedTimestamp]: {
+        paymentAmount: selectedDetails.price,
+        paymentDate: currentTimestamp,
+        paymentMode: paymentMode,
+        paymenttransId: paymentMode === "Online" ? paymentId : null,
+      }
+    };
+
+    const paymentRef = ref(db, `User details/${userUid}/Bookings/${currentDate}/RoomDetails/PaymentDetails/`);
+    await set(paymentRef, paymentDetails);
 
     alert("User details and room booking added successfully");
     window.location.href = "././users.html";
