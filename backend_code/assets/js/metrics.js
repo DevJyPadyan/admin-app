@@ -9,7 +9,7 @@ const db = getDatabase();
 
 const getHostelData = () => {
         let cnt = 0;
-        const dbref = ref(db, "Hostel details");
+        const dbref = ref(db);
     onValue(dbref, (snapshot) => {
         hostelData = [];
         snapshot.forEach((h) => {
