@@ -22,19 +22,22 @@ const SelectAlldataReal = () => {
                 Object.values(userData.Bookings).forEach(booking => {
                     if (booking.RoomDetails) {
                         const roomDetails = booking.RoomDetails;
-                        const paymentDetails = Object.values(roomDetails.PaymentDetails || {})[0] || {};
 
-                        userDetails.push({
-                            userFullName: userData.userFullName || "N/A",
-                            userPhone: userData.userPhone || "N/A",
-                            paymentAmount: paymentDetails.paymentAmount || "N/A",
-                            paymentDate: paymentDetails.paymentDate
-                                ? new Date(paymentDetails.paymentDate).toLocaleString()
-                                : "N/A",
-                            paymentMode: paymentDetails.paymentMode || "N/A",
-                            paymentComplete: roomDetails.paymentComplete || "N/A",
-                            room: roomDetails.room || "N/A",
-                            roomType: roomDetails.roomType || "N/A"
+                        // Loop through all payment details
+                        const paymentDetailsArray = Object.values(roomDetails.PaymentDetails || {});
+                        paymentDetailsArray.forEach(paymentDetails => {
+                            userDetails.push({
+                                userFullName: userData.userFullName || "N/A",
+                                userPhone: userData.userPhone || "N/A",
+                                paymentAmount: paymentDetails.paymentAmount || "N/A",
+                                paymentDate: paymentDetails.paymentDate
+                                    ? new Date(paymentDetails.paymentDate).toLocaleString()
+                                    : "N/A",
+                                paymentMode: paymentDetails.paymentMode || "N/A",
+                                paymentComplete: roomDetails.paymentComplete || "N/A",
+                                room: roomDetails.room || "N/A",
+                                roomType: roomDetails.roomType || "N/A"
+                            });
                         });
                     }
                 });
@@ -45,6 +48,7 @@ const SelectAlldataReal = () => {
         AddAllRecords();
     });
 };
+
 
 
 const AddSingleRecord = (userFullName, userPhone, paymentDate, paymentAmount, paymentMode, roomType, room, paymentComplete) => {

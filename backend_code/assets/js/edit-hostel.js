@@ -1763,6 +1763,10 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
                 const remarks = remarksElem.value;
                 let roomImages = [];
 
+                const acPrice = acType === 'ac' ? price : 0;
+                const nonacPrice = acType === 'non_ac' ? price : 0;
+                console.log(acPrice,nonacPrice);
+
                 if (imageInputElem && imageInputElem.files.length > 0) {
                     const files = imageInputElem.files;
                     const uploadPromises = [];
@@ -1789,9 +1793,11 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
                 if (!roomsObject[`floor${floorNumber}`][roomType]) {
                     roomsObject[`floor${floorNumber}`][roomType] = {
                         floor: floorNumber,
-                        price: price,
+                        acPrice: acPrice,
+                        nonacPrice: nonacPrice,
                         roomCount: roomCount,
                         roomType: roomType,
+                        imagesLink:roomImages, 
                         bedsAvailable: roomTypeBedsAvailable,
                         rooms: {}
                     };
