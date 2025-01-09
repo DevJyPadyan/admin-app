@@ -29,6 +29,7 @@ const getHostelData = () => {
         });
         initializeDefaultFilters();
     });
+}
 
 
 
