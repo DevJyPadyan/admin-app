@@ -8,66 +8,34 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase();
 
 
-const waitForData = (dbref) => {
-    return new Promise((resolve, reject) => {
-        const interval = setInterval(() => {
-            onValue(
-                dbref,
-                (snapshot) => {
-                    const data = snapshot.val();
-                    if (data) {
-                        clearInterval(interval); // Stop polling
-                        resolve(data); // Resolve when data is found
-                    }
-                },
-                (error) => {
-                    clearInterval(interval); // Stop polling on error
-                    reject(error); // Reject if an error occurs
-                }
-            );
-        }, 100); // Poll every 100ms
-    });
-};
-
-const getHostelData = async () => {
-    try {
+const getHostelData = () => {
+        let cnt = 0;
         const dbref = ref(db);
-
-        // Wait until data is retrieved
-        const hostelData = await waitForData(dbref);
-        console.log("Hostel data:", hostelData);
-
-        // Validate and populate dropdown
-        if (!hostelData || !hostelData["Hostel details"]) {
-            throw new Error("Invalid hostel data format");
+            onValue(dbref, (snapshot) => {
+        hostelData = snapshot.val();
+        console.log('Hostel data',hostelData);
+        while(!hostelData){
+                cnt++;
+                console.log('Cnt',cnt);
         }
 
-        const hostelDetails = hostelData["Hostel details"];
-        const hostelDropdown = document.getElementById("hostel-name");
-
-        hostelDropdown.innerHTML = "";
-        Object.keys(hostelDetails).forEach((hostelName) => {
-            const option = document.createElement("option");
-            option.value = hostelName;
-            option.textContent = hostelName;
-            hostelDropdown.appendChild(option);
+        const hostelDropdown = document.getElementById('hostel-name');
+        // Loop through the keys in the hostelData object
+        Object.keys(hostelData['Hostel details']).forEach(hostelName => {
+            const option = document.createElement('option');
+            option.value = hostelName; // Set the value of the option
+            option.textContent = hostelName; // Set the displayed text
+            hostelDropdown.appendChild(option); // Append the option to the dropdown
         });
-
-        console.log("Dropdown populated with hostel names");
-
-        // Call initializeDefaultFilters after ensuring dropdown is populated
         initializeDefaultFilters();
-
-    } catch (error) {
-        console.error("Error fetching hostel data:", error);
-    }
-};
+    });
 
 
 
+document.getElementById("fetch-data-btn").addEventListener("click", filterData);
 
 
-                // Get total beds, occupied beds, and available beds
+// Get total beds, occupied beds, and available beds
 const getBedStats = () => {
     let bedStatsData = [];
     let totalBeds = 0, occupiedBeds = 0, availableBeds = 0;
@@ -517,8 +485,8 @@ function calculateHostelData(fromDate, toDate) {
             renderCharts(dataOutput);
         }
 
-        function filterData(event) {
-                event.preventDefault();
+        function filterData() {
+                
             const selectedHostel = document.getElementById('hostel-name').value;
             const startDate = document.getElementById('start-date').value;
             const endDate = document.getElementById('end-date').value;
