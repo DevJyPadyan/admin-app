@@ -32,10 +32,6 @@ const getHostelData = () => {
 }
 
 
-
-document.getElementById("fetch-data-btn").addEventListener("click", filterData);
-
-
 // Get total beds, occupied beds, and available beds
 const getBedStats = () => {
     let bedStatsData = [];
@@ -691,6 +687,14 @@ if (foodDataExists) {
 
         }
 
-        // document.addEventListener('DOMContentLoaded', getHostelData);
-window.addEventListener("load", getHostelData);
+        document.addEventListener('DOMContentLoaded', getHostelData);
+// window.addEventListener("load", getHostelData);
+document.addEventListener("DOMContentLoaded", () => {
+    const button = document.getElementById("fetch-data-btn");
+    if (button) {
+        button.addEventListener("click", filterData);
+    } else {
+        console.error("Button with id 'fetch-data-btn' not found.");
+    }
+});
   
