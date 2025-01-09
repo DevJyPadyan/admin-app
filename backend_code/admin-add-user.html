@@ -722,11 +722,48 @@
                                         <div class="col-xl-6">
                                             <div class="input-box">
                                                 <h6>Hostel Name</h6>
-                                                <select id="hostelDropdown1" style="margin-bottom:30px;">
+                                                <select id="hostelDropdown1" class="js-example-basic-single w-100"
+                                                    name="state" style="margin-bottom:30px;">
                                                     <option value="">Select Hostel</option>
                                                 </select>
                                             </div>
                                         </div>
+
+                                        <div class="col-xl-6">
+                                            <div class="input-box">
+                                                <h6>room Type<span class="required">*</span></h6>
+                                                <select class="js-example-basic-single w-100" name="state" id="roomType"
+                                                    required>
+                                                    <option>2 sharing</option>
+                                                    <option>3 sharing</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-6">
+                                            <div class="input-box">
+                                                <h6>Ac type<span class="required">*</span></h6>
+                                                <select class="js-example-basic-single w-100" name="state" id="acType"
+                                                    required>
+                                                    <option>ac</option>
+                                                    <option>non_ac</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-6">
+                                            <div class="input-box">
+                                                <h6>bathroom<span class="required">*</span></h6>
+                                                <select class="js-example-basic-single w-100" name="state"
+                                                    id="bathroomType" required>
+                                                    <option>attached</option>
+                                                    <option>common</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="col-12 mb-5">
+                                        <button type="button" id="applyFilter"
+                                            class="btn restaurant-button">Filter</button>
                                     </div>
 
                                     <div class="table-responsive theme-scrollbar" id="roomContainer">
@@ -739,8 +776,8 @@
                                                     <th>AC</th>
                                                     <th>Amenities</th>
                                                     <th>Bathroom</th>
-                                                    <th>Room Count</th>
-                                                    <th>Room Price</th>
+                                                    <th>Price</th>
+                                                    <th>View</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -756,60 +793,40 @@
                         <div class="col-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5>Room Booking</h5>
+                                    <h5>Payment details</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="input-items">
                                         <div class="row gy-3">
-                                            <div class="col-xl-6">
+                                            <!--<div class="col-xl-6">
                                                 <div class="input-box">
                                                     <h6>Hostel Name</h6>
                                                     <select id="hostelDropdown" class="js-example-basic-single w-100">
                                                         <option value="">Select Hostel</option>
                                                     </select>
                                                 </div>
-                                            </div>
+                                            </div>-->
                                             <div class="col-xl-6">
                                                 <div class="input-box">
-                                                    <h6>Floor<span class="required">*</span></h6>
-                                                    <input type="text" placeholder="Enter Floor number" id="floornum"
-                                                        required>
-                                                </div>
-                                            </div>
-                                            <div class="col-xl-6">
-                                                <div class="input-box">
-                                                    <h6>Room type<span class="required">*</span></h6>
+                                                    <h6>Payment mode<span class="required">*</span></h6>
                                                     <select class="js-example-basic-single w-100" name="state"
-                                                        id="roomtype" required>
-                                                        <option>1 sharing</option>
-                                                        <option>2 sharing</option>
-                                                        <option>3 sharing</option>
-                                                        <option>4 sharing</option>
+                                                        id="paymentMode" required>
+                                                        <option>Online</option>
+                                                        <option>Manual</option>
                                                     </select>
                                                 </div>
                                             </div>
                                             <div class="col-xl-6">
                                                 <div class="input-box">
-                                                    <h6>Air conditioning<span class="required">*</span></h6>
-                                                    <select class="js-example-basic-single w-100" name="state"
-                                                        id="aircond" required>
-                                                        <option>ac</option>
-                                                        <option>non-ac</option>
-                                                    </select>
+                                                    <h6>Transaction Id</h6>
+                                                    <input type="text" placeholder="Booking Status" id="paymentId">
                                                 </div>
                                             </div>
                                             <div class="col-xl-6">
                                                 <div class="input-box">
-                                                    <h6>Room price<span class="required">*</span></h6>
-                                                    <input type="number" placeholder="Enter Room price" id="roomprice"
-                                                        required>
-                                                </div>
-                                            </div>
-                                            <div class="col-xl-6">
-                                                <div class="input-box">
-                                                    <h6>Payment Status</h6>
-                                                    <input type="text" placeholder="Booking Status" value="Yes"
-                                                        id="paymentComplete">
+                                                    <h6>Comments</h6>
+                                                    <input type="text" placeholder="Booking Status"
+                                                        id="paymentComments">
                                                 </div>
                                             </div>
                                         </div>
@@ -1055,6 +1072,114 @@
     <!-- Page Body End -->
     </div>
     <!-- page-wrapper End -->
+    <!-- Modal for Bed Selection -->
+    <div class="modal theme-modal fade" id="viewRoomDetails" tabindex="-1" role="dialog" aria-modal="true">
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Room Details</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Select a Bed</p>
+                    <!-- Container for bed cards -->
+                    <div id="bedParent" style="display: grid; gap: 20px; grid-template-columns: 1fr 1fr 1fr;">
+                        <!-- Bed cards will be dynamically added by JavaScript -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-cancel" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        Close
+                    </button>
+                    <button class="btn btn-primary" id="confirmBooking" type="button">
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal End - bed details -->
+
+    <div class="modal theme-modal fade" id="viewExtrasModal" tabindex="-1" role="dialog" aria-modal="true">
+        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Room Details</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive theme-scrollbar" id="ExtraContainer">
+                        <table class="table category-table dataTable no-footer" id="extraTable">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input id="checkall" class="custom-checkbox" type="checkbox" name="text" />
+                                    </th>
+                                    <th>Food Name</th>
+                                    <th>Food Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Extras data will be injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-cancel" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal End - extra details -->
+
+
+    <!-- Extras Modal -
+    <div class="modal fade" id="viewExtrasModal" tabindex="-1" aria-labelledby="viewExtrasModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewExtrasModalLabel">Extras</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive theme-scrollbar" id="ExtraContainer">
+                        <table class="table category-table dataTable no-footer" id="extraTable">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input id="checkall" class="custom-checkbox" type="checkbox" name="text" />
+                                    </th>
+                                    <th>Food Name</th>
+                                    <th>Food Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                              
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-cancel" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>-->
+
 
     <!--Add room Modal start-->
     <div class="modal fade location-modal" id="room" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
@@ -1160,6 +1285,18 @@
 
     <!-- Theme js -->
     <script src="assets/js/script.js"></script>
+    <script>
+        const extrasModal = document.getElementById('viewExtrasModal');
+
+        extrasModal.addEventListener('hidden.bs.modal', () => {
+            const modalBackdrop = document.querySelector('.modal-backdrop');
+            if (modalBackdrop) {
+                modalBackdrop.remove();
+            }
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+        });
+    </script>
 </body>
 
 </html>
