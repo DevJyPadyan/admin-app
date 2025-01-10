@@ -1649,7 +1649,7 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
             let remarks = document.getElementById(`remarks-${uniqueId}`).value;
 
             // Calculate beds available
-            const roomTypeBedsAvailable = parseInt(roomType.match(/\d+/)[0]) * roomCount;
+            const roomTypeBedsAvailable = parseInt(roomType.match(/\d+/)[0]) * 1; // by default room will be 1 for adding additional rooms
 
             // Handle images upload
             let imageInput = document.getElementById(`roomImage-${uniqueId}`);
