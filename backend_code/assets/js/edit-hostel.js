@@ -43,18 +43,18 @@ function prevStep(step) {
 function showLoader() {
     const loader = document.getElementById("loader");
     if (loader) {
-      loader.style.display = "flex";
+        loader.style.display = "flex";
     }
-  }
-  
-  // Hide loader
-  function hideLoader() {
+}
+
+// Hide loader
+function hideLoader() {
     const loader = document.getElementById("loader");
     if (loader) {
-      loader.style.display = "none";
+        loader.style.display = "none";
     }
-  }
-  
+}
+
 
 function updateProgressBar(step) {
     const progressBar = document.getElementById("progressBar");
@@ -997,7 +997,7 @@ document.addEventListener('DOMContentLoaded', function () {
             { value: '3 sharing', text: '3 sharing' },
             /*{ value: '4 sharing', text: '4 sharing' }*/
         ]));
-        rowElem.appendChild(createInputBox("Room Count", `roomCount-${roomCount}`, "number", true));
+
         rowElem.appendChild(createInputBox("Amenities", `amenities-${roomCount}`, "text", false, "e.g., WiFi, Laundry"));
         rowElem.appendChild(createInputBox("Price", `price-${roomCount}`, "number", true));
         rowElem.appendChild(createInputBox("Upload Room Images", `roomImage-${roomCount}`, "file", false, "", true));
@@ -1633,7 +1633,7 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
 
         // Wait for all image uploads to finish
         await Promise.all(uploadPromises);
-        
+
 
         let additionalRoomContainers = document.querySelectorAll('.additional-room-container');
 
@@ -1641,23 +1641,44 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
             let uniqueId = roomElem.id.split('-')[1];
             let floor = parseInt(document.getElementById(`floor-${uniqueId}`).value, 10);
             let roomType = document.getElementById(`roomType-${uniqueId}`).value;
-            let roomCount = parseInt(document.getElementById(`roomCount-${uniqueId}`).value, 10);
             let amenities = document.getElementById(`amenities-${uniqueId}`).value;
             let price = document.getElementById(`price-${uniqueId}`).value;
             let bathroom = document.getElementById(`bathroom-${uniqueId}`).value;
             let ac = document.getElementById(`acType-${uniqueId}`).value;
             let remarks = document.getElementById(`remarks-${uniqueId}`).value;
 
-            // Calculate beds available
-            const roomTypeBedsAvailable = parseInt(roomType.match(/\d+/)[0]) * roomCount;
-            const bedsAvailableForRoom = parseInt(roomType.match(/\d+/)[0]);
+            // Use a constant roomCount for additional rooms
+            const roomCount = 1;
 
-            // Handle images upload
+            // Get roomType-level Firebase path
+            const roomTypePath = `Hostel details/${hname}/rooms/floor${floor}/${roomType}`;
+            const roomTypeRef = ref(db, roomTypePath);
+
+            // Fetch existing data for the roomType
+            const roomTypeSnapshot = await get(roomTypeRef);
+            const roomTypeData = roomTypeSnapshot.val();
+
+            // Update bedsAvailable at the roomType level
+            const updatedBedsAvailable = roomTypeData.bedsAvailable + roomCount;
+
+            // Fetch existing rooms to determine the highest room number
+            const existingRooms = roomTypeData.rooms?.[ac] || {};
+            const roomNumbers = Object.keys(existingRooms).map(key => {
+                const match = key.match(/R(\d+)_F\d+/);
+                return match ? parseInt(match[1], 10) : 0;
+            });
+            const maxRoomNumber = Math.max(0, ...roomNumbers);
+            const newRoomNumber = maxRoomNumber + 1;
+            const roomNumberKey = `roomR${newRoomNumber}_F${floor}`;
+            const roomNumber = `R${newRoomNumber}_F${floor}`;
+
+            // Handle image uploads
             let imageInput = document.getElementById(`roomImage-${uniqueId}`);
             let files = imageInput.files;
             let imageLinks = [];
 
             if (files.length !== 0) {
+                // User uploaded images
                 for (let file of files) {
                     let storageRef = ref2(storage, `images/${hname}/room-${uniqueId}/${file.name}`);
                     await uploadBytes(storageRef, file);
@@ -1665,61 +1686,61 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
                     imageLinks.push(imageUrl);
                 }
             }
+            else {
 
-            // Update roomType-level details in Firebase
-            const roomTypePath = `Hostel details/${hname}/rooms/floor${floor}/${roomType}`;
+                let defaultImageUrl = 'https://firebasestorage.googleapis.com/v0/b/hostel-user-app.appspot.com/o/DefaultImages%2Fp-18.png?alt=media&token=f86592b8-023d-47f0-b43f-858e2f45b2bf';
 
-            // Initialize acPrice and nonacPrice based on the AC type
-            const acPrice = ac === 'ac' ? price : 0;
-            const nonacPrice = ac === 'non_ac' ? price : 0;
+                // Directly reference the uploaded image URL and store it under `images/${hname}/room-${uniqueId}`
+                const defaultImageRef = ref2(storage, `images/${hname}/room-${uniqueId}/default-room.jpg`);
 
-            // Construct the roomTypeData object
-            const roomTypeData = {
+                // No need to fetch the image as it's already uploaded. Directly store the URL.
+                const uploadedDefaultImageUrl = defaultImageUrl; // This is the URL of the uploaded image
+
+                // Store the image URL in the imageLinks array
+                imageLinks.push(uploadedDefaultImageUrl);
+
+                // Now you can proceed to store this image URL in Firebase Database as needed                
+            }
+
+            // Update roomType-level data
+            const updatedRoomTypeData = {
+                bedsAvailable: updatedBedsAvailable, // Increment bedsAvailable
+            };
+            await update(roomTypeRef, updatedRoomTypeData);
+            const bedsAvailableForRoom = parseInt(roomType.match(/\d+/)[0]); // E.g., "2 sharing" => 2 beds
+
+            // Prepare room-level data for the additional room
+            const roomData = {
                 floor: floor,
                 roomType: roomType,
-                acPrice: acPrice,
-                nonacPrice: nonacPrice,
+                roomNumber: roomNumber,
+                roomCount: roomCount,
+                amenities: amenities,
+                ac: ac,
+                bathroom: bathroom,
+                price: price,
+                remarks: remarks,
                 imagesLink: imageLinks,
-                bedsAvailable: roomTypeBedsAvailable,
+                bedsAvailable: bedsAvailableForRoom
             };
 
-            // Update the database
-            await update(ref(db, roomTypePath), roomTypeData)
-            // Loop through each room and add room-level details
-            for (let roomSubIndex = 1; roomSubIndex <= roomCount; roomSubIndex++) {
-                const roomNumber = `R${roomNumberCounter++}_F${floor}`;
-                const roomPath = `${roomTypePath}/rooms/${ac}/room${roomNumber}`;
+            // Add bed-level data
 
-                const roomData = {
-                    floor: floor,
-                    roomType: roomType,
-                    roomNumber: roomNumber,
-                    roomCount: roomCount,
-                    amenities: amenities,
-                    ac: ac,
-                    bathroom: bathroom,
-                    price: price,
-                    remarks: remarks,
-                    bedsAvailable: roomTypeBedsAvailable,
-                    imagesLink: imageLinks,
+            const bedsData = {};
+            for (let bedIndex = 1; bedIndex <= bedsAvailableForRoom; bedIndex++) {
+                const bedKey = `bed ${bedIndex}`;
+                bedsData[bedKey] = {
+                    status: "not booked",
                 };
-                await update(ref(db, roomPath), roomData);
-
-                // Add bed-level data
-                let bedsData = {};
-                for (let bedIndex = 1; bedIndex <= bedsAvailableForRoom; bedIndex++) {
-                    const bedKey = `bed ${bedIndex}`;
-                    bedsData[bedKey] = {
-                        status: "not booked" // Object with the desired structure
-                    };
-                }
-
-                // Update beds in Firebase
-                const bedsPath = `${roomPath}/beds`;
-                await update(ref(db, bedsPath), bedsData);
             }
-        }
+            roomData.beds = bedsData;
 
+            // Add the additional room under the correct path
+            const newRoomPath = `${roomTypePath}/rooms/${ac}/${roomNumberKey}`;
+            await update(ref(db, newRoomPath), roomData);
+
+            console.log(`Additional room added: ${roomNumber}`);
+        }
 
         const floorCount = document.querySelectorAll('.card-header h5').length;
 
@@ -1766,7 +1787,7 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
 
                 const acPrice = acType === 'ac' ? price : 0;
                 const nonacPrice = acType === 'non_ac' ? price : 0;
-                console.log(acPrice,nonacPrice);
+                console.log(acPrice, nonacPrice);
 
                 if (imageInputElem && imageInputElem.files.length > 0) {
                     const files = imageInputElem.files;
@@ -1798,7 +1819,7 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
                         nonacPrice: nonacPrice,
                         roomCount: roomCount,
                         roomType: roomType,
-                        imagesLink:roomImages, 
+                        imagesLink: roomImages,
                         bedsAvailable: roomTypeBedsAvailable,
                         rooms: {}
                     };
