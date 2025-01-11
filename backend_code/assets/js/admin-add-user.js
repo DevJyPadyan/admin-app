@@ -152,18 +152,19 @@ async function loadExtrasView() {
 
     if (snapshot.exists()) {
       const extras = snapshot.val();
-      console.log("Extras Data:", extras);
 
       extras.forEach((extra, index) => {
         const row = document.createElement("tr");
 
-        // Checkbox cell
         const checkboxCell = document.createElement("td");
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.classList.add("extra-checkbox");
         checkbox.dataset.index = index;
 
+        if (selectedExtras[index]) {
+          checkbox.checked = true;
+        }
 
         checkbox.addEventListener("change", (e) => {
           if (e.target.checked) {
@@ -180,7 +181,6 @@ async function loadExtrasView() {
         checkboxCell.appendChild(checkbox);
         row.appendChild(checkboxCell);
 
-
         const foodNameCell = document.createElement("td");
         foodNameCell.textContent = extra.foodName;
         row.appendChild(foodNameCell);
@@ -192,7 +192,6 @@ async function loadExtrasView() {
         extraTableBody.appendChild(row);
       });
 
-      // Show the modal
       const viewExtrasModal = new bootstrap.Modal(
         document.getElementById("viewExtrasModal")
       );
@@ -224,19 +223,23 @@ function attachFilterEventListeners() {
   });
 }
 
-// Initialize dropdowns and attach listeners
 document.addEventListener("DOMContentLoaded", () => {
   populateHostelDropdown1();
   attachFilterEventListeners();
 });
 
-
-let selectedDetails = {};
-let isUpdatingBedStatus = false; // Flag to prevent unnecessary UI reloads
-
 // Load bed view for the selected room
+let selectedDetails = {};
+let selectedBedState = {};
+let isUpdatingBedStatus = false; // Prevent unnecessary UI reloads
+
 async function loadBedView(floor, roomNo, roomType, acType, bathroom, price) {
   const hostelName = document.getElementById("hostelDropdown1").value;
+  const roomKey = `${hostelName}_F${floor}_R${roomNo}`; // Unique identifier for the room
+
+  if (!selectedBedState[roomKey]) {
+    selectedBedState[roomKey] = {}; // Initialize state for this room
+  }
 
   const dbref = ref(
     db,
@@ -244,10 +247,10 @@ async function loadBedView(floor, roomNo, roomType, acType, bathroom, price) {
   );
 
   const parentContainer = document.getElementById("bedParent");
-  parentContainer.innerHTML = ""; // Clear any previous data
+  parentContainer.innerHTML = ""; // Clear previous data
 
   await onValue(dbref, (snapshot) => {
-    if (isUpdatingBedStatus) return; // Skip UI update if we're already updating the status
+    if (isUpdatingBedStatus) return;
 
     const beds = snapshot.val();
     if (!beds) {
@@ -263,65 +266,54 @@ async function loadBedView(floor, roomNo, roomType, acType, bathroom, price) {
       elem.classList.add("card");
       elem.style.cursor = "pointer";
 
-
+      // Determine bed state and style
       if (bed.status === "booked") {
-        elem.style.backgroundColor = "#FF7F7F"; 
+        elem.style.backgroundColor = "#FF7F7F";
         elem.style.border = "1px solid #FF7F7F";
         elem.style.color = "red";
         elem.style.pointerEvents = "none";
+      } else if (selectedBedState[roomKey][key]) {
+        elem.style.backgroundColor = "lightgreen"; 
+        elem.style.color = "black";
       } else {
         elem.style.backgroundColor = "white";
         elem.style.border = "1px solid black";
+      }
 
-        // Add event listener for bed selection
-        elem.addEventListener("click", async () => {
+      elem.addEventListener("click", () => {
+        // Reset all beds for this room
+        for (let cardKey in selectedBedState[roomKey]) {
+          selectedBedState[roomKey][cardKey] = false;
+        }
 
-          const cards = parentContainer.querySelectorAll(".card");
-          cards.forEach((card) => {
+        const cards = parentContainer.querySelectorAll(".card");
+        cards.forEach((card) => {
+          if (!card.style.pointerEvents.includes("none")) {
             card.style.backgroundColor = "white";
             card.style.color = "black";
-          });
-
-          elem.style.backgroundColor = "lightgreen";
-          elem.style.color = "black";
-
-          // Store selected bed details
-          selectedDetails = {
-            floor,
-            roomNumber: roomNo,
-            roomType,
-            ac: acType,
-            bedId: key,
-            bathroomType: bathroom || "N/A",
-            price: price || "N/A",
-            hostelName,
-          };
-
-          console.log("Selected Bed Details:", selectedDetails);
-
-          // Temporarily disable updates to avoid UI reset
-          isUpdatingBedStatus = true;
-
-          // Update the bed status in Firebase as "booked"
-          const bedRef = ref(
-            db,
-            `Hostel details/${hostelName}/rooms/floor${floor}/${roomType}/rooms/${acType}/room${roomNo}/beds/${key}`
-          );
-
-          try {
-            await update(bedRef, { status: "booked" });
-            console.log(`Bed ${key} status updated to "booked".`);
-
-            // Re-enable updates after a brief delay
-            setTimeout(() => {
-              isUpdatingBedStatus = false;
-            }, 500);
-          } catch (error) {
-            console.error("Error updating bed status:", error);
-            isUpdatingBedStatus = false;
           }
         });
-      }
+
+        elem.style.backgroundColor = "lightgreen";
+        elem.style.color = "black";
+
+        // Update selected bed state
+        selectedBedState[roomKey][key] = true;
+
+        // Store selected bed details locally
+        selectedDetails = {
+          floor,
+          roomNumber: roomNo,
+          roomType,
+          ac: acType,
+          bedId: key,
+          bathroomType: bathroom || "N/A",
+          price: price || "N/A",
+          hostelName,
+        };
+
+        console.log("Selected Bed Details:", selectedDetails);
+      });
 
       elem.innerHTML = `<div class="card-body">${key} - ${bed.status}</div>`;
       parentContainer.appendChild(elem);
@@ -356,7 +348,7 @@ function confirmSelection() {
       row.style.backgroundColor = "lightgreen"; // Highlight the row
     } else {
 
-      row.style.backgroundColor = ""; 
+      row.style.backgroundColor = "";
     }
   });
 
@@ -436,17 +428,19 @@ registerUser.addEventListener('click', async (e) => {
   var paymentMode = document.getElementById("paymentMode").value;
   var paymentId = document.getElementById("paymentId").value;
   var paymentComments = document.getElementById("paymentComments").value;
-  // var paymentComplete = document.getElementById("paymentComplete").value;
   var paymentComplete = "yes";
 
   // Validation for user and guardian details
   if (!userName || !userFullName || !userPhone || !userGender || !userEmail || !userAddress1 || !userCity || !userState || !userPin ||
     !password1 || !password2 || !guardName || !guardRelation || !guardEmail || !guardPhone || !guardAddress1 || !guardCity || !guardState
-    || !guardPin || !paymentMode || !paymentComplete) {
+    || !guardPin || !paymentMode) {
     alert("Please fill all required fields.");
     return;
   }
-
+  if (!selectedDetails.bedId) {
+    alert("Please select a bed before registering.");
+    return;
+  }
   // Email validation
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailPattern.test(userEmail)) {
@@ -519,7 +513,7 @@ registerUser.addEventListener('click', async (e) => {
       newUserDetails.proofData = existingData.proofData;
     }
 
-    await set(userRef, newUserDetails); // Store user details
+    await update(userRef, newUserDetails); // Store user details
 
     // Generate current timestamp for booking
     const currentTimestamp = new Date().toISOString();
@@ -539,7 +533,7 @@ registerUser.addEventListener('click', async (e) => {
       floor: selectedDetails.floor,
       ac: selectedDetails.ac,
       totalAmount: selectedDetails.price,
-      paymentComplete: "yes",
+      paymentComplete: "paymentComplete",
       paymentDate: currentTimestamp,
       paymenttransId: paymentMode === "Online" ? paymentId : null,
       paymentComments: paymentMode === "Manual" ? paymentComments : null,
@@ -565,6 +559,13 @@ registerUser.addEventListener('click', async (e) => {
         paymenttransId: paymentMode === "Online" ? paymentId : null,
       }
     };
+    const bedRef = ref(
+      db,
+      `Hostel details/${selectedDetails.hostelName}/rooms/floor${selectedDetails.floor}/${selectedDetails.roomType}/rooms/${selectedDetails.ac}/room${selectedDetails.roomNumber}/beds/${selectedDetails.bedId}`
+    );
+
+    await update(bedRef, { status: "booked" });
+    console.log(`Bed ${selectedDetails.bedId} status updated to "booked".`);
 
     const paymentRef = ref(db, `User details/${userUid}/Bookings/${currentDate}/RoomDetails/PaymentDetails/`);
     await set(paymentRef, paymentDetails);
