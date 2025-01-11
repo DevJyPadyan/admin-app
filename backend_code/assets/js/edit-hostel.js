@@ -1650,6 +1650,7 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
 
             // Calculate beds available
             const roomTypeBedsAvailable = parseInt(roomType.match(/\d+/)[0]) * roomCount;
+            const bedsAvailableForRoom = parseInt(roomType.match(/\d+/)[0]);
 
             // Handle images upload
             let imageInput = document.getElementById(`roomImage-${uniqueId}`);
@@ -1706,7 +1707,7 @@ document.getElementById("nextButtonStep2").addEventListener("click", async () =>
 
                 // Add bed-level data
                 let bedsData = {};
-                for (let bedIndex = 1; bedIndex <= roomTypeBedsAvailable; bedIndex++) {
+                for (let bedIndex = 1; bedIndex <= bedsAvailableForRoom; bedIndex++) {
                     const bedKey = `bed ${bedIndex}`;
                     bedsData[bedKey] = {
                         status: "not booked" // Object with the desired structure
