@@ -428,6 +428,7 @@ registerUser.addEventListener('click', async (e) => {
   var paymentMode = document.getElementById("paymentMode").value;
   var paymentId = document.getElementById("paymentId").value;
   var paymentComments = document.getElementById("paymentComments").value;
+  var paymentComplete = "yes";
 
   // Validation for user and guardian details
   if (!userName || !userFullName || !userPhone || !userGender || !userEmail || !userAddress1 || !userCity || !userState || !userPin ||
@@ -532,7 +533,7 @@ registerUser.addEventListener('click', async (e) => {
       floor: selectedDetails.floor,
       ac: selectedDetails.ac,
       totalAmount: selectedDetails.price,
-      paymentComplete: "yes",
+      paymentComplete: "paymentComplete",
       paymentDate: currentTimestamp,
       paymenttransId: paymentMode === "Online" ? paymentId : null,
       paymentComments: paymentMode === "Manual" ? paymentComments : null,
