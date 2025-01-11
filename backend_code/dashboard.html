@@ -113,7 +113,7 @@
                 </div>
                 <div class="welcome-title">
                     <h5>
-                        User payment details!
+                        Admin Dashboard
                         <img src="./assets/images/header.gif" alt="">
                     </h5>
                     <span>
@@ -403,10 +403,149 @@
             </div>
             <!-- Page Sidebar Ends-->
 
+
             <!-- Container-fluid starts-->
             <div class="page-body">
                 <div class="container-fluid">
                     <div class="row">
+                        <!--<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+                            <div class="container-fluid">
+                                <a class="navbar-brand" href="#">Periketis Admin Dashboard Metric</a>
+                            </div>
+                        </nav>-->
+                        <div class="container my-4">
+                            <form id="filters" class="row g-3 mb-4">
+                                <div class="col-md-3">
+                                    <label for="hostel-name" class="form-label">Hostel</label>
+                                    <select id="hostel-name" class="form-select">
+                                        <option value="all">All Hostels</option> <!-- Default option -->
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="start-date" class="form-label">From Date</label>
+                                    <input type="date" id="start-date" class="form-control">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="end-date" class="form-label">To Date</label>
+                                    <input type="date" id="end-date" class="form-control">
+                                </div>
+                                <div class="col-md-3 align-self-end">
+                                    <button type="button" id="fetch-data-btn" class="btn btn-primary w-100">Apply
+                                        Filters</button>
+                                </div>
+                            </form>
+
+                            <div class="row">
+                                <!-- Bed Stats Chart -->
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">Bed Stats</div>
+                                        <div class="card-body">
+                                            <canvas id="bedStatsChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- User Stats Chart -->
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">User Stats</div>
+                                        <div class="card-body">
+                                            <canvas id="userStatsChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- Occupied Bed Types Chart -->
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">Occupied Bed Types</div>
+                                        <div class="card-body">
+                                            <canvas id="occupiedBedChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Payment Stats -->
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">Payment Stats</div>
+                                        <div class="card-body">
+                                            <canvas id="paymentStatsChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- Financial Stats -->
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header">Financial Stats</div>
+                                        <div class="card-body">
+                                            <canvas id="financialStatsChart"></canvas>
+
+                                            <h5 class="mt-4">Category-Wise Expense Breakdown</h5>
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Category</th>
+                                                        <th>Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="financialBreakdownTable">
+                                                    <tr>
+                                                        <td colspan="2">Loading...</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+
+                                            <h5 class="mt-4">Income Breakdown</h5>
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <th>Description</th>
+                                                        <th>Amount</th>
+                                                        <th>Transaction ID</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="incomeBreakdownTable">
+                                                    <tr>
+                                                        <td colspan="4">Loading...</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- Extra Food Options -->
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">Extra Food Options</div>
+                                        <div class="card-body">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Hostel</th>
+                                                        <th>Food Item</th>
+                                                        <th>Count</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="foodOptionsTable">
+                                                    <tr>
+                                                        <td colspan="3">Loading...</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-sm-12">
                             <div class="card card-table">
                                 <div class="card-body">
@@ -427,8 +566,9 @@
                                                         class="product-btn-1">
                                                         <i class="ri-upload-2-fill me-1"></i>Export</a>
                                                 </li>
-                                                <a href='./metrics.html' target='_blank' class="product-btn-1">View Detailed Metrics</a>
-                                               
+                                                <!--<a href='./metrics.html' target='_blank' class="product-btn-1">View
+                                                    Detailed Metrics</a>-->
+
                                             </ul>
                                         </div>
                                     </div>
@@ -601,6 +741,8 @@
 
     <!-- Hostel details js -->
     <script src="assets/js/dashboard.js" type="module" defer></script>
+
+    <script src="assets/js/metrics.js" type="module" defer></script>
 
     <!-- latest js -->
     <script src="assets/js/jquery-3.6.0.min.js"></script>
