@@ -825,21 +825,21 @@
                                         </div>
                                     </div>
                                 </div> -->
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h5>User Details</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="container-fluid">
-                                            <div class="row">
-                                                <div class="col-sm-12">
-                                                    <div class="card card-table">
-                                                        <div class="card-body">
-                                                            <div class="title-header option-title d-sm-flex d-block">
-                                                                <h5>Users History</h5>
-                                                                <div class="right-options">
-                                                                    <ul>
-                                                                        <!--<li>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>User Details</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="container-fluid">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="card card-table">
+                                                    <div class="card-body">
+                                                        <div class="title-header option-title d-sm-flex d-block">
+                                                            <h5>Users History</h5>
+                                                            <div class="right-options">
+                                                                <ul>
+                                                                    <!--<li>
                                                                         <a href="javascript:void(0)" class="product-btn-1">
                                                                             <i class="ri-download-2-fill me-1"></i>import</a>
                                                                     </li>
@@ -847,70 +847,62 @@
                                                                         <a href="javascript:void(0)" class="product-btn-1">
                                                                             <i class="ri-upload-2-fill me-1"></i>Export</a>
                                                                     </li>-->
-                                                                        <li>
-                                                                            <a id="export_table_btn"
-                                                                                onclick="downloadExcel()"
-                                                                                class="product-btn-1">
-                                                                                <i
-                                                                                    class="ri-upload-2-fill me-1"></i>Export</a>
-                                                                        </li>
-                                                                    </ul>
-                                                                </div>
+                                                                    <li>
+                                                                        <a id="export_table_btn"
+                                                                            onclick="downloadExcel()"
+                                                                            class="product-btn-1">
+                                                                            <i
+                                                                                class="ri-upload-2-fill me-1"></i>Export</a>
+                                                                    </li>
+                                                                </ul>
                                                             </div>
-                                                            <div>
-                                                                <div class="input-box">
-                                                                    <input class="search-box" type="search"
-                                                                        placeholder="Search User details here..."
-                                                                        id="myInput" onkeyup='searchTable()'>
-                                                                    <br>
-                                                                    <br>
-                                                                </div>
-                                                                <div class="table-responsive theme-scrollbar">
-                                                                    <table
-                                                                        class="table category-table dataTable no-footer"
-                                                                        id="table_id">
-                                                                        <thead>
-                                                                            <tr>
-                                                                                <th><input id="checkall"
-                                                                                        class="custom-checkbox"
-                                                                                        type="checkbox" name="text">
-                                                                                </th>
-                                                                                <!--<th>S. No</th>-->
-                                                                                <th>Booking ID</th>
-                                                                                <th>Hostel Name <span class="fa fa-sort"
-                                                                                        onclick="sortTable(1)"></span>
-                                                                                    <span class="filterButton"
-                                                                                        onclick="toggleFilter(event, 1)"
-                                                                                        style="cursor: pointer;">
-                                                                                        <i class="fa fa-filter"></i>
-                                                                                    </span>
-                                                                                    <div class="filterOptions"></div>
-                                                                                </th>
-                                                                                <th>Floor</th>
-                                                                                <th>Type</th>
-                                                                                <th>AC</th>
-                                                                                <th>Room No</th>
-                                                                                <th>Bed ID</th>
-                                                                                <th>Room Rent &nbsp; <span class="fa fa-sort"
-                                                                                        onclick="sortTable(2)"></span>
-                                                                                    <span class="filterButton"
-                                                                                        onclick="toggleFilter(event, 1)"
-                                                                                        style="cursor: pointer;">
-                                                                                        <i class="fa fa-filter"></i>
-                                                                                    </span>
-                                                                                    <div class="filterOptions"></div>
-                                                                                </th>
-                                                                                </th>
-                                                                                <th>Booking Date&nbsp;<span class="fa fa-sort"
-                                                                                        onclick="sortTable(3)"></span>
-                                                                                    <span class="filterButton"
-                                                                                        onclick="toggleFilter(event, 1)"
-                                                                                        style="cursor: pointer;">
-                                                                                        <i class="fa fa-filter"></i>
-                                                                                    </span>
-                                                                                    <div class="filterOptions"></div>
-                                                                                </th>
-                                                                                <th>Status &nbsp;<span class="fa fa-sort"
+                                                        </div>
+                                                        <div>
+                                                            <div class="input-box">
+                                                                <input class="search-box" type="search"
+                                                                    placeholder="Search User details here..."
+                                                                    id="myInput" onkeyup='searchTable()'>
+                                                                <br>
+                                                                <br>
+                                                            </div>
+                                                            <div class="table-responsive theme-scrollbar">
+                                                                <table class="table category-table dataTable no-footer"
+                                                                    id="table_id">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th><input id="checkall"
+                                                                                    class="custom-checkbox"
+                                                                                    type="checkbox" name="text">
+                                                                            </th>
+                                                                            <!--<th>S. No</th>-->
+                                                                            <th>Booking ID</th>
+                                                                            <th>Hostel Name <span class="fa fa-sort"
+                                                                                    onclick="sortTable(1)"></span>
+                                                                                <span class="filterButton"
+                                                                                    onclick="toggleFilter(event, 1)"
+                                                                                    style="cursor: pointer;">
+                                                                                    <i class="fa fa-filter"></i>
+                                                                                </span>
+                                                                                <div class="filterOptions"></div>
+                                                                            </th>
+                                                                            <th>Floor</th>
+                                                                            <th>Type</th>
+                                                                            <th>AC</th>
+                                                                            <th>Room No</th>
+                                                                            <th>Bed ID</th>
+                                                                            <th>Room Rent &nbsp; <span
+                                                                                    class="fa fa-sort"
+                                                                                    onclick="sortTable(2)"></span>
+                                                                                <span class="filterButton"
+                                                                                    onclick="toggleFilter(event, 1)"
+                                                                                    style="cursor: pointer;">
+                                                                                    <i class="fa fa-filter"></i>
+                                                                                </span>
+                                                                                <div class="filterOptions"></div>
+                                                                            </th>
+                                                                            </th>
+                                                                            <th>Booking Date&nbsp;<span
+                                                                                    class="fa fa-sort"
                                                                                     onclick="sortTable(3)"></span>
                                                                                 <span class="filterButton"
                                                                                     onclick="toggleFilter(event, 1)"
@@ -919,18 +911,27 @@
                                                                                 </span>
                                                                                 <div class="filterOptions"></div>
                                                                             </th>
-                                                                                <th>Payment History</th>
-                                                                                <th>Vacation Details</th>
-                                                                                <th>Checkout Details</th>
-                                                                            </tr>
-                                                                        </thead>
+                                                                            <th>Status &nbsp;<span class="fa fa-sort"
+                                                                                    onclick="sortTable(3)"></span>
+                                                                                <span class="filterButton"
+                                                                                    onclick="toggleFilter(event, 1)"
+                                                                                    style="cursor: pointer;">
+                                                                                    <i class="fa fa-filter"></i>
+                                                                                </span>
+                                                                                <div class="filterOptions"></div>
+                                                                            </th>
+                                                                            <th>Payment History</th>
+                                                                            <th>Vacation Details</th>
+                                                                            <th>Checkout Details</th>
+                                                                            <th>Change room</th>
+                                                                        </tr>
+                                                                    </thead>
 
-                                                                        <tbody id="tbody1">
-                                                                            <tr>
-                                                                            </tr>
-                                                                        </tbody>
-                                                                    </table>
-                                                                </div>
+                                                                    <tbody id="tbody1">
+                                                                        <tr>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -940,28 +941,29 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 mb-5">
-                                <button type="button" id="updateUser" class="btn restaurant-button">Update</button>
-                            </div>
+                        </div>
+                        <div class="col-12 mb-5">
+                            <button type="button" id="updateUser" class="btn restaurant-button">Update</button>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- New Product Add End -->
-
-            <!-- footer Start -->
-            <div class="container-fluid">
-                <footer class="footer">
-                    <div class="row">
-                        <div class="col-md-12 footer-copyright text-center">
-                            <p class="mb-0">Copyright 2024 ©Perikitis</p>
-                        </div>
-                    </div>
-                </footer>
-            </div>
-            <!-- footer En -->
         </div>
-        <!-- Container-fluid End -->
+        <!-- New Product Add End -->
+
+        <!-- footer Start -->
+        <div class="container-fluid">
+            <footer class="footer">
+                <div class="row">
+                    <div class="col-md-12 footer-copyright text-center">
+                        <p class="mb-0">Copyright 2024 ©Perikitis</p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        <!-- footer En -->
+    </div>
+    <!-- Container-fluid End -->
     </div>
     <!-- Page Body End -->
     </div>
@@ -1028,7 +1030,7 @@
 
     <!-- Modal Start - Payment details -->
     <div class="modal theme-modal fade" id="viewPaymentDetails" tabindex="-1" role="dialog" aria-modal="true">
-        <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5>Payment Details</h5>
@@ -1038,14 +1040,10 @@
                 </div>
                 <div class="modal-body">
                     <div class="table-responsive theme-scrollbar">
-                        <table
-                            class="table category-table dataTable no-footer"
-                            id="table_id_payment">
+                        <table class="table category-table dataTable no-footer" id="table_id_payment">
                             <thead>
                                 <tr>
-                                    <th><input id="checkall"
-                                            class="custom-checkbox"
-                                            type="checkbox" name="text">
+                                    <th><input id="checkall" class="custom-checkbox" type="checkbox" name="text">
                                     </th>
                                     <th>Transaction ID</th>
                                     <th>Amount</th>
@@ -1064,6 +1062,119 @@
                 <div class="modal-footer">
                     <button class="btn btn-cancel" type="button" data-bs-dismiss="modal"
                         aria-label="Close">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Start - Change Room details -->
+    <div class="modal theme-modal fade" id="viewChangeRoom" tabindex="-1" role="dialog" aria-modal="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Change room</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive theme-scrollbar">
+                        <table class="table category-table dataTable no-footer" id="table_id_change_room">
+                            <thead>
+                                <tr>
+
+                                    <th>Floor</th>
+                                    <th>Room</th>
+                                    <th>Type</th>
+                                    <th>Ac</th>
+                                    <th>Bathroom</th>
+                                    <th>Rent</th>
+                                    <th>View beds</th>
+
+                                </tr>
+                            </thead>
+
+                            <tbody id="tbody3">
+                                <tr>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-cancel" type="button" data-bs-dismiss="modal"
+                        aria-label="Close">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal for Bed Selection -->
+    <div class="modal theme-modal fade" id="viewRoomDetails" tabindex="-1" role="dialog" aria-modal="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Room Details</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="ri-close-line"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Select a Bed</p>
+                    <!-- Container for bed cards -->
+                    <div id="bedParent" style="display: grid; gap: 20px; grid-template-columns: 1fr 1fr 1fr;">
+                        <!-- Bed cards will be dynamically added by JavaScript -->
+                    </div>
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Payment details</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="input-items">
+                                    <div class="row gy-3">
+                                        <!--<div class="col-xl-6">
+                                            <div class="input-box">
+                                                <h6>Hostel Name</h6>
+                                                <select id="hostelDropdown" class="js-example-basic-single w-100">
+                                                    <option value="">Select Hostel</option>
+                                                </select>
+                                            </div>
+                                        </div>-->
+                                        <div class="col-xl-6">
+                                            <div class="input-box">
+                                                <h6>Payment mode<span class="required">*</span></h6>
+                                                <select class="js-example-basic-single w-100" name="state"
+                                                    id="paymentMode" required>
+                                                    <option>Online</option>
+                                                    <option>Manual</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-6">
+                                            <div class="input-box">
+                                                <h6>Transaction Id</h6>
+                                                <input type="text" placeholder="Booking Status" id="paymentId">
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-6">
+                                            <div class="input-box">
+                                                <h6>Comments</h6>
+                                                <input type="text" placeholder="Booking Status" id="paymentComments">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-cancel" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        Close
+                    </button>
+                    <button class="btn btn-primary" id="confirmBooking" type="button">
+                        OK
+                    </button>
                 </div>
             </div>
         </div>
@@ -1107,8 +1218,7 @@
                 <div class="modal-footer">
                     <button class="btn btn-cancel" type="button" id="cancelVacationBtn">
                         Cancel Vacation</button>
-                    <button type="button" id="updateVacationBtn"
-                        class="btn btn-primary">Update</button>
+                    <button type="button" id="updateVacationBtn" class="btn btn-primary">Update</button>
                 </div>
             </div>
         </div>
@@ -1129,7 +1239,7 @@
                         <div class="row gy-3">
                             <div class="col-xl-6">
                                 <h6>Checkout Initiated Date:</h6>
-                                <input type="date"  id="checkoutdate_user">
+                                <input type="date" id="checkoutdate_user">
                             </div>
                             <div class="col-xl-6">
                                 <h6>Checkout Date:</h6>
@@ -1144,10 +1254,9 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-cancel" type="button" data-bs-dismiss="modal"
-                        aria-label="Close" id="declineCheckout">Decliine</button>
-                    <button type="button" id="approveCheckout"
-                        class="btn btn-primary">Approve</button>
+                    <button class="btn btn-cancel" type="button" data-bs-dismiss="modal" aria-label="Close"
+                        id="declineCheckout">Decliine</button>
+                    <button type="button" id="approveCheckout" class="btn btn-primary">Approve</button>
                 </div>
             </div>
         </div>
