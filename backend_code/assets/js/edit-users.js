@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, get, set, child, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, get, set, child, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { getStorage, ref as ref2, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 import { firebaseConfig } from "./firebase-config.js";
 
@@ -76,6 +76,7 @@ async function fetchUserId(username) {
     console.error("Error fetching user details:", error);
   }
 }
+
 
 async function updateDownloadLinks() {
   const imageRef = ref(db, `User details/${userUid}/proofData/`); // Use userId for accessing proof data
@@ -471,7 +472,7 @@ const addTableRow = async (
   const td12 = document.createElement("td");
   const td13 = document.createElement("td");
   const td14 = document.createElement("td");
-  // const td15 = document.createElement("td");
+  const td15 = document.createElement("td");
 
 
   td1.innerText = id;
@@ -529,9 +530,330 @@ const addTableRow = async (
 
   td14.appendChild(detailsButton);
 
-  trow.append(td1, td2, td3, td4, td5, td6, td7, td8, td9, td10, td11, td12, td13, td14);
+  var changeRoomButton = document.createElement('a');
+  changeRoomButton.innerHTML = '<a data-bs-toggle="modal" data-bs-target="#viewChangeRoom" style="cursor:pointer; color:orange; text-decoration: underline">Change</a>';
+  changeRoomButton.onclick = function (event) {
+    event.stopPropagation(); // Prevent row click event
+    //fillPaymentDetails(paymentHistoryObj);
+    let hostelDetails = [];
+    hostelDetails.push(bookingId);
+    hostelDetails.push(hostelName);
+    hostelDetails.push(hostelFloor);
+    hostelDetails.push(hostelType);
+    hostelDetails.push(hostelac);
+    hostelDetails.push(hostelRoom);
+    hostelDetails.push(bedId);
+    loadHostel(hostelDetails);
+  };
+
+  if(roomStatus.toLowerCase() == 'booked'){
+    td15.appendChild(changeRoomButton);
+  }
+
+  trow.append(td1, td2, td3, td4, td5, td6, td7, td8, td9, td10, td11, td12, td13, td14, td15);
   tbody1.appendChild(trow);
 };
+
+async function loadHostel(hostelDetails) {
+
+  const roomsRef = ref(db, `Hostel details/${hostelDetails[1]}/rooms/`);
+  try {
+    const snapshot = await get(roomsRef);
+    const roomTableBody = document.querySelector("#table_id_change_room tbody");
+    roomTableBody.innerHTML = ""; // Clear previous table data
+
+    if (snapshot.exists()) {
+      const rooms = snapshot.val();
+      let matchedRooms = 0; // Counter to track matched rooms
+
+      for (let floorKey in rooms) {
+        const floor = rooms[floorKey];
+        for (let roomTypeKey in floor) {
+
+          const roomTypeData = floor[roomTypeKey];
+          for (let acTypeKey in roomTypeData.rooms) {
+
+            const acRooms = roomTypeData.rooms[acTypeKey];
+            for (let roomKey in acRooms) {
+              const roomData = acRooms[roomKey];
+
+              const row = roomTableBody.insertRow();
+              row.innerHTML = `
+                  <td>${roomData.floor}</td>
+                  <td>${roomData.roomNumber}</td>
+                  <td>${roomData.roomType}</td>
+                  <td>${roomData.ac}</td>
+                  <td>${roomData.bathroom}</td>
+                  <td>${roomData.price}</td>
+                  <td>
+                    <a data-bs-toggle="modal" data-bs-target="#viewRoomDetails" style="cursor:pointer; color:orange; text-decoration:underline">View beds</a> |
+                    <!--<a data-bs-toggle="modal" data-bs-target="#viewExtrasModal" style="cursor:pointer; color:orange; text-decoration:underline">View extras</a>-->
+                  </td>
+                `;
+
+              // Attach event listener to "View beds" link
+              const viewBedsLink = row.querySelector("a:first-of-type");
+              viewBedsLink.addEventListener("click", (event) => {
+                event.stopPropagation();
+                loadBedView(
+                  hostelDetails,
+                  roomData.floor,
+                  roomData.roomNumber,
+                  roomData.roomType,
+                  acTypeKey,
+                  roomData.bathroom,
+                  roomData.price,
+                );
+              });
+              matchedRooms++;
+            }
+          }
+        }
+      }
+
+      if (matchedRooms === 0) {
+        roomTableBody.innerHTML = "<tr><td colspan='8'>No rooms match the selected filters.</td></tr>";
+      }
+    } else {
+      console.log("No rooms found for this hostel.");
+      roomTableBody.innerHTML = "<tr><td colspan='8'>No rooms available.</td></tr>";
+    }
+  } catch (error) {
+    console.error("Error fetching filtered room details:", error);
+  }
+}
+let selectedDetails = {};
+let selectedBedState = {};
+let isUpdatingBedStatus = false; // Prevent unnecessary UI reloads
+
+async function loadBedView(hostelDetails, floor, roomNo, roomType, acType, bathroom, price) {
+  const roomKey = `${hostelDetails[1]}_F${floor}_R${roomNo}`; // Unique identifier for the room
+
+  if (!selectedBedState[roomKey]) {
+    selectedBedState[roomKey] = {}; // Initialize state for this room
+  }
+
+  const dbref = ref(
+    db,
+    `Hostel details/${hostelDetails[1]}/rooms/floor${floor}/${roomType}/rooms/${acType}/room${roomNo}/beds`
+  );
+
+  const parentContainer = document.getElementById("bedParent");
+  parentContainer.innerHTML = ""; // Clear previous data
+
+  await onValue(dbref, (snapshot) => {
+    if (isUpdatingBedStatus) return;
+
+    const beds = snapshot.val();
+    if (!beds) {
+      parentContainer.innerHTML = "<p>No beds available.</p>";
+      return;
+    }
+
+    parentContainer.innerHTML = "";
+    for (let key in beds) {
+      let bed = beds[key];
+
+      const elem = document.createElement("div");
+      elem.classList.add("card");
+      elem.style.cursor = "pointer";
+
+      // Determine bed state and style
+      if (bed.status === "booked") {
+        elem.style.backgroundColor = "#FF7F7F";
+        elem.style.border = "1px solid #FF7F7F";
+        elem.style.color = "red";
+        elem.style.pointerEvents = "none";
+      } else if (selectedBedState[roomKey][key]) {
+        elem.style.backgroundColor = "lightgreen";
+        elem.style.color = "black";
+      } else {
+        elem.style.backgroundColor = "white";
+        elem.style.border = "1px solid black";
+      }
+
+      elem.addEventListener("click", () => {
+        // Reset all beds for this room
+        for (let cardKey in selectedBedState[roomKey]) {
+          selectedBedState[roomKey][cardKey] = false;
+        }
+
+        const cards = parentContainer.querySelectorAll(".card");
+        cards.forEach((card) => {
+          if (!card.style.pointerEvents.includes("none")) {
+            card.style.backgroundColor = "white";
+            card.style.color = "black";
+          }
+        });
+
+        elem.style.backgroundColor = "lightgreen";
+        elem.style.color = "black";
+
+        // Update selected bed state
+        selectedBedState[roomKey][key] = true;
+
+        // Get payment details input values
+        const paymentMode = document.getElementById("paymentMode").value;
+        const paymentId = document.getElementById("paymentId").value;
+        const paymentComments = document.getElementById("paymentComments").value;
+
+        // Store selected bed details locally, including payment details
+        selectedDetails = {
+          floor:"floor"+floor,
+          roomNumber: "room"+roomNo,
+          roomType:roomType,
+          acType: acType,
+          bedId: key,
+          bathroomType: bathroom || "N/A",
+          price: price || "N/A",
+          hostelDetails: hostelDetails,
+          paymentMode: paymentMode || "N/A",
+          paymentId: paymentId || "N/A",
+          paymentComments: paymentComments || "N/A",
+        };
+
+        console.log("Selected Bed Details:", selectedDetails);
+      });
+
+      elem.innerHTML = `<div class="card-body">${key} - ${bed.status}</div>`;
+      parentContainer.appendChild(elem);
+    }
+  });
+}
+
+async function confirmSelection() {
+  // Ensure a bed has been selected
+  if (Object.keys(selectedDetails).length === 0) {
+    alert("Please select a bed before confirming.");
+    return;
+  }
+
+
+  let existingRoomTypeRef = ref(db, `Hostel details/${selectedDetails.hostelDetails[1]}/rooms/${selectedDetails.hostelDetails[2]}/${selectedDetails.hostelDetails[3]}`);
+  let existingRoomTypeSnapshot = await get(existingRoomTypeRef);
+  let existingRoomTypeData = existingRoomTypeSnapshot.exists() ? existingRoomTypeSnapshot.val() : {};
+  let existingRoomTypeBedsAvailable = existingRoomTypeData.bedsAvailable || 0;
+
+
+  // Fetch existing room data for updating room-level information
+  let existingRoomRef = ref(db, `Hostel details/${selectedDetails.hostelDetails[1]}/rooms/${selectedDetails.hostelDetails[2]}/${selectedDetails.hostelDetails[3]}/rooms/${selectedDetails.hostelDetails[4]}/${selectedDetails.hostelDetails[5]}`);
+  let existingRoomSnapshot = await get(existingRoomRef);
+  let existingRoomData = existingRoomSnapshot.exists() ? existingRoomSnapshot.val() : {};
+  let existingBeds = existingRoomData.beds || {};
+  let existingBedsAvailable = existingRoomData.bedsAvailable;
+
+  console.log(`Hostel details/${selectedDetails.hostelDetails[1]}/rooms/${selectedDetails.hostelDetails[2]}/${selectedDetails.hostelDetails[3]}`);
+  //updating roomType for previous change
+  await update(ref(db, `Hostel details/${selectedDetails.hostelDetails[1]}/rooms/${selectedDetails.hostelDetails[2]}/${selectedDetails.hostelDetails[3]}`), {
+    bedsAvailable: Number(existingRoomTypeBedsAvailable) + 1
+  }).catch((error) => {
+    console.error(`Error updating roomType details for ${roomType}:`, error);
+    alert(`Error updating roomType details for ${roomType}: ${error}`);
+  });
+
+
+  console.log(`Hostel details/${selectedDetails.hostelDetails[1]}/rooms/${selectedDetails.hostelDetails[2]}/${selectedDetails.hostelDetails[3]}/rooms/${selectedDetails.hostelDetails[4]}/${selectedDetails.hostelDetails[5]}`)
+  //updating roomLevel for previous change
+  await update(ref(db, `Hostel details/${selectedDetails.hostelDetails[1]}/rooms/${selectedDetails.hostelDetails[2]}/${selectedDetails.hostelDetails[3]}/rooms/${selectedDetails.hostelDetails[4]}/${selectedDetails.hostelDetails[5]}`), {
+    bedsAvailable: Number(existingBedsAvailable) + 1
+
+  }).catch((error) => {
+    console.error(`Error updating roomType details for ${roomType}:`, error);
+    alert(`Error updating roomType details for ${roomType}: ${error}`);
+  });
+
+  //updating roomLevel beds for previous change
+  console.log( `Hostel details/${selectedDetails.hostelDetails[1]}/rooms/${selectedDetails.hostelDetails[2]}/${selectedDetails.hostelDetails[3]}/rooms/${selectedDetails.hostelDetails[4]}/${selectedDetails.hostelDetails[5]}/beds/${selectedDetails.hostelDetails[6]}`)
+  await update(ref(db, `Hostel details/${selectedDetails.hostelDetails[1]}/rooms/${selectedDetails.hostelDetails[2]}/${selectedDetails.hostelDetails[3]}/rooms/${selectedDetails.hostelDetails[4]}/${selectedDetails.hostelDetails[5]}/beds/${selectedDetails.hostelDetails[6]}/`), {
+    status: "not booked"
+
+  }).catch((error) => {
+    console.error(`Error updating roomType details for ${roomType}:`, error);
+    alert(`Error updating roomType details for ${roomType}: ${error}`);
+  });
+
+   existingRoomTypeRef = ref(db,`Hostel details/${selectedDetails.hostelDetails[1]}/rooms/${selectedDetails.floor}/${selectedDetails.roomType}`);
+   existingRoomTypeSnapshot = await get(existingRoomTypeRef);
+   existingRoomTypeData = existingRoomTypeSnapshot.exists() ? existingRoomTypeSnapshot.val() : {};
+   existingRoomTypeBedsAvailable = existingRoomTypeData.bedsAvailable || 0;
+
+
+  // Fetch existing room data for updating room-level information
+   existingRoomRef = ref(db, `Hostel details/${selectedDetails.hostelDetails[1]}/rooms/${selectedDetails.floor}/${selectedDetails.roomType}/rooms/${selectedDetails.acType}/${selectedDetails.roomNumber}`);
+   existingRoomSnapshot = await get(existingRoomRef);
+   existingRoomData = existingRoomSnapshot.exists() ? existingRoomSnapshot.val() : {};
+   existingBeds = existingRoomData.beds || {};
+   existingBedsAvailable = existingRoomData.bedsAvailable;
+
+  console.log(`Hostel details/${selectedDetails.hostelDetails[1]}/rooms/${selectedDetails.floor}/${selectedDetails.roomType}`);
+  //updating roomType for after change
+  await update(ref(db, `Hostel details/${selectedDetails.hostelDetails[1]}/rooms/${selectedDetails.floor}/${selectedDetails.roomType}`), {
+    bedsAvailable: Number(existingRoomTypeBedsAvailable) - 1
+  }).catch((error) => {
+    console.error(`Error updating roomType details for ${roomType}:`, error);
+    alert(`Error updating roomType details for ${roomType}: ${error}`);
+  });
+
+  console.log(`Hostel details/${selectedDetails.hostelDetails[1]}/rooms/${selectedDetails.floor}/${selectedDetails.roomType}/rooms/${selectedDetails.acType}/${selectedDetails.roomNumber}`)
+  //updating roomLevel for after change
+  await update(ref(db, `Hostel details/${selectedDetails.hostelDetails[1]}/rooms/${selectedDetails.floor}/${selectedDetails.roomType}/rooms/${selectedDetails.acType}/${selectedDetails.roomNumber}`), {
+    bedsAvailable: Number(existingBedsAvailable) - 1
+
+  }).catch((error) => {
+    console.error(`Error updating roomType details for ${roomType}:`, error);
+    alert(`Error updating roomType details for ${roomType}: ${error}`);
+  });
+
+  console.log(`Hostel details/${selectedDetails.hostelDetails[1]}/rooms/${selectedDetails.floor}/${selectedDetails.roomType}/rooms/${selectedDetails.acType}/${selectedDetails.roomNumber}/beds/${selectedDetails.bedId}`)
+  //updating roomLevel beds for after change
+  await update(ref(db, `Hostel details/${selectedDetails.hostelDetails[1]}/rooms/${selectedDetails.floor}/${selectedDetails.roomType}/rooms/${selectedDetails.acType}/${selectedDetails.roomNumber}/beds/${selectedDetails.bedId}/`), {
+    status: "booked"
+
+  }).catch((error) => {
+    console.error(`Error updating roomType details for ${roomType}:`, error);
+    alert(`Error updating roomType details for ${roomType}: ${error}`);
+  });
+
+  var date = new Date();
+  console.log("User details/" + userUid + '/Bookings/' + date + '/RoomDetails/')
+  await update(ref(db, "User details/" + userUid + '/Bookings/' + date + '/RoomDetails/'), {
+    bedId: selectedDetails.bedId,
+    roomType: selectedDetails.roomType,
+    floor: selectedDetails.floor,
+    ac: selectedDetails.acType,
+    room: selectedDetails.roomNumber,
+    paymentComplete: "yes",
+    totalAmount: selectedDetails.price,
+    roomRent: selectedDetails.price,
+    paymentDate: date,
+    paymenttransId: selectedDetails.paymentId,
+    roomCheckoutDateByUser: "",
+    roomCheckoutDateByAdmin: "",
+    hostelName: selectedDetails.hostelDetails[1],
+    status: 'booked',
+    roomBookedDate:date
+    // paymentOrderId:paymentResponse.razorpay_order_id
+  })
+  console.log("User details/" + userUid + '/Bookings/' + selectedDetails.hostelDetails[0] + '/RoomDetails/')
+
+ await update(ref(db, "User details/" + userUid + '/Bookings/' + selectedDetails.hostelDetails[0] + '/RoomDetails/'), {
+    status: "Updated"
+  })
+
+  console.log("User details/" + userUid + '/Bookings/' + date + '/RoomDetails/PaymentDetails/' + date + '/')
+ await  update(ref(db, "User details/" + userUid + '/Bookings/' + date + '/RoomDetails/PaymentDetails/' + date + '/'), {
+    paymentDate: date,
+    paymentMode: selectedDetails.paymentMode,
+    paymentAmount: selectedDetails.price,
+    paymenttransId: selectedDetails.paymentId,
+  })
+
+  const modal = bootstrap.Modal.getInstance(document.getElementById("viewRoomDetails"));
+  modal.hide();
+  location.reload();
+}
+document.getElementById("confirmBooking").addEventListener("click", confirmSelection);
+
 
 const tbody2 = document.getElementById("tbody2");
 function fillPaymentDetails(paymentHistoryObj) {
