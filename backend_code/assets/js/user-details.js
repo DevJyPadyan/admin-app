@@ -15,13 +15,12 @@ let tbody = document.getElementById("tbody1");
 const removeUser = async (event, userName) => {
     event.stopPropagation(); // Prevent the row click event from triggering
 
-    // Show confirmation alert box
     const userConfirmed = window.confirm(`Are you sure you want to delete the user: ${userName}?`);
 
     // If the user confirms deletion
     if (userConfirmed) {
         try {
-            // Reference to the 'User details' node in Firebase
+
             const usersRef = ref(db, 'User details');
 
             // Fetch all user data
@@ -43,7 +42,6 @@ const removeUser = async (event, userName) => {
                 if (userUid) {
                     const userRef = ref(db, `User details/${userUid}`); // Reference to the user details
 
-                    // Remove the user data
                     await remove(userRef);
                     alert(`${userName} removed successfully!`);
 
@@ -164,16 +162,26 @@ function loadOrderDetails(user) {
         return;
     }
 
-    // Fetch bookings under 'User details/{userUid}/Bookings/'
     const dbref = ref(db, `User details/${userUid}/Bookings/`);
     onValue(dbref, (snapshot) => {
-        let ordersList = [];
-        snapshot.forEach(h => {
-            ordersList.push(h.val());
-        });
+        let bookings = snapshot.val(); // Get all bookings
+        console.log(bookings);
 
-        const bookingDetails = ordersList.length > 0 ? ordersList[0].RoomDetails : null; // Get first booking details
-        AddsingleRecord(user, bookingDetails);
+        if (bookings) {
+
+            const dates = Object.keys(bookings); //extract dates from firebase bookings node.
+            const sortedDates = dates.sort((a, b) => new Date(b) - new Date(a)); //sorting dates so that we will get the latest date
+            const latestDate = sortedDates[0];
+
+            const latestStatus = bookings[latestDate].RoomDetails.status;
+
+            console.log("Latest booking date:", latestDate);
+            console.log("Status of latest booking:", latestStatus);
+
+            AddsingleRecord(user, bookings[latestDate].RoomDetails);
+        } else {
+            console.log("No bookings found for this user.");
+        }
     });
 }
 
@@ -182,7 +190,6 @@ const AddsingleRecord = (user, bookingDetails) => {
     var trow = document.createElement('tr');
     flag++;
 
-    // User details
     var cells = [
         flag,
         user.userName || 'N/A',
@@ -203,17 +210,17 @@ const AddsingleRecord = (user, bookingDetails) => {
         user.guardAddress2 || 'N/A',
         user.guardCity || 'N/A',
         user.guardState || 'N/A',
-        user.guardPin || 'N/A'
+        user.guardPin || 'N/A',
+        bookingDetails.status
     ];
 
 
     cells.forEach(data => {
-            var td = document.createElement('td');
-            td.innerHTML = data;
-            trow.appendChild(td);
+        var td = document.createElement('td');
+        td.innerHTML = data;
+        trow.appendChild(td);
     });
 
-    // Remove button - append before the paymentComplete cell
     var removeButton = document.createElement('button');
     removeButton.type = 'button';
     removeButton.innerHTML = '<i class="fas fa-trash"></i>';
@@ -225,7 +232,6 @@ const AddsingleRecord = (user, bookingDetails) => {
     var tdRemoveButton = document.createElement('td');
     tdRemoveButton.appendChild(removeButton);
 
-    // Append the delete button at the end
     trow.appendChild(tdRemoveButton);
 
     tbody.append(trow);
