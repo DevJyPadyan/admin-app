@@ -525,29 +525,76 @@ function addStyles1() {
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1rem;
         }
-        .meal-card {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            text-align: left;
-            padding: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            background-color: #fff;
-        }
-        .meal-options {
-            width: 100%;
-        }
-        .meal-item {
-            display: flex;
-            margin-bottom: 0.5rem;
-        }
-        .meal-item img {
-            width: 70px;
-            height: 70px;
-            margin-right: 0.5rem;
-            border-radius: 4px;
-        }
+       /* Styling for each session container */
+.session-container {
+  margin-bottom: 30px;
+  padding: 10px;
+  background-color: #fdfdfd;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+/* Session title styling */
+.session-container h3 {
+  margin: 10px 0;
+  font-size: 22px;
+  color: #333;
+  text-transform: capitalize;
+  padding-left: 10px;
+}
+
+/* Dish list for horizontal layout */
+.dish-list {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto; /* Enable horizontal scrolling if needed */
+  padding: 10px 0;
+}
+
+/* Dish tile (individual dish card) */
+.dish-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 180px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Dish image styling */
+.dish-tile img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+/* Dish details */
+.dish-details {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.4;
+}
+
+/* Add horizontal scroll indicator */
+.dish-list::-webkit-scrollbar {
+  height: 8px;
+}
+
+.dish-list::-webkit-scrollbar-thumb {
+  background-color: #bbb;
+  border-radius: 4px;
+}
+
+.dish-list::-webkit-scrollbar-thumb:hover {
+  background-color: #888;
+}
+
         .actions {
             text-align: center;
             margin-top: 1rem;
@@ -586,15 +633,29 @@ function addStyles1() {
 addStyles1();
 
 async function fetchFoodData() {
-  const foodMenuRef = ref(db, "Food Menu");
-  const snapshot = await get(foodMenuRef);
-  if (snapshot.exists()) {
-    return snapshot.val();
-  } else {
-    console.error("No data found at 'Food Menu' path");
-    return null;
-  }
+    const foodMenuRef = ref(db, "Food Menu");
+    const snapshot = await get(foodMenuRef);
+    if (snapshot.exists()) {
+        const foodData = snapshot.val();
+
+        // Sort foodData in ascending order based on dish name (or other properties)
+        for (const session in foodData) {
+            if (Array.isArray(foodData[session]?.dishes)) {
+                foodData[session].dishes.sort((a, b) => {
+                    const nameA = a.mainDish?.toLowerCase() || "";
+                    const nameB = b.mainDish?.toLowerCase() || "";
+                    return nameA.localeCompare(nameB);
+                });
+            }
+        }
+
+        return foodData;
+    } else {
+        console.error("No data found at 'Food Menu' path");
+        return null;
+    }
 }
+
 async function setupWeekContainer() {
   const foodData = await fetchFoodData();
 
@@ -646,7 +707,7 @@ async function setupWeekContainer() {
         (day, index) => `
           <div class="day-container ${index === 0 ? "active" : ""}" id="details-${day}-${weekCounter}">
             <center><h3>${day}</h3></center>
-            <div class="session-grid">
+            <div class="session-container">
               ${["Breakfast", "Lunch", "Snacks", "Dinner"]
             .map(session => createMealCard(session, day, weekCounter, foodData))
             .join("")}
@@ -738,29 +799,42 @@ async function setupWeekContainer() {
   }
 
   function createMealCard(session, day, weekCounter, foodData) {
-    const sessionData = foodData[session]?.dishes || [];
+    const sessionData = foodData[session]?.dishes || []; // Get the dishes for the session
     const options = sessionData
       .map(
-        dish => ` 
-          <div class="meal-item">
-            <img src="${dish.image}" alt="${dish.name}" />
-            <label>
-              <input type="checkbox" value="${dish.id}" data-name="${dish.mainDish}" data-beverage="${dish.beverages}" data-special_dish="${dish.specialDish}" data-image="${dish.image}">
-              ${dish.mainDish}
-              ${dish.sideDish}
-              ${dish.beverages ? `<br><small><b>Beverages:</b> ${dish.beverages}</small>` : ""}
-              ${dish.specialDish ? `<br><small><b>Special Dish:</b> ${dish.specialDish}</small>` : ""}
-            </label>
-          </div>`
+        (dish) => `
+          <div class="dish-tile">
+            <img src="${dish.image}" alt="${dish.mainDish}" />
+            <div class="dish-details">
+            <input type="checkbox" 
+                   value="${dish.id}"
+                   data-name="${dish.mainDish}"
+                   data-side="${dish.sideDish}"
+                   data-beverage="${dish.beverages || ""}" 
+                   data-special_dish="${dish.specialDish || ""}" 
+                   data-image="${dish.image}" 
+                   data-session="${session}" 
+                   class="dish-checkbox" 
+            />
+              <strong>${dish.mainDish}</strong><br>
+              ${dish.sideDish ? `Side: ${dish.sideDish}<br>` : ""}
+              ${dish.beverages ? `Beverages: ${dish.beverages}<br>` : ""}
+              ${dish.specialDish ? `Special: ${dish.specialDish}` : ""}
+            </div>
+            
+          </div>
+        `
       )
       .join("");
 
     return `
-      <div class="meal-card" data-session="${session}">
+      <div class="session-container">
         <h3>${session}</h3>
-        <div class="meal-options">${options}</div>
-      </div>`;
+        <div class="dish-list">${options}</div>
+      </div>
+    `;
   }
+
 
   function setupTabs(tabsDiv, dayDetailsDiv, weekCounter) {
     const tabs = tabsDiv.querySelectorAll("button");
@@ -847,26 +921,27 @@ async function setupWeekContainer() {
       Snacks: `${formatTimeToAmPm(snacksStart)} - ${formatTimeToAmPm(snacksEnd)}`,
       Dinner: `${formatTimeToAmPm(dinnerStart)} - ${formatTimeToAmPm(dinnerEnd)}`
     };
-
     const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-    daysOfWeek.forEach(day => {
+    daysOfWeek.forEach((day) => {
       const daySelections = {};
       const checkboxes = document.querySelectorAll(`#details-${day}-${weekCounter} input[type="checkbox"]:checked`);
-      checkboxes.forEach(checkbox => {
-        const session = checkbox.closest(".meal-card").dataset.session;
+
+      checkboxes.forEach((checkbox) => {
+        const session = checkbox.dataset.session;
 
         if (!daySelections[session]) {
           daySelections[session] = {
             dishes: [],
-            dishTimings: timings[session]
+            dishTimings: timings[session],
           };
         }
 
         daySelections[session].dishes.push({
           name: checkbox.dataset.name,
+          side_dish: checkbox.dataset.side,
           beverage: checkbox.dataset.beverage,
           special_dish: checkbox.dataset.special_dish,
-          image: checkbox.dataset.image
+          image: checkbox.dataset.image,
         });
       });
 
