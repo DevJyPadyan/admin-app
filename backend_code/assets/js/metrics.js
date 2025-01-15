@@ -311,7 +311,7 @@ const calculateExpenses = (startDate, endDate) => {
                 totalExpenses: 0,
                 categoryWiseExpenses: {},
             };
-        }else{
+        }if(expensesByHostel){
 
         for (const dateRange in hostelExpenses) {
             const expenseEntry = hostelExpenses[dateRange];
