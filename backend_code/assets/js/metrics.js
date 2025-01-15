@@ -629,6 +629,7 @@ function calculateHostelData(fromDate, toDate) {
 
             // Render Financial Breakdown Table
             const financialBreakdownTable = document.getElementById('financialBreakdownTable');
+                console.log('financialStats',filteredData);
             const expenseHostelKeys = Object.keys(filteredData.financialStats.expensesByHostel);
             financialBreakdownTable.innerHTML = expenseHostelKeys.map(hostelKey => {
                 const expensesByHostel = filteredData.financialStats.expensesByHostel[hostelKey] || {};
