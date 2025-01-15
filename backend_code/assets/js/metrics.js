@@ -487,6 +487,7 @@ function calculateHostelData(fromDate, toDate) {
             const endDate = document.getElementById('end-date').value;
 
             const dataOutput = getDataOutput(startDate, endDate);
+                console.log('financialStats',dataOutput);
 
             const filteredData = {
                 bedStats: selectedHostel === 'all' ? dataOutput.bedStats : dataOutput.bedStats.filter(item => item.hostel === selectedHostel),
