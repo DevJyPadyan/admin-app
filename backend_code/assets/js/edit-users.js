@@ -511,7 +511,7 @@ const addTableRow = async (
     fillVacationDetails(vacationObj, hostelDetails);
   };
 
-  td13.appendChild(vacationDetailsButton);
+  // td13.appendChild(vacationDetailsButton);
 
   var detailsButton = document.createElement('a');
   detailsButton.innerHTML = '<a data-bs-toggle="modal" data-bs-target="#viewCheckoutDetails" style="cursor:pointer; color:orange; text-decoration: underline">Checkout Details</a>';
@@ -528,7 +528,7 @@ const addTableRow = async (
     fillCheckoutDetails(checkoutObj, hostelDetails);
   };
 
-  td14.appendChild(detailsButton);
+  // td14.appendChild(detailsButton);
 
   var changeRoomButton = document.createElement('a');
   changeRoomButton.innerHTML = '<a data-bs-toggle="modal" data-bs-target="#viewChangeRoom" style="cursor:pointer; color:orange; text-decoration: underline">Change</a>';
@@ -546,6 +546,12 @@ const addTableRow = async (
     loadHostel(hostelDetails);
   };
 
+  if(roomStatus.toLowerCase() == 'booked'){
+    td13.appendChild(vacationDetailsButton);
+  }
+  if(roomStatus.toLowerCase() == 'booked'){
+    td14.appendChild(detailsButton);
+  }
   if(roomStatus.toLowerCase() == 'booked'){
     td15.appendChild(changeRoomButton);
   }
@@ -837,7 +843,7 @@ async function confirmSelection() {
   console.log("User details/" + userUid + '/Bookings/' + selectedDetails.hostelDetails[0] + '/RoomDetails/')
 
  await update(ref(db, "User details/" + userUid + '/Bookings/' + selectedDetails.hostelDetails[0] + '/RoomDetails/'), {
-    status: "Updated"
+    status: "updated"
   })
 
   console.log("User details/" + userUid + '/Bookings/' + date + '/RoomDetails/PaymentDetails/' + date + '/')

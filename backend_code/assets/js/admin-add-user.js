@@ -2,6 +2,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getDatabase, ref, get, set, onValue, child, update, remove, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { getStorage, ref as ref2, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 import { firebaseConfig } from "./firebase-config.js";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"
+
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase();
@@ -373,31 +375,74 @@ document.getElementById("files").addEventListener("change", function (e) {
 });
 
 document.getElementById("uploadImage").addEventListener("click", async function () {
-  // Generate the uniqueID if it's not already created
-  if (!userUid) {
-    const userRef = push(ref(db, "User details")); // Push to generate a unique ID
-    userUid = userRef.key; // Get the generated unique ID
-  }
 
-  // Checks if files are selected
-  if (files.length != 0) {
-    for (let i = 0; i < files.length; i++) {
-      const storageRef = ref2(storage, 'userProof/' + userUid + '/govtProof/' + files[i].name); // Use uniqueID
-      const upload = await uploadBytes(storageRef, files[i]);
-      const imageUrl = await getDownloadURL(storageRef);
-      imagelink.push(imageUrl);
+  const auth = getAuth(app);
+  var userEmail = document.getElementById("usermail").value;
+  var password1 = document.getElementById("pwd1").value;
+
+  if (userEmail != '' && password1 != '') {
+    console.log(userUid)
+    if (userUid == '') {
+     await createUserWithEmailAndPassword(auth, userEmail, password1)
+        .then((userCredential) => {
+          // Signed up
+          let url = userCredential.user.uid;
+          userUid = userCredential.user.uid;
+          set(ref(db, "User details/" + url), {
+            userUid: userCredential.user.uid
+          })
+            .then(async () => {
+              await sendEmailVerification(userCredential.user);
+              alert(`A verification email has been sent to User email address!. Please verify User email to login.`);
+              // Checks if files are selected
+            })
+            .catch((error) => {
+              // alert("hellooo-",error.message);
+              console.log(error)
+            });
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorMessage)
+          if (errorCode == "auth/email-already-in-use") {
+            alert("Email - Already exists, try with another email")
+          }
+          if (errorCode == "auth/invalid-email") {
+            alert("Please enter an Valid Email")
+          }
+          if (errorCode == "auth/weak-password") {
+            alert("Password should be at least 6 characters");
+          }
+          // alert("Please Enter Valid Email");
+        });
     }
-
-    const imageRef = ref(db, 'User details/' + userUid + '/proofData/');
-    await set(imageRef, imagelink)
-      .then(() => {
-        alert("Image is uploading.. please click OK");
-        alert("Image is uploaded. Please click OK");
-        console.log('Image URLs have been successfully stored!');
-      });
-  } else {
-    alert("No file chosen");
+    if(userUid != ''){
+      if (files.length != 0) {
+        for (let i = 0; i < files.length; i++) {
+          const storageRef = ref2(storage, 'userProof/' + userUid + '/govtProof/' + files[i].name); // Use uniqueID
+          const upload = await uploadBytes(storageRef, files[i]);
+          const imageUrl = await getDownloadURL(storageRef);
+          imagelink.push(imageUrl);
+        }
+  
+        const imageRef = ref(db, 'User details/' + userUid + '/proofData/');
+        await set(imageRef, imagelink)
+          .then(() => {
+            alert("Image is uploading.. please click OK");
+            alert("Image is uploaded. Please click OK");
+            alert("Do NOT ALTER EMAIL AFTER PROOF IS PROCESSED.")
+            console.log('Image URLs have been successfully stored!');
+          });
+      } else {
+        alert("No file chosen");
+      }
+    }
   }
+  else {
+    alert("Enter Email and password to store proof")
+  }
+
 });
 
 registerUser.addEventListener('click', async (e) => {
@@ -530,17 +575,17 @@ registerUser.addEventListener('click', async (e) => {
     // Room and payment details
     const roomDetails = {
       roomType: selectedDetails.roomType,
-      floor: selectedDetails.floor,
+      floor: 'floor'+selectedDetails.floor,
       ac: selectedDetails.ac,
       totalAmount: selectedDetails.price,
       paymentComplete: "paymentComplete",
       paymentDate: currentTimestamp,
       paymenttransId: paymentMode === "Online" ? paymentId : null,
       paymentComments: paymentMode === "Manual" ? paymentComments : null,
-      room: selectedDetails.roomNumber,
+      room: 'room'+selectedDetails.roomNumber,
       roomBookedDate: currentTimestamp,
       hostelName: selectedDetails.hostelName,
-      status: "Updated",
+      status: "booked",
       bedId: selectedDetails.bedId,
       roomRent: selectedDetails.price,
       extras: Object.values(selectedExtras), // Add extras as an array
